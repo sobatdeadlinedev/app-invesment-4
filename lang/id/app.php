@@ -73,6 +73,12 @@ return [
     'binance_smart_chain' => 'Binance Smart Chain',
 
     // Validation Messages - Deposit
+    'amount_required'         => 'Jumlah wajib diisi',
+    'wallet_type_required'    => 'Silakan pilih jaringan',
+    'wallet_type_invalid'     => 'Tipe jaringan tidak valid',
+    'payment_proof_required'  => 'Bukti transfer wajib diupload',
+    'payment_proof_image'     => 'Bukti transfer harus berupa gambar',
+    'payment_proof_mimes'     => 'Bukti transfer harus berformat JPG, JPEG, atau PNG',
     'please_enter_valid_amount' => 'Silakan masukkan jumlah yang valid',
     // 'minimum_deposit_alert' => 'Jumlah deposit minimum adalah 10 USDT',
     'please_upload_proof' => 'Silakan upload bukti transfer',

@@ -433,7 +433,7 @@
                 <h1>Verify OTP</h1>
                 <p>
                     Enter the 6-digit code sent to<br>
-                    <strong>{{ session('email') }}</strong>
+                    <strong>{{ session('reset_email') }}</strong>
                 </p>
             </div>
 
@@ -515,7 +515,7 @@
 
             <div class="resend-row">
                 Didn't receive the code?
-                <a href="{{ route('forget-password') }}">Resend OTP</a>
+                <a href="{{ route('forget-password.resend-otp') }}">Resend OTP</a>
             </div>
 
             <div class="timer-badge">
@@ -572,7 +572,7 @@
             btn.querySelector('.btn-text').textContent = 'Verifying...';
         });
 
-        // Countdown timer — 10 minutes
+        // Countdown timer — 10 minutes (matches OTP TTL set in ForgetPasswordController)
         let seconds = 600;
         const countdownEl = document.getElementById('countdown');
 

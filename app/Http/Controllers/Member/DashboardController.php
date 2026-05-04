@@ -56,7 +56,7 @@ class DashboardController extends Controller
             ],
             'ETHUSDT' => [
                 'name' => 'Ethereum',
-                'icon' => 'bi bi-currency-ethereum',
+                'icon' => 'bi bi-diamond',
                 'color' => '#627EEA'
             ],
             'XRPUSDT' => [
@@ -207,6 +207,37 @@ class DashboardController extends Controller
         return $coinsByCategory;
     }
 
+    public function getChartData(Request $request)
+    {
+        $symbol = strtoupper($request->input('symbol', 'BTCUSDT'));
+        $idMap  = $this->getCoinGeckoIdMap();
+        $coinId = $idMap[$symbol] ?? 'bitcoin';
+
+        try {
+            $response = Http::timeout(8)->get("https://api.coingecko.com/api/v3/coins/{$coinId}/ohlc", [
+                'vs_currency' => 'usd',
+                'days'        => 2,
+            ]);
+
+            if ($response->successful()) {
+                $candles = collect($response->json())->map(fn($k) => [
+                    'time'  => $k[0] / 1000,
+                    'open'  => (float) $k[1],
+                    'high'  => (float) $k[2],
+                    'low'   => (float) $k[3],
+                    'close' => (float) $k[4],
+                ]);
+
+                return response()->json(['success' => true, 'data' => $candles]);
+            }
+
+            throw new \Exception('CoinGecko OHLC API failed');
+        } catch (\Exception $e) {
+            Log::error("Chart data fetch failed: " . $e->getMessage());
+            return response()->json(['success' => false, 'data' => []]);
+        }
+    }
+
     /**
      * API endpoint for real-time price updates (AJAX)
      */
@@ -257,63 +288,87 @@ class DashboardController extends Controller
         return $prices;
     }
 
-    /**
-     * Batch fetch from Binance
-     */
+    private function getCoinGeckoIdMap()
+    {
+        return [
+            'BTCUSDT'  => 'bitcoin',
+            'ETHUSDT'  => 'ethereum',
+            'XRPUSDT'  => 'ripple',
+            'LINKUSDT' => 'chainlink',
+            'DOTUSDT'  => 'polkadot',
+            'DOGEUSDT' => 'dogecoin',
+            'BCHUSDT'  => 'bitcoin-cash',
+            'FILUSDT'  => 'filecoin',
+            'LTCUSDT'  => 'litecoin',
+            'ZECUSDT'  => 'zcash',
+            'DASHUSDT' => 'dash',
+        ];
+    }
+
     private function getBinancePricesBatch($symbols)
     {
-        try {
-            $prices = [];
-            $response = Http::timeout(8)->get('https://api.binance.us/api/v3/ticker/24hr');
+        $idMap      = $this->getCoinGeckoIdMap();
+        $symbolToId = array_intersect_key($idMap, array_flip($symbols));
 
-            if ($response->successful()) {
-                $allTickers = $response->json();
+        if (empty($symbolToId)) {
+            return array_fill_keys($symbols, [
+                'price' => '0.00', 'change' => '0.00', 'isPositive' => true,
+                'high' => 0, 'low' => 0, 'volume' => 0,
+            ]);
+        }
 
-                foreach ($allTickers as $ticker) {
-                    if (in_array($ticker['symbol'], $symbols)) {
-                        $lastPrice = (float)$ticker['lastPrice'];
+        $cacheKey = 'coingecko_prices_' . md5(implode(',', array_values($symbolToId)));
 
-                        // Format based on price range
-                        if ($lastPrice < 1) {
-                            $formattedPrice = number_format($lastPrice, 4, '.', '');
-                        } elseif ($lastPrice < 100) {
-                            $formattedPrice = number_format($lastPrice, 2, '.', '');
+        return Cache::remember($cacheKey, 60, function () use ($symbolToId, $symbols) {
+            try {
+                $response = Http::timeout(8)->get('https://api.coingecko.com/api/v3/coins/markets', [
+                    'vs_currency' => 'usd',
+                    'ids'         => implode(',', array_values($symbolToId)),
+                    'order'       => 'market_cap_desc',
+                    'per_page'    => 100,
+                    'page'        => 1,
+                ]);
+
+                if ($response->successful()) {
+                    $byId   = collect($response->json())->keyBy('id');
+                    $prices = [];
+
+                    foreach ($symbolToId as $symbol => $id) {
+                        if (!$byId->has($id)) continue;
+                        $coin   = $byId->get($id);
+                        $price  = (float) $coin['current_price'];
+                        $change = (float) ($coin['price_change_percentage_24h'] ?? 0);
+
+                        if ($price < 1) {
+                            $formatted = number_format($price, 4, '.', '');
+                        } elseif ($price < 100) {
+                            $formatted = number_format($price, 2, '.', '');
                         } else {
-                            $formattedPrice = number_format($lastPrice, 2, '.', ',');
+                            $formatted = number_format($price, 2, '.', ',');
                         }
 
-                        $prices[$ticker['symbol']] = [
-                            'price' => $formattedPrice,
-                            'change' => number_format((float)$ticker['priceChangePercent'], 2, '.', ''),
-                            'isPositive' => (float)$ticker['priceChangePercent'] >= 0,
-                            'high' => (float)$ticker['highPrice'],
-                            'low' => (float)$ticker['lowPrice'],
-                            'volume' => (float)$ticker['volume']
+                        $prices[$symbol] = [
+                            'price'      => $formatted,
+                            'change'     => number_format($change, 2, '.', ''),
+                            'isPositive' => $change >= 0,
+                            'high'       => (float) ($coin['high_24h'] ?? 0),
+                            'low'        => (float) ($coin['low_24h'] ?? 0),
+                            'volume'     => (float) ($coin['total_volume'] ?? 0),
                         ];
                     }
+
+                    return $prices;
                 }
 
-                return $prices;
+                throw new \Exception('CoinGecko API failed');
+            } catch (\Exception $e) {
+                Log::error("CoinGecko API failed: " . $e->getMessage());
+                return null;
             }
-
-            throw new \Exception('Binance API failed');
-        } catch (\Exception $e) {
-            Log::error("Binance API failed: " . $e->getMessage());
-
-            // Return empty array or $0.00 if API fails
-            $fallback = [];
-            foreach ($symbols as $symbol) {
-                $fallback[$symbol] = [
-                    'price' => '0.00',
-                    'change' => '0.00',
-                    'isPositive' => true,
-                    'high' => 0,
-                    'low' => 0,
-                    'volume' => 0
-                ];
-            }
-            return $fallback;
-        }
+        }) ?? array_fill_keys($symbols, [
+            'price' => '0.00', 'change' => '0.00', 'isPositive' => true,
+            'high' => 0, 'low' => 0, 'volume' => 0,
+        ]);
     }
 
     /**

@@ -1,150 +1,121 @@
 @extends('member.layouts.app')
 @section('content')
-    <!-- Scrollable Content Area -->
     <div class="scrollable-content">
-        <div class="content-section">
-            <!-- Back Button -->
-            <div class="mb-3">
-                <a href="{{ route('member.profile.index') }}" class="btn-back">
-                    <i class="bi bi-arrow-left me-2"></i>{{ __('app.back') }}
+        <div class="content-section" style="padding: 0;">
+
+            <!-- Header -->
+            <div class="pg-header">
+                <a href="{{ route('member.deposit.index') }}" class="pg-back">
+                    <i class="bi bi-arrow-left"></i>
                 </a>
+                <div class="pg-header-text">
+                    <h5 class="pg-title">{{ __('app.deposit_history') }}</h5>
+                </div>
             </div>
 
-            <h5 class="text-white mb-3">{{ __('app.deposit_history') }}</h5>
-
-            <!-- Summary Card -->
-            <div class="card-dark shadow-sm p-3 mb-3">
-                <div class="row g-3">
-                    <div class="col-6">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="summary-icon-wrapper pending">
-                                <i class="bi bi-clock-history"></i>
-                            </div>
-                            <div>
-                                <p class="text-muted mb-0 small">{{ __('app.pending') }}</p>
-                                <h6 class="text-white mb-0 fw-bold">{{ $pendingCount }}</h6>
-                            </div>
+            <!-- Summary Stats -->
+            <div class="stat-row">
+                <div class="stat-cell">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="stat-icon pending">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <div>
+                            <p class="text-muted mb-0" style="font-size: 11px;">{{ __('app.pending') }}</p>
+                            <h6 class="text-white mb-0 fw-bold">{{ $pendingCount }}</h6>
                         </div>
                     </div>
-                    <div class="col-6">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="summary-icon-wrapper completed">
-                                <i class="bi bi-check-circle"></i>
-                            </div>
-                            <div>
-                                <p class="text-muted mb-0 small">{{ __('app.completed') }}</p>
-                                <h6 class="text-white mb-0 fw-bold">{{ $completedCount }}</h6>
-                            </div>
+                </div>
+                <div class="stat-cell">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="stat-icon completed">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <div>
+                            <p class="text-muted mb-0" style="font-size: 11px;">{{ __('app.completed') }}</p>
+                            <h6 class="text-white mb-0 fw-bold">{{ $completedCount }}</h6>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Filter Tabs -->
-            <div class="filter-tabs mb-3">
-                <button class="filter-tab active" onclick="filterTransactions('all')">
-                    {{ __('app.all') }}
-                </button>
-                <button class="filter-tab" onclick="filterTransactions('pending')">
-                    {{ __('app.pending') }}
-                </button>
-                <button class="filter-tab" onclick="filterTransactions('approved')">
-                    {{ __('app.approved') }}
-                </button>
-                <button class="filter-tab" onclick="filterTransactions('rejected')">
-                    {{ __('app.rejected') }}
-                </button>
-                <button class="filter-tab" onclick="filterTransactions('completed')">
-                    {{ __('app.completed') }}
-                </button>
+            <div class="form-block" style="padding-bottom: 12px;">
+                <div class="filter-tabs">
+                    <button class="filter-tab active" onclick="filterTransactions('all', event)">{{ __('app.all') }}</button>
+                    <button class="filter-tab" onclick="filterTransactions('pending', event)">{{ __('app.pending') }}</button>
+                    <button class="filter-tab" onclick="filterTransactions('approved', event)">{{ __('app.approved') }}</button>
+                    <button class="filter-tab" onclick="filterTransactions('rejected', event)">{{ __('app.rejected') }}</button>
+                    <button class="filter-tab" onclick="filterTransactions('completed', event)">{{ __('app.completed') }}</button>
+                </div>
             </div>
 
             <!-- Transactions List -->
-            <div class="card-dark shadow-sm">
-                @forelse($transactions as $transaction)
-                    <div class="deposit-item" data-status="{{ $transaction->status }}">
-                        <div class="d-flex align-items-start gap-3">
-                            <!-- Icon -->
-                            <div class="deposit-icon-wrapper {{ $transaction->status }}">
-                                @if ($transaction->status === 'pending')
-                                    <i class="bi bi-clock-history"></i>
-                                @elseif($transaction->status === 'approved')
-                                    <i class="bi bi-hourglass-split"></i>
-                                @elseif($transaction->status === 'completed')
-                                    <i class="bi bi-check-circle"></i>
-                                @else
-                                    <i class="bi bi-x-circle"></i>
-                                @endif
+            @forelse($transactions as $transaction)
+                <div class="txn-row" data-status="{{ $transaction->status }}">
+                    <div class="txn-icon {{ $transaction->status === 'completed' ? 'completed' : ($transaction->status === 'rejected' ? 'rejected' : ($transaction->status === 'approved' ? 'approved' : 'pending')) }}">
+                        @if ($transaction->status === 'pending')
+                            <i class="bi bi-clock-history"></i>
+                        @elseif($transaction->status === 'approved')
+                            <i class="bi bi-hourglass-split"></i>
+                        @elseif($transaction->status === 'completed')
+                            <i class="bi bi-check-circle"></i>
+                        @else
+                            <i class="bi bi-x-circle"></i>
+                        @endif
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <div>
+                                <h6 class="text-white mb-0 fw-bold" style="font-size: 14px;">{{ __('app.deposit') }}</h6>
+                                <p class="text-muted mb-0" style="font-size: 11px;">{{ $transaction->reference }}</p>
                             </div>
-
-                            <!-- Content -->
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-start mb-1">
-                                    <div>
-                                        <h6 class="text-white mb-0 fw-bold">{{ __('app.deposit') }}</h6>
-                                        <p class="text-muted small mb-0">{{ $transaction->reference }}</p>
-                                    </div>
-                                    <div class="text-end">
-                                        <h6 class="text-success mb-0 fw-bold">+{{ number_format($transaction->amount, 2) }}
-                                            USDT</h6>
-                                        <span class="status-badge {{ $transaction->status }}">
-                                            {{ __('app.' . $transaction->status) }}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <!-- Transaction Details -->
-                                <div class="transaction-details mt-2">
-                                    {{-- <div class="detail-row">
-                                        <span class="text-muted small">{{ __('app.payment_method') }}:</span>
-                                        <span class="text-white small fw-bold">
-                                            {{ __('app.' . str_replace(' ', '_', strtolower($transaction->payment_method))) }}
-                                        </span>
-                                    </div> --}}
-                                    <div class="detail-row">
-                                        <span class="text-muted small">{{ __('app.amount') }}:</span>
-                                        <span class="text-success small fw-bold">
-                                            {{ number_format($transaction->total_amount, 2) }} USDT
-                                        </span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="text-muted small">{{ __('app.date') }}:</span>
-                                        <span class="text-white small">
-                                            {{ $transaction->created_at->format('d M Y, H:i') }}
-                                        </span>
-                                    </div>
-                                    @if (in_array($transaction->status, ['approved', 'completed']) && $transaction->updated_at)
-                                        <div class="detail-row">
-                                            <span class="text-muted small">{{ __('app.processed_at') }}:</span>
-                                            <span class="text-white small">
-                                                {{ $transaction->updated_at->format('d M Y, H:i') }}
-                                            </span>
-                                        </div>
-                                    @endif
-                                    @if ($transaction->payment_proof)
-                                        <div class="detail-row">
-                                            <span class="text-muted small">{{ __('app.payment_proof') }}:</span>
-                                            <button type="button" class="btn-view-proof"
-                                                onclick="viewProof('{{ asset('storage/' . $transaction->payment_proof) }}')">
-                                                <i class="bi bi-eye me-1"></i>{{ __('app.view') }}
-                                            </button>
-                                        </div>
-                                    @endif
-                                </div>
+                            <div class="text-end">
+                                <h6 class="text-success mb-0 fw-bold" style="font-size: 14px;">
+                                    +{{ number_format($transaction->amount, 2) }} USDT
+                                </h6>
+                                <span class="s-badge {{ $transaction->status }}">
+                                    {{ __('app.' . $transaction->status) }}
+                                </span>
                             </div>
                         </div>
+                        <div class="txn-detail-box mt-2">
+                            <div class="detail-row">
+                                <span class="text-muted small">{{ __('app.amount') }}:</span>
+                                <span class="text-success small fw-bold">{{ number_format($transaction->total_amount, 2) }} USDT</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="text-muted small">{{ __('app.date') }}:</span>
+                                <span class="text-white small">{{ $transaction->created_at->format('d M Y, H:i') }}</span>
+                            </div>
+                            @if (in_array($transaction->status, ['approved', 'completed']) && $transaction->updated_at)
+                                <div class="detail-row">
+                                    <span class="text-muted small">{{ __('app.processed_at') }}:</span>
+                                    <span class="text-white small">{{ $transaction->updated_at->format('d M Y, H:i') }}</span>
+                                </div>
+                            @endif
+                            @if ($transaction->payment_proof)
+                                <div class="detail-row">
+                                    <span class="text-muted small">{{ __('app.payment_proof') }}:</span>
+                                    <button type="button" class="btn-view-proof"
+                                        onclick="viewProof('{{ asset('storage/' . $transaction->payment_proof) }}')">
+                                        <i class="bi bi-eye me-1"></i>{{ __('app.view') }}
+                                    </button>
+                                </div>
+                            @endif
+                        </div>
                     </div>
-                @empty
-                    <div class="empty-state">
-                        <i class="bi bi-inbox"></i>
-                        <p class="text-muted mb-0">{{ __('app.no_deposit_history') }}</p>
-                    </div>
-                @endforelse
-            </div>
+                </div>
+            @empty
+                <div class="pg-empty">
+                    <i class="bi bi-inbox" style="font-size: 56px; color: var(--text-muted); opacity: 0.3; display: block; margin-bottom: 12px;"></i>
+                    <p class="text-muted mb-0">{{ __('app.no_deposit_history') }}</p>
+                </div>
+            @endforelse
 
             <!-- Pagination -->
             @if ($transactions->hasPages())
-                <div class="mt-3">
+                <div class="form-block">
                     {{ $transactions->links() }}
                 </div>
             @endif
@@ -169,303 +140,78 @@
     </div>
 
     <style>
-        /* Summary Icon Wrapper */
-        .summary-icon-wrapper {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid;
-            flex-shrink: 0;
+        /* Stat icons */
+        .stat-icon {
+            width: 36px; height: 36px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid; flex-shrink: 0;
         }
-
-        .summary-icon-wrapper i {
-            font-size: 20px;
-        }
-
-        .summary-icon-wrapper.pending {
-            background: rgba(255, 193, 7, 0.15);
-            border-color: rgba(255, 193, 7, 0.3);
-        }
-
-        .summary-icon-wrapper.pending i {
-            color: #ffc107;
-        }
-
-        .summary-icon-wrapper.completed {
-            background: rgba(40, 167, 69, 0.15);
-            border-color: rgba(40, 167, 69, 0.3);
-        }
-
-        .summary-icon-wrapper.completed i {
-            color: #28a745;
-        }
+        .stat-icon i { font-size: 18px; }
+        .stat-icon.pending { background: rgba(255,193,7,0.15); border-color: rgba(255,193,7,0.3); }
+        .stat-icon.pending i { color: #ffc107; }
+        .stat-icon.completed { background: rgba(40,167,69,0.15); border-color: rgba(40,167,69,0.3); }
+        .stat-icon.completed i { color: #28a745; }
 
         /* Filter Tabs */
-        .filter-tabs {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-        }
-
-        .filter-tabs::-webkit-scrollbar {
-            height: 4px;
-        }
-
-        .filter-tabs::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
-
+        .filter-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+        .filter-tabs::-webkit-scrollbar { height: 3px; }
+        .filter-tabs::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
         .filter-tab {
-            padding: 8px 16px;
-            background: rgba(245, 166, 35, 0.1);
-            border: 1px solid rgba(245, 166, 35, 0.3);
-            border-radius: 6px;
-            color: var(--text-muted);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            flex-shrink: 0;
+            padding: 7px 14px;
+            background: rgba(0,229,255,0.06); border: 1px solid rgba(0,229,255,0.2);
+            border-radius: 20px; color: var(--text-muted);
+            font-size: 12px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s ease; white-space: nowrap; flex-shrink: 0;
         }
+        .filter-tab:hover { background: rgba(0,229,255,0.12); }
+        .filter-tab.active { background: var(--gold-color); border-color: var(--gold-color); color: #0a0f1e; }
 
-        .filter-tab:hover {
-            background: rgba(245, 166, 35, 0.15);
+        /* Extended txn-icon statuses */
+        .txn-icon.approved { background: rgba(59,181,232,0.15); border-color: rgba(59,181,232,0.3); }
+        .txn-icon.approved i { color: #3bb5e8; }
+        .txn-icon.rejected { background: rgba(220,53,69,0.15); border-color: rgba(220,53,69,0.3); }
+        .txn-icon.rejected i { color: #dc3545; }
+
+        /* s-badge extended */
+        .s-badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .s-badge.pending { background: rgba(255,193,7,0.15); color: #ffc107; border: 1px solid rgba(255,193,7,0.3); }
+        .s-badge.approved { background: rgba(59,181,232,0.15); color: #3bb5e8; border: 1px solid rgba(59,181,232,0.3); }
+        .s-badge.completed { background: rgba(40,167,69,0.15); color: #28a745; border: 1px solid rgba(40,167,69,0.3); }
+        .s-badge.rejected { background: rgba(220,53,69,0.15); color: #dc3545; border: 1px solid rgba(220,53,69,0.3); }
+
+        /* Detail box inside txn row */
+        .txn-detail-box {
+            background: rgba(0,229,255,0.04); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 10px 12px;
         }
+        .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
+        .detail-row:not(:last-child) { border-bottom: 1px solid rgba(255,255,255,0.04); }
 
-        .filter-tab.active {
-            background: var(--gold-color);
-            border-color: var(--gold-color);
-            color: #000;
-        }
-
-        /* Deposit Item */
-        .deposit-item {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border-color);
-            transition: background-color 0.2s ease;
-        }
-
-        .deposit-item:hover {
-            background-color: rgba(245, 166, 35, 0.05);
-        }
-
-        .deposit-item:last-child {
-            border-bottom: none;
-        }
-
-        /* Deposit Icon Wrapper */
-        .deposit-icon-wrapper {
-            width: 45px;
-            height: 45px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid;
-            flex-shrink: 0;
-        }
-
-        .deposit-icon-wrapper i {
-            font-size: 22px;
-        }
-
-        .deposit-icon-wrapper.pending {
-            background: rgba(255, 193, 7, 0.15);
-            border-color: rgba(255, 193, 7, 0.3);
-        }
-
-        .deposit-icon-wrapper.pending i {
-            color: #ffc107;
-        }
-
-        .deposit-icon-wrapper.approved {
-            background: rgba(59, 181, 232, 0.15);
-            border-color: rgba(59, 181, 232, 0.3);
-        }
-
-        .deposit-icon-wrapper.approved i {
-            color: var(--blue-color);
-        }
-
-        .deposit-icon-wrapper.completed {
-            background: rgba(40, 167, 69, 0.15);
-            border-color: rgba(40, 167, 69, 0.3);
-        }
-
-        .deposit-icon-wrapper.completed i {
-            color: #28a745;
-        }
-
-        .deposit-icon-wrapper.rejected {
-            background: rgba(220, 53, 69, 0.15);
-            border-color: rgba(220, 53, 69, 0.3);
-        }
-
-        .deposit-icon-wrapper.rejected i {
-            color: #dc3545;
-        }
-
-        /* Status Badge */
-        .status-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .status-badge.pending {
-            background: rgba(255, 193, 7, 0.15);
-            color: #ffc107;
-            border: 1px solid rgba(255, 193, 7, 0.3);
-        }
-
-        .status-badge.approved {
-            background: rgba(59, 181, 232, 0.15);
-            color: var(--blue-color);
-            border: 1px solid rgba(59, 181, 232, 0.3);
-        }
-
-        .status-badge.completed {
-            background: rgba(40, 167, 69, 0.15);
-            color: #28a745;
-            border: 1px solid rgba(40, 167, 69, 0.3);
-        }
-
-        .status-badge.rejected {
-            background: rgba(220, 53, 69, 0.15);
-            color: #dc3545;
-            border: 1px solid rgba(220, 53, 69, 0.3);
-        }
-
-        /* Transaction Details */
-        .transaction-details {
-            background: rgba(245, 166, 35, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 10px 12px;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 4px 0;
-        }
-
-        .detail-row:not(:last-child) {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        /* View Proof Button */
+        /* View proof button */
         .btn-view-proof {
-            padding: 4px 10px;
-            background: rgba(59, 181, 232, 0.1);
-            border: 1px solid rgba(59, 181, 232, 0.3);
-            border-radius: 4px;
-            color: var(--blue-color);
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            padding: 3px 10px;
+            background: rgba(59,181,232,0.1); border: 1px solid rgba(59,181,232,0.3);
+            border-radius: 4px; color: #3bb5e8; font-size: 11px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s ease;
         }
-
-        .btn-view-proof:hover {
-            background: rgba(59, 181, 232, 0.2);
-            border-color: rgba(59, 181, 232, 0.5);
-        }
-
-        /* Empty State */
-        .empty-state {
-            padding: 60px 20px;
-            text-align: center;
-        }
-
-        .empty-state i {
-            font-size: 64px;
-            color: var(--text-muted);
-            opacity: 0.5;
-            margin-bottom: 16px;
-            display: block;
-        }
-
-        .empty-state p {
-            font-size: 14px;
-        }
-
-        /* Responsive */
-        @media (max-width: 375px) {
-            .deposit-icon-wrapper {
-                width: 40px;
-                height: 40px;
-            }
-
-            .deposit-icon-wrapper i {
-                font-size: 20px;
-            }
-
-            .summary-icon-wrapper {
-                width: 36px;
-                height: 36px;
-            }
-
-            .summary-icon-wrapper i {
-                font-size: 18px;
-            }
-
-            .filter-tab {
-                padding: 6px 12px;
-                font-size: 12px;
-            }
-        }
+        .btn-view-proof:hover { background: rgba(59,181,232,0.2); }
     </style>
 
     <script>
-        // Filter transactions
-        function filterTransactions(status) {
-            // Update active tab
-            document.querySelectorAll('.filter-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
+        function filterTransactions(status, event) {
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
-
-            // Filter items
-            const items = document.querySelectorAll('.deposit-item');
-            items.forEach(item => {
-                if (status === 'all') {
-                    item.style.display = 'block';
-                } else {
-                    if (item.dataset.status === status) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                }
+            document.querySelectorAll('.txn-row').forEach(item => {
+                item.style.display = (status === 'all' || item.dataset.status === status) ? 'flex' : 'none';
             });
         }
 
-        // View payment proof
         function viewProof(imageUrl) {
             document.getElementById('proofImage').src = imageUrl;
-            const modal = new bootstrap.Modal(document.getElementById('proofModal'));
-            modal.show();
+            new bootstrap.Modal(document.getElementById('proofModal')).show();
         }
 
-        // Show alert messages
-        @if (session('success'))
-            alert('{{ session('success') }}');
-        @endif
-
-        @if (session('error'))
-            alert('{{ session('error') }}');
-        @endif
+        @if (session('success')) alert('{{ session('success') }}'); @endif
+        @if (session('error')) alert('{{ session('error') }}'); @endif
     </script>
 @endsection

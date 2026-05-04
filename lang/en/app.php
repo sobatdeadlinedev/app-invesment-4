@@ -72,6 +72,12 @@ return [
     'binance_smart_chain' => 'Binance Smart Chain',
 
     // Validation Messages - Deposit
+    'amount_required'         => 'Amount is required',
+    'wallet_type_required'    => 'Please select a network',
+    'wallet_type_invalid'     => 'Invalid network type',
+    'payment_proof_required'  => 'Payment proof is required',
+    'payment_proof_image'     => 'Payment proof must be an image',
+    'payment_proof_mimes'     => 'Payment proof must be JPG, JPEG, or PNG',
     'please_enter_valid_amount' => 'Please enter a valid amount',
      'minimum_deposit_hint'   => 'Minimum deposit is 200 USDT',
     'minimum_deposit_alert'  => 'Minimum deposit is 200 USDT',

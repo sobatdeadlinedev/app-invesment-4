@@ -2,21 +2,29 @@
 <div class="bottom-nav">
     <a href="{{ route('member.dashboard.index') }}"
         class="nav-item {{ request()->routeIs('member.dashboard.*') ? 'active' : '' }}">
-        <i class="bi bi-house-door-fill d-block fs-5"></i>
-        <span>{{ __('app.home') }}</span>
+        <i class="bi bi-house-door-fill"></i>
+        <span>Welcome</span>
+    </a>
+    <a href="{{ route('member.market.index') }}"
+        class="nav-item {{ request()->routeIs('member.market.*') ? 'active' : '' }}">
+        <i class="bi bi-bar-chart-fill"></i>
+        <span>Market</span>
     </a>
     <a href="{{ route('member.invest.coin', ['coin' => 'btcusdt']) }}"
-        class="nav-item {{ request()->routeIs('member.invest.*') ? 'active' : '' }}">
-        <i class="bi bi-graph-up d-block fs-5"></i>
-        <span>{{ __('app.trade') }}</span>
+        class="nav-item nav-item-futures {{ request()->routeIs('member.invest.*') ? 'active' : '' }}">
+        <div class="futures-fab">
+            <i class="bi bi-graph-up-arrow"></i>
+        </div>
+        <span>Futures</span>
     </a>
-    <a href="{{ route('member.team.index') }}" class="nav-item {{ request()->routeIs('member.team.*') ? 'active' : '' }}">
-        <i class="bi bi-people-fill d-block fs-5"></i>
-        <span>{{ __('app.team') }}</span>
+    <a href="{{ route('member.team.index') }}"
+        class="nav-item {{ request()->routeIs('member.team.*') ? 'active' : '' }}">
+        <i class="bi bi-shield-lock-fill"></i>
+        <span>Access</span>
     </a>
     <a href="{{ route('member.profile.index') }}"
-        class="nav-item {{ request()->routeIs('member.profile.*') ? 'active' : '' }}">
-        <i class="bi bi-wallet-fill d-block fs-5"></i>
-        <span>{{ __('app.my_assets') }}</span>
+        class="nav-item {{ request()->routeIs('member.profile.*') || request()->routeIs('member.deposit.*') || request()->routeIs('member.withdraw.*') || request()->routeIs('member.balance.*') ? 'active' : '' }}">
+        <i class="bi bi-wallet-fill"></i>
+        <span>Wallet</span>
     </a>
 </div>

@@ -165,7 +165,7 @@
                 justify-content: space-between;
                 width: 42%;
                 max-width: 520px;
-                padding: 60px 48px;
+                padding: 32px 48px 40px;
                 border-right: 1px solid var(--border);
                 position: relative;
                 overflow: hidden;
@@ -705,21 +705,21 @@
 
                     <div class="field">
                         <div class="field-label">
-                            <span>Email Address</span>
+                            <span>Email / Username / Phone</span>
                         </div>
                         <div class="input-wrap">
                             <div class="input-prefix">
-                                <i class="ki-duotone ki-sms">
-                                    <span class="path1"></span><span class="path2"></span>
+                                <i class="ki-duotone ki-profile-circle">
+                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
                                 </i>
                             </div>
                             <input
-                                type="email"
-                                name="email"
-                                placeholder="you@example.com"
-                                autocomplete="email"
-                                value="{{ old('email') }}"
-                                class="field-input @error('email') is-invalid @enderror"
+                                type="text"
+                                name="login"
+                                placeholder="you@example.com / 0812xxx / username"
+                                autocomplete="username"
+                                value="{{ old('login') }}"
+                                class="field-input @error('login') is-invalid @enderror"
                                 required
                             />
                         </div>
@@ -755,7 +755,7 @@
 
                     <div class="remember-row">
                         <input type="checkbox" name="remember" id="rememberMe" class="custom-check" />
-                        <label for="rememberMe" class="remember-label">Keep me signed in for 30 days</label>
+                        <label for="rememberMe" class="remember-label">Keep me signed in on this device</label>
                     </div>
 
                     <button type="submit" class="btn-login" id="loginBtn">

@@ -9,7 +9,7 @@
                     <div class="coin-icon-large"
                         style="background: linear-gradient(135deg, {{ $coinInfo['color'] }}33 0%, {{ $coinInfo['color'] }}1a 100%); 
                                border: 2px solid {{ $coinInfo['color'] }}66;">
-                        <i class="{{ $coinInfo['icon'] }}" style="color: {{ $coinInfo['color'] }};"></i>
+                        <i class="bi {{ $coinInfo['icon'] }}" style="color: {{ $coinInfo['color'] }};"></i>
                     </div>
                     <div class="flex-grow-1">
                         <h5 class="mb-1 fw-bold" style="color: var(--text-primary); font-size: 18px;">
@@ -44,7 +44,7 @@
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="coin-icon-small"
                                         style="background: linear-gradient(135deg, {{ $info['color'] }} 0%, {{ $info['color'] }}dd 100%);">
-                                        <i class="{{ $info['icon'] }}"></i>
+                                        <i class="bi {{ $info['icon'] }}"></i>
                                     </div>
                                     <div class="flex-grow-1">
                                         <div class="fw-bold">{{ $info['symbol'] }}</div>
@@ -118,7 +118,7 @@
             {{-- CHART SECTION - Full Width Seamless --}}
             <div class="seamless-chart-wrapper">
                 <iframe id="tradingViewChart"
-                    src="https://www.tradingview.com/widgetembed/?symbol={{ $coinInfo['tradingview_symbol'] }}&interval=60&theme=light&style=1&locale=en&toolbar_bg=F5F5F5&enable_publishing=false&hidesidetoolbar=1&allow_symbol_change=0&show_popup_button=0&details=0&calendar=0&studies=%5B%5D"
+                    src="https://www.tradingview.com/widgetembed/?symbol={{ $coinInfo['tradingview_symbol'] }}&interval=60&theme=dark&style=1&locale=en&toolbar_bg=131d2e&enable_publishing=false&hidesidetoolbar=1&allow_symbol_change=0&show_popup_button=0&details=0&calendar=0&studies=%5B%5D"
                     style="width: 100%; height: 450px; border: none; display: block;" frameborder="0"
                     allowtransparency="true" scrolling="no">
                 </iframe>
@@ -631,7 +631,7 @@
 
             /* Button Switch Coin - NEW */
             .btn-switch-coin {
-                background: linear-gradient(135deg, var(--gold-color) 0%, #d4a017 100%);
+                background: linear-gradient(135deg, var(--gold-color) 0%, #00b8d4 100%);
                 border: none;
                 border-radius: 8px;
                 width: 36px;
@@ -641,12 +641,12 @@
                 justify-content: center;
                 cursor: pointer;
                 transition: all 0.3s ease;
-                box-shadow: 0 2px 8px rgba(169, 126, 0, 0.3);
+                box-shadow: 0 2px 8px rgba(0, 229, 255, 0.3);
             }
 
             .btn-switch-coin:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(169, 126, 0, 0.4);
+                box-shadow: 0 4px 12px rgba(0, 229, 255, 0.4);
             }
 
             .btn-switch-coin i {
@@ -691,7 +691,7 @@
                 justify-content: space-between;
                 padding: 20px 24px;
                 border-bottom: 1px solid var(--border-color);
-                background: rgba(169, 126, 0, 0.03);
+                background: rgba(0, 229, 255, 0.03);
                 /* Very light gold tint */
             }
 
@@ -717,7 +717,7 @@
             }
 
             .btn-popup-close:hover {
-                background: rgba(169, 126, 0, 0.1);
+                background: rgba(0, 229, 255, 0.1);
                 transform: rotate(90deg);
             }
 
@@ -746,12 +746,12 @@
             }
 
             .popup-body::-webkit-scrollbar-thumb {
-                background: rgba(169, 126, 0, 0.3);
+                background: rgba(0, 229, 255, 0.3);
                 border-radius: 3px;
             }
 
             .popup-body::-webkit-scrollbar-thumb:hover {
-                background: rgba(169, 126, 0, 0.5);
+                background: rgba(0, 229, 255, 0.5);
             }
 
             /* Coin Popup Item - FIXED */
@@ -770,16 +770,14 @@
             }
 
             .coin-popup-item:hover {
-                background: rgba(169, 126, 0, 0.05);
+                background: rgba(0, 229, 255, 0.05);
                 /* Light gold hover */
                 transform: translateX(4px);
             }
 
             .coin-popup-item.active {
-                background: rgba(169, 126, 0, 0.1);
-                /* Slightly darker gold */
+                background: rgba(0, 229, 255, 0.1);
                 border-left: 4px solid var(--gold-color);
-                /* #A97E00 */
                 padding-left: 20px;
             }
 
@@ -898,9 +896,9 @@
 
             /* Button Join Signal - NEW */
             .btn-join-signal {
-                background: linear-gradient(135deg, var(--gold-color) 0%, #d4a017 100%);
+                background: linear-gradient(135deg, var(--gold-color) 0%, #00b8d4 100%);
                 border: none;
-                color: white;
+                color: #0a0f1e;
                 padding: 12px 24px;
                 border-radius: 8px;
                 font-weight: 600;
@@ -910,7 +908,7 @@
 
             .btn-join-signal:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(169, 126, 0, 0.4);
+                box-shadow: 0 4px 12px rgba(0, 229, 255, 0.4);
             }
 
             /* Alert Joined - NEW */
@@ -940,7 +938,7 @@
             }
 
             .stat-card {
-                background: rgba(169, 126, 0, 0.05);
+                background: rgba(0, 229, 255, 0.05);
                 padding: 10px;
                 border-radius: 6px;
                 text-align: center;
@@ -1090,7 +1088,7 @@
 
             .tab-btn-modern:hover {
                 color: var(--text-primary);
-                background: rgba(169, 126, 0, 0.03);
+                background: rgba(0, 229, 255, 0.03);
             }
 
             .tab-btn-modern.active {
@@ -1137,7 +1135,7 @@
             }
 
             .history-item:hover {
-                background: rgba(169, 126, 0, 0.03);
+                background: rgba(0, 229, 255, 0.03);
             }
 
             .seamless-history-list {
@@ -1180,8 +1178,8 @@
 
             .seamless-info-section {
                 padding: 20px;
-                background: linear-gradient(135deg, rgba(169, 126, 0, 0.05) 0%, rgba(169, 126, 0, 0.02) 100%);
-                border-top: 1px solid rgba(169, 126, 0, 0.2);
+                background: linear-gradient(135deg, rgba(0, 229, 255, 0.05) 0%, rgba(0, 229, 255, 0.02) 100%);
+                border-top: 1px solid rgba(0, 229, 255, 0.2);
                 margin-top: 0;
             }
 

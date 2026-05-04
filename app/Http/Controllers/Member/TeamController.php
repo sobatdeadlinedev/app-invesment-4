@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Member;
 
 use App\Models\User;
+use App\Models\Transaction;
 use App\Models\ReferralUsage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -27,6 +28,12 @@ class TeamController extends Controller
         $totalTeam = $teamMembers->count();
         $directTeam = $teamMembers->where('level', 1)->count();
 
+        // Total commission revenue earned from referrals
+        $totalRevenue = Transaction::forUser($user->id)
+            ->commission()
+            ->whereIn('status', ['approved', 'completed'])
+            ->sum('amount');
+
         // Generate referral link
         $referralLink = route('register', ['ref' => $user->refferal_code]);
 
@@ -36,7 +43,8 @@ class TeamController extends Controller
             'totalTeam',
             'directTeam',
             'levelStats',
-            'referralLink'
+            'referralLink',
+            'totalRevenue'
         ));
     }
 

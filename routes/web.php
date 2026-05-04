@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\WalletController as AdminWalletController;
 use App\Http\Controllers\Admin\BalanceController as AdminBalanceController;
 use App\Http\Controllers\Admin\DepositController as AdminDepositController;
 use App\Http\Controllers\Member\InvestController as MemberInvestController;
+use App\Http\Controllers\Member\MarketController as MemberMarketController;
 use App\Http\Controllers\Member\SignalController as MemberSignalController;
 
 // Member Controllers
@@ -53,7 +54,9 @@ Route::get('/language/{locale}', function ($locale) {
 Route::middleware('guest')->group(function () {
     // Login
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+    Route::post('/login', [LoginController::class, 'login'])
+        ->middleware('throttle:10,1')
+        ->name('login.post');
 
     // Register
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
@@ -71,6 +74,7 @@ Route::get('/register/resend-otp', [RegisterController::class, 'resendOtp'])->na
     Route::post('/forget-password', [ForgetPasswordController::class, 'sendOtp'])->name('forget-password.send-otp');
     Route::get('/verify-otp', [ForgetPasswordController::class, 'showVerifyOtpForm'])->name('verify-otp');
     Route::post('/verify-otp', [ForgetPasswordController::class, 'verifyOtp'])->name('verify-otp.post');
+    Route::get('/forget-password/resend-otp', [ForgetPasswordController::class, 'resendOtp'])->name('forget-password.resend-otp');
     Route::get('/reset-password', [ForgetPasswordController::class, 'showResetPasswordForm'])->name('reset-password');
     Route::post('/reset-password', [ForgetPasswordController::class, 'resetPassword'])->name('reset-password.post');
 });
@@ -161,6 +165,11 @@ Route::prefix('member')->name('member.')->middleware(['auth', 'role:member'])->g
         Route::get('/', [MemberDashboardController::class, 'index'])->name('index');
         Route::post('/prices', [MemberDashboardController::class, 'getPrices'])->name('prices');
         Route::post('/chart-data', [MemberDashboardController::class, 'getChartData'])->name('chart-data');
+    });
+
+    Route::prefix('market')->name('market.')->group(function () {
+        Route::get('/', [MemberMarketController::class, 'index'])->name('index');
+        Route::post('/prices', [MemberMarketController::class, 'getPrices'])->name('prices');
     });
 
 

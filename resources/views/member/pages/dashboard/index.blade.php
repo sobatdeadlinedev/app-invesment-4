@@ -1,633 +1,542 @@
 @extends('member.layouts.app')
 
 @section('content')
-    <!-- Scrollable Content Area -->
-    <div class="scrollable-content">
-        <div class="content-section">
-            <!-- Tab Navigation -->
-            <div class="tab-navigation">
-                <button class="tab-btn active" data-tab="digital">Digital Currency</button>
-                <button class="tab-btn" data-tab="forex">Forex</button>
-                <button class="tab-btn" data-tab="precious">Precious Metals</button>
+<div class="scrollable-content">
+
+    {{-- ═══ HERO — Welcome + Balance ═══ --}}
+    <div class="dash-hero">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <p class="hero-greeting">Welcome back,</p>
+                <h5 class="hero-name">{{ auth()->user()->name }}</h5>
             </div>
-
-            @if ($announcement && !empty($announcement))
-                <!-- Announcement Card -->
-                <div class="card-dark shadow-sm p-3 mb-3 mt-3">
-                    <div class="d-flex align-items-start gap-2">
-                        <i class="bi bi-megaphone-fill text-gold" style="font-size: 18px; margin-top: 2px;"></i>
-                        <div>
-                            <h6 class="text-white mb-1" style="font-size: 13px;">Pengumuman</h6>
-                            <p class="small text-muted mb-0" style="font-size: 12px;">
-                                {{ $announcement }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-            <!-- Hot Section Card - Top 4 Crypto -->
-            <div class="card-dark shadow-sm p-3 mb-3 mt-3"
-                style="background: linear-gradient(135deg, rgba(169, 126, 0, 0.15) 0%, rgba(169, 126, 0, 0.05) 100%); border: 2px solid rgba(169, 126, 0, 0.3);">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h5 class="text-gold mb-0 fw-bold" style="font-size: 18px;">
-                        <i class="bi bi-fire me-2"></i>Hot
-                    </h5>
-                </div>
-
-                <!-- Hot Coins Grid -->
-                <div class="row g-2">
-                    @php
-                        $hotCoins = array_slice($coinsByCategory['crypto'], 0, 4);
-                    @endphp
-
-                    @foreach ($hotCoins as $coin)
-                        @php
-                            $priceData = $allPrices[$coin['symbol']] ?? [
-                                'price' => '0.00',
-                                'change' => '0.00',
-                                'isPositive' => true,
-                            ];
-                        @endphp
-                        <div class="col-6">
-                            <div class="card-dark p-3" style="background: #FFFFFF; border: 1px solid #e5e7eb;">
-                                <div class="mb-2">
-                                    <div class="d-flex align-items-center justify-content-between mb-1">
-                                        <span class="fw-bold"
-                                            style="font-size: 13px; color: #1f2937;">{{ $coin['symbol'] }}</span>
-                                        <div class="coin-icon"
-                                            style="width: 24px; height: 24px; background: {{ $coin['color'] }}; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                            <i class="{{ $coin['icon'] }}" style="font-size: 14px; color: white;"></i>
-                                        </div>
-                                    </div>
-                                    <div class="fw-bold coin-price" style="font-size: 16px; color: #1f2937;"
-                                        data-symbol="{{ $coin['symbol'] }}">
-                                        ${{ $priceData['price'] }}
-                                    </div>
-                                    <small class="price-change {{ $priceData['isPositive'] ? 'positive' : 'negative' }}"
-                                        data-symbol="{{ $coin['symbol'] }}">
-                                        <i class="bi bi-arrow-{{ $priceData['isPositive'] ? 'up' : 'down' }}"></i>
-                                        {{ $priceData['change'] }}%
-                                    </small>
-                                </div>
-                                <!-- Mini Chart -->
-                                <div class="mini-chart {{ $priceData['isPositive'] ? 'positive' : 'negative' }}"
-                                    data-symbol="{{ $coin['symbol'] }}">
-                                    <canvas class="coin-chart" id="chart-{{ strtolower($coin['symbol']) }}"
-                                        height="60"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
+            <div class="hero-avatar">
+                <i class="bi bi-person-fill"></i>
             </div>
-
-            <!-- All Markets Section -->
-            <div class="mb-4 mt-3">
-                <!-- Digital Currency Section -->
-                <div class="market-section" id="section-digital" data-category="digital">
-                    <div class="d-flex align-items-center justify-content-between mb-3 px-3">
-                        <h6 class="mb-0 fw-bold" style="color: #1f2937; font-size: 15px;">Cryptocurrency</h6>
-                    </div>
-
-                    <!-- Crypto Cards Grid (3 columns compact) -->
-                    <div class="coin-cards-grid crypto-grid">
-                        @foreach ($coinsByCategory['crypto'] as $coin)
-                            @php
-                                $priceData = $allPrices[$coin['symbol']] ?? [
-                                    'price' => '0.00',
-                                    'change' => '0.00',
-                                    'isPositive' => true,
-                                ];
-                            @endphp
-                            <div class="coin-card" data-symbol="{{ $coin['symbol'] }}">
-                                <div class="d-flex align-items-center justify-content-between mb-1">
-                                    <span class="fw-bold"
-                                        style="font-size: 11px; color: #1f2937;">{{ $coin['symbol'] }}</span>
-                                    <div
-                                        style="width: 18px; height: 18px; background: {{ $coin['color'] }}; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                        <i class="{{ $coin['icon'] }}" style="font-size: 9px; color: white;"></i>
-                                    </div>
-                                </div>
-                                <div class="fw-bold coin-price" style="font-size: 13px; color: #1f2937; margin: 2px 0;"
-                                    data-symbol="{{ $coin['symbol'] }}">
-                                    ${{ $priceData['price'] }}
-                                </div>
-                                <div class="price-change-mini {{ $priceData['isPositive'] ? 'positive' : 'negative' }}"
-                                    data-symbol="{{ $coin['symbol'] }}">
-                                    <i class="bi bi-arrow-{{ $priceData['isPositive'] ? 'up' : 'down' }}"></i>
-                                    {{ $priceData['change'] }}%
-                                </div>
-                                <div class="coin-mini-chart {{ $priceData['isPositive'] ? 'positive' : 'negative' }}">
-                                    <canvas class="coin-chart-small" id="chart-small-{{ strtolower($coin['symbol']) }}"
-                                        height="45"></canvas>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                <!-- Forex Section -->
-                <div class="market-section" id="section-forex" data-category="forex">
-                    <div class="d-flex align-items-center justify-content-between mb-3 px-3">
-                        <h6 class="mb-0 fw-bold" style="color: #1f2937; font-size: 15px;">Forex</h6>
-                    </div>
-
-                    <!-- Forex Cards Grid (2 columns) -->
-                    <div class="coin-cards-grid forex-grid">
-                        @foreach ($coinsByCategory['forex'] as $coin)
-                            @php
-                                $priceData = $allPrices[$coin['symbol']] ?? [
-                                    'price' => '0.00',
-                                    'change' => '0.00',
-                                    'isPositive' => true,
-                                ];
-                            @endphp
-                            <div class="coin-card" data-symbol="{{ $coin['symbol'] }}">
-                                <div class="d-flex align-items-center justify-content-between mb-1">
-                                    <span class="fw-bold"
-                                        style="font-size: 11px; color: #1f2937;">{{ $coin['symbol'] }}</span>
-                                    <div
-                                        style="width: 18px; height: 18px; background: {{ $coin['color'] }}; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                        <i class="{{ $coin['icon'] }}" style="font-size: 9px; color: white;"></i>
-                                    </div>
-                                </div>
-                                <div class="fw-bold coin-price" style="font-size: 13px; color: #1f2937; margin: 2px 0;"
-                                    data-symbol="{{ $coin['symbol'] }}">
-                                    ${{ $priceData['price'] }}
-                                </div>
-                                <div class="price-change-mini {{ $priceData['isPositive'] ? 'positive' : 'negative' }}"
-                                    data-symbol="{{ $coin['symbol'] }}">
-                                    <i class="bi bi-arrow-{{ $priceData['isPositive'] ? 'up' : 'down' }}"></i>
-                                    {{ $priceData['change'] }}%
-                                </div>
-                                <div class="coin-mini-chart {{ $priceData['isPositive'] ? 'positive' : 'negative' }}">
-                                    <canvas class="coin-chart-small" id="chart-small-{{ strtolower($coin['symbol']) }}"
-                                        height="45"></canvas>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                <!-- Precious Metals Section -->
-                <div class="market-section" id="section-precious" data-category="precious">
-                    <div class="d-flex align-items-center justify-content-between mb-3 px-3">
-                        <h6 class="mb-0 fw-bold" style="color: #1f2937; font-size: 15px;">Precious Metals</h6>
-                    </div>
-
-                    <!-- Precious Metals Cards Grid (2 columns) -->
-                    <div class="coin-cards-grid forex-grid">
-                        @foreach ($coinsByCategory['precious'] as $coin)
-                            @php
-                                $priceData = $allPrices[$coin['symbol']] ?? [
-                                    'price' => '0.00',
-                                    'change' => '0.00',
-                                    'isPositive' => true,
-                                ];
-                            @endphp
-                            <div class="coin-card" data-symbol="{{ $coin['symbol'] }}">
-                                <div class="d-flex align-items-center justify-content-between mb-1">
-                                    <span class="fw-bold"
-                                        style="font-size: 11px; color: #1f2937;">{{ $coin['symbol'] }}</span>
-                                    <div
-                                        style="width: 18px; height: 18px; background: {{ $coin['color'] }}; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                        <i class="{{ $coin['icon'] }}" style="font-size: 9px; color: white;"></i>
-                                    </div>
-                                </div>
-                                <div class="fw-bold coin-price" style="font-size: 13px; color: #1f2937; margin: 2px 0;"
-                                    data-symbol="{{ $coin['symbol'] }}">
-                                    ${{ $priceData['price'] }}
-                                </div>
-                                <div class="price-change-mini {{ $priceData['isPositive'] ? 'positive' : 'negative' }}"
-                                    data-symbol="{{ $coin['symbol'] }}">
-                                    <i class="bi bi-arrow-{{ $priceData['isPositive'] ? 'up' : 'down' }}"></i>
-                                    {{ $priceData['change'] }}%
-                                </div>
-                                <div class="coin-mini-chart {{ $priceData['isPositive'] ? 'positive' : 'negative' }}">
-                                    <canvas class="coin-chart-small" id="chart-small-{{ strtolower($coin['symbol']) }}"
-                                        height="45"></canvas>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
+        </div>
+        <p class="hero-balance-label">Total Balance</p>
+        <h2 class="hero-balance-amount">
+            {{ number_format((auth()->user()->exchange_balance ?? 0) + (auth()->user()->trade_balance ?? 0), 2) }}
+            <span class="hero-balance-currency">USDT</span>
+        </h2>
+        <div class="hero-stats-row">
+            <div class="hero-stat">
+                <span class="hero-stat-label">Exchange</span>
+                <span class="hero-stat-val">{{ number_format(auth()->user()->exchange_balance ?? 0, 2) }}</span>
+            </div>
+            <div class="hero-stat-sep"></div>
+            <div class="hero-stat">
+                <span class="hero-stat-label">Trade</span>
+                <span class="hero-stat-val">{{ number_format(auth()->user()->trade_balance ?? 0, 2) }}</span>
             </div>
         </div>
     </div>
+
+    {{-- ═══ QUICK ACTIONS ═══ --}}
+    <div class="dash-actions">
+        <a href="{{ route('member.deposit.index') }}" class="action-item">
+            <div class="action-icon">
+                <i class="bi bi-arrow-down-circle-fill"></i>
+            </div>
+            <span>Deposit</span>
+        </a>
+        <a href="{{ route('member.withdraw.index') }}" class="action-item">
+            <div class="action-icon">
+                <i class="bi bi-arrow-up-circle-fill"></i>
+            </div>
+            <span>Withdraw</span>
+        </a>
+        <a href="{{ route('member.balance.transfer') }}" class="action-item">
+            <div class="action-icon">
+                <i class="bi bi-arrow-left-right"></i>
+            </div>
+            <span>Transfer</span>
+        </a>
+        <a href="{{ route('member.team.index') }}" class="action-item">
+            <div class="action-icon">
+                <i class="bi bi-person-plus-fill"></i>
+            </div>
+            <span>Invite</span>
+        </a>
+    </div>
+
+    {{-- ═══ BANNER CAROUSEL ═══ --}}
+    <div class="dash-banners px-3 mb-4">
+        <div class="banner-track" id="bannerTrack">
+
+            @if ($announcement && !empty($announcement))
+            <div class="banner-slide">
+                <div class="banner-card banner-announcement">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="banner-ico"><i class="bi bi-megaphone-fill"></i></div>
+                        <div>
+                            <h6 class="banner-title">Announcement</h6>
+                            <p class="banner-text">{{ $announcement }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            <div class="banner-slide">
+                <div class="banner-card banner-trade">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="banner-thumb">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <div>
+                            <h6 class="banner-title">Copy Expert Traders</h6>
+                            <p class="banner-text">Earn passive income automatically and proven strategies at your fingertips.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="banner-slide">
+                <div class="banner-card banner-invite">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="banner-thumb banner-thumb-gold">
+                            <i class="bi bi-trophy-fill"></i>
+                        </div>
+                        <div>
+                            <h6 class="banner-title">Invite & Earn</h6>
+                            <p class="banner-text">Share your referral code and earn commissions on every trade.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="banner-slide">
+                <div class="banner-card banner-signal">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="banner-thumb banner-thumb-purple">
+                            <i class="bi bi-broadcast"></i>
+                        </div>
+                        <div>
+                            <h6 class="banner-title">Trading Signals</h6>
+                            <p class="banner-text">Follow live expert signals and maximize your trading results.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="banner-dots" id="bannerDots"></div>
+    </div>
+
+    {{-- ═══ MINI MARKET ═══ --}}
+    <div class="dash-mini-market">
+
+        {{-- Section Header --}}
+        <div class="mini-market-header px-3">
+            <span class="mini-market-title">Market</span>
+            <a href="{{ route('member.market.index') }}" class="mini-market-see-all">
+                See All <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+
+        {{-- Featured Coins: BTC, ETH, DOGE, XAU, EUR --}}
+        @php
+            $featured = ['BTCUSDT', 'ETHUSDT', 'DOGEUSDT', 'XAUUSD', 'EURUSDT'];
+        @endphp
+
+        @foreach ($featured as $sym)
+            @php
+                $coin      = $availableCoins[$sym] ?? null;
+                $priceData = $allPrices[$sym] ?? ['price' => '0.00', 'change' => '0.00', 'isPositive' => true];
+                if (!$coin) continue;
+                $base = preg_replace('/USD(T)?$/', '', $sym);
+            @endphp
+            <a href="{{ route('member.invest.coin', ['coin' => strtolower($sym)]) }}"
+               class="mini-row" data-symbol="{{ $sym }}">
+                <div class="mini-coin">
+                    <div class="mini-icon" style="background:{{ $coin['color'] }}20; border-color:{{ $coin['color'] }}50;">
+                        <i class="{{ $coin['icon'] }}" style="color:{{ $coin['color'] }};"></i>
+                    </div>
+                    <div>
+                        <div class="mini-symbol">{{ $base }}<span class="mini-quote">/{{ str_ends_with($sym, 'USDT') ? 'USDT' : 'USD' }}</span></div>
+                        <div class="mini-name">{{ $coin['name'] }}</div>
+                    </div>
+                </div>
+                <div class="mini-price coin-price" data-symbol="{{ $sym }}">${{ $priceData['price'] }}</div>
+                <div class="mini-change price-change {{ $priceData['isPositive'] ? 'positive' : 'negative' }}" data-symbol="{{ $sym }}">
+                    {{ $priceData['isPositive'] ? '+' : '' }}{{ $priceData['change'] }}%
+                </div>
+            </a>
+        @endforeach
+
+    </div>
+
+</div>
 @endsection
 
 @push('styles')
-    <style>
-        /* Hot Section Chart */
-        .mini-chart {
-            border-radius: 6px;
-            overflow: hidden;
-            background: rgba(0, 0, 0, 0.02);
-        }
+<style>
+    /* ── HERO ── */
+    .dash-hero {
+        padding: 24px 20px 20px;
+        background: linear-gradient(135deg, #0d1928 0%, #0a1420 60%, #091320 100%);
+        border-bottom: 1px solid var(--border-color);
+        position: relative;
+        overflow: hidden;
+    }
+    .dash-hero::before {
+        content: '';
+        position: absolute;
+        top: -40px; right: -40px;
+        width: 160px; height: 160px;
+        background: radial-gradient(circle, rgba(0,229,255,0.12) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    .hero-greeting {
+        color: var(--text-muted);
+        font-size: 13px;
+        margin: 0 0 2px;
+    }
+    .hero-name {
+        color: #fff;
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0;
+    }
+    .hero-avatar {
+        width: 44px; height: 44px;
+        border-radius: 50%;
+        background: rgba(0,229,255,0.1);
+        border: 2px solid rgba(0,229,255,0.3);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .hero-avatar i { font-size: 24px; color: var(--gold-color); }
+    .hero-balance-label {
+        color: var(--text-muted);
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+    .hero-balance-amount {
+        color: #fff;
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin: 0 0 12px;
+        line-height: 1;
+    }
+    .hero-balance-currency {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--gold-color);
+    }
+    .hero-stats-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 10px 14px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+    }
+    .hero-stat { display: flex; flex-direction: column; gap: 2px; }
+    .hero-stat-label { color: var(--text-muted); font-size: 11px; }
+    .hero-stat-val { color: var(--gold-color); font-size: 13px; font-weight: 700; }
+    .hero-stat-sep { width: 1px; height: 28px; background: var(--border-color); }
 
-        .mini-chart canvas {
-            display: block;
-            width: 100% !important;
-        }
+    /* ── QUICK ACTIONS ── */
+    .dash-actions {
+        display: flex;
+        justify-content: space-around;
+        padding: 20px 12px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .action-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        color: var(--text-muted);
+        font-size: 11px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    .action-item:hover { color: var(--gold-color); }
+    .action-item:hover .action-icon { background: rgba(0,229,255,0.12); border-color: rgba(0,229,255,0.3); }
+    .action-icon {
+        width: 52px; height: 52px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.2s ease;
+    }
+    .action-icon i { font-size: 22px; color: var(--gold-color); }
 
-        .price-change {
-            display: inline-flex;
-            align-items: center;
-            gap: 2px;
-            font-size: 11px;
-            font-weight: 600;
-        }
+    /* ── BANNERS ── */
+    .dash-banners { padding-top: 20px; }
+    .banner-track {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        padding-bottom: 4px;
+    }
+    .banner-track::-webkit-scrollbar { display: none; }
+    .banner-slide {
+        flex-shrink: 0;
+        width: calc(100% - 32px);
+        scroll-snap-align: start;
+    }
+    .banner-card {
+        border-radius: 14px;
+        padding: 16px;
+        border: 1px solid var(--border-color);
+    }
+    .banner-announcement {
+        background: linear-gradient(135deg, rgba(0,229,255,0.08) 0%, rgba(0,184,212,0.05) 100%);
+        border-color: rgba(0,229,255,0.2);
+    }
+    .banner-trade {
+        background: linear-gradient(135deg, rgba(13,110,253,0.12) 0%, rgba(0,229,255,0.06) 100%);
+        border-color: rgba(13,110,253,0.2);
+    }
+    .banner-invite {
+        background: linear-gradient(135deg, rgba(40,167,69,0.1) 0%, rgba(0,229,255,0.05) 100%);
+        border-color: rgba(40,167,69,0.2);
+    }
+    .banner-signal {
+        background: linear-gradient(135deg, rgba(138,43,226,0.1) 0%, rgba(0,229,255,0.05) 100%);
+        border-color: rgba(138,43,226,0.2);
+    }
+    .banner-title { color: #fff; font-size: 13px; font-weight: 700; margin: 0 0 4px; }
+    .banner-text  { color: var(--text-muted); font-size: 12px; margin: 0; line-height: 1.5; }
+    .banner-ico {
+        width: 40px; height: 40px; flex-shrink: 0;
+        background: rgba(0,229,255,0.1); border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .banner-ico i { font-size: 20px; color: var(--gold-color); }
+    .banner-thumb {
+        width: 56px; height: 56px; flex-shrink: 0; border-radius: 12px;
+        background: rgba(13,110,253,0.15);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .banner-thumb i { font-size: 26px; color: #4d94ff; }
+    .banner-thumb-gold { background: rgba(255,215,0,0.12); }
+    .banner-thumb-gold i { color: #ffd700; }
+    .banner-thumb-purple { background: rgba(138,43,226,0.15); }
+    .banner-thumb-purple i { color: #a855f7; }
+    .banner-dots {
+        display: flex; justify-content: flex-end; align-items: center;
+        gap: 6px; margin-top: 10px; padding-right: 4px;
+    }
+    .banner-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: var(--border-color); transition: all 0.3s ease;
+    }
+    .banner-dot.active {
+        background: var(--gold-color); width: 18px; border-radius: 3px;
+    }
 
-        .price-change.positive {
-            color: #22c55e;
-        }
+    /* ── MINI MARKET ── */
+    .dash-mini-market { padding-top: 20px; }
+    .mini-market-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+    .mini-market-title {
+        color: #fff;
+        font-size: 15px;
+        font-weight: 700;
+    }
+    .mini-market-see-all {
+        color: var(--gold-color);
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        transition: opacity 0.2s ease;
+    }
+    .mini-market-see-all:hover { opacity: 0.75; }
+    .mini-market-see-all i { font-size: 11px; }
 
-        .price-change.negative {
-            color: #ef4444;
-        }
+    .mini-row {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 8px;
+        align-items: center;
+        padding: 11px 20px;
+        border-bottom: 1px solid var(--border-color);
+        text-decoration: none;
+        transition: background 0.2s ease;
+    }
+    .mini-row:hover { background: rgba(0,229,255,0.03); }
+    .mini-row:last-child { border-bottom: none; }
 
-        /* Compact Grid Layout */
-        .coin-cards-grid {
-            display: grid;
-            gap: 8px;
-            padding: 0 12px;
-        }
+    .mini-coin { display: flex; align-items: center; gap: 10px; }
+    .mini-icon {
+        width: 34px; height: 34px; flex-shrink: 0;
+        border-radius: 50%; border: 1px solid;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .mini-icon i { font-size: 16px; }
+    .mini-symbol { color: #fff; font-size: 12px; font-weight: 700; }
+    .mini-quote  { color: var(--text-muted); font-size: 10px; font-weight: 400; }
+    .mini-name   { color: var(--text-muted); font-size: 10px; margin-top: 1px; }
+    .mini-price  { min-width: 76px; text-align: right; color: #fff; font-size: 12px; font-weight: 600; }
+    .mini-change {
+        min-width: 58px; text-align: right;
+        font-size: 11px; font-weight: 700;
+        padding: 3px 7px; border-radius: 5px;
+    }
+    .mini-change.positive { color: #22c55e; background: rgba(34,197,94,0.1); }
+    .mini-change.negative { color: #ef4444; background: rgba(239,68,68,0.1); }
 
-        .crypto-grid {
-            grid-template-columns: repeat(3, 1fr);
-        }
+    @keyframes priceFlash {
+        0%   { background: rgba(0,229,255,0.15); }
+        100% { background: transparent; }
+    }
+    .price-updated { animation: priceFlash 0.5s ease; }
 
-        .forex-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
+    /* ── MARKET CTA ── */
+    .dash-market-cta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 16px 20px 8px;
+        padding: 16px;
+        background: rgba(0,229,255,0.06);
+        border: 1px solid rgba(0,229,255,0.2);
+        border-radius: 14px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .dash-market-cta:hover { background: rgba(0,229,255,0.1); border-color: rgba(0,229,255,0.35); }
+    .dash-market-icon {
+        width: 42px; height: 42px;
+        background: rgba(0,229,255,0.12);
+        border: 1px solid rgba(0,229,255,0.3);
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .dash-market-icon i { font-size: 20px; color: var(--gold-color); }
+    .dash-market-label { color: #fff; font-size: 14px; font-weight: 700; }
+    .dash-market-sub   { color: var(--text-muted); font-size: 11px; margin-top: 2px; }
+    .dash-market-arrow { color: var(--text-muted); font-size: 16px; }
 
-        .coin-card {
-            background: #FFFFFF;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 8px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .coin-card:hover {
-            box-shadow: 0 2px 8px rgba(169, 126, 0, 0.15);
-            border-color: rgba(169, 126, 0, 0.4);
-            transform: translateY(-1px);
-        }
-
-        .coin-mini-chart {
-            border-radius: 4px;
-            overflow: hidden;
-            background: rgba(0, 0, 0, 0.01);
-            margin-top: 6px;
-            height: 45px;
-        }
-
-        .coin-mini-chart canvas {
-            display: block;
-            width: 100% !important;
-            height: 45px !important;
-        }
-
-        .price-change-mini {
-            display: inline-flex;
-            align-items: center;
-            gap: 2px;
-            font-weight: 600;
-            font-size: 9px;
-        }
-
-        .price-change-mini.positive {
-            color: #22c55e;
-        }
-
-        .price-change-mini.negative {
-            color: #ef4444;
-        }
-
-        .market-section {
-            margin-bottom: 20px;
-        }
-
-        @keyframes priceUpdate {
-            0% {
-                background: rgba(169, 126, 0, 0.2);
-            }
-
-            100% {
-                background: transparent;
-            }
-        }
-
-        .price-updated {
-            animation: priceUpdate 0.5s ease;
-        }
-
-        @media (max-width: 375px) {
-            .crypto-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .coin-card {
-                padding: 6px;
-            }
-        }
-    </style>
+    @media (max-width: 375px) {
+        .hero-balance-amount { font-size: 26px; }
+        .mlist-row { padding: 10px 16px; }
+        .action-icon { width: 46px; height: 46px; }
+        .action-icon i { font-size: 20px; }
+    }
+</style>
 @endpush
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script>
-        const chartInstances = {};
-        let priceUpdateTimer = null;
-        let isPageVisible = true;
+<script>
+document.addEventListener('DOMContentLoaded', function () {
 
-        const CONFIG = {
-            updateInterval: 10000,
-            chartPoints: 20,
-            priceRoute: '{{ route('member.dashboard.prices') }}',
-            csrfToken: '{{ csrf_token() }}',
-            batchSize: 10
-        };
+    // ── Banner Slider ──
+    (function () {
+        const track   = document.getElementById('bannerTrack');
+        const dotsEl  = document.getElementById('bannerDots');
+        const slides  = track ? track.querySelectorAll('.banner-slide') : [];
+        if (!slides.length) return;
 
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Dashboard initializing...');
-            initializeVisibleChartsOnly();
-            startPriceUpdates();
-            initializeTabNavigation();
-            setupVisibilityListener();
-            setupIntersectionObserver();
+        let current = 0;
+
+        // Build dots
+        slides.forEach((_, i) => {
+            const d = document.createElement('span');
+            d.className = 'banner-dot' + (i === 0 ? ' active' : '');
+            dotsEl.appendChild(d);
         });
 
-        function setupVisibilityListener() {
-            document.addEventListener('visibilitychange', function() {
-                isPageVisible = !document.hidden;
-                isPageVisible ? startPriceUpdates() : stopPriceUpdates();
+        function goTo(idx) {
+            current = idx;
+            slides[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+            dotsEl.querySelectorAll('.banner-dot').forEach((d, i) => {
+                d.classList.toggle('active', i === idx);
             });
         }
 
-        function setupIntersectionObserver() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const canvas = entry.target;
-                        const symbol = canvas.closest('[data-symbol]')?.getAttribute('data-symbol');
-                        if (symbol && !chartInstances[canvas.id]) {
-                            initializeChart(canvas, symbol);
-                        }
-                    }
-                });
-            }, {
-                rootMargin: '50px'
-            });
+        // Auto-slide every 4s
+        setInterval(() => goTo((current + 1) % slides.length), 4000);
 
-            document.querySelectorAll('canvas.coin-chart, canvas.coin-chart-small').forEach(canvas => {
-                observer.observe(canvas);
-            });
-        }
-
-        function stopPriceUpdates() {
-            if (priceUpdateTimer) {
-                clearInterval(priceUpdateTimer);
-                priceUpdateTimer = null;
-            }
-        }
-
-        function initializeVisibleChartsOnly() {
-            const visibleCanvases = Array.from(
-                document.querySelectorAll('canvas.coin-chart, canvas.coin-chart-small')
-            ).filter(canvas => canvas.getBoundingClientRect().top < window.innerHeight + 100);
-
-            console.log(`📊 Initializing ${visibleCanvases.length} visible charts`);
-            processBatch(visibleCanvases, 0);
-        }
-
-        function processBatch(canvases, startIndex) {
-            const batch = canvases.slice(startIndex, startIndex + CONFIG.batchSize);
-            batch.forEach(canvas => {
-                const symbol = canvas.closest('[data-symbol]')?.getAttribute('data-symbol');
-                if (symbol) initializeChart(canvas, symbol);
-            });
-
-            if (startIndex + CONFIG.batchSize < canvases.length) {
-                requestAnimationFrame(() => processBatch(canvases, startIndex + CONFIG.batchSize));
-            }
-        }
-
-        function initializeChart(canvas, symbol) {
-            if (chartInstances[canvas.id]) return;
-
-            const ctx = canvas.getContext('2d');
-            const container = canvas.closest('.mini-chart, .coin-mini-chart');
-            const isPositive = container?.classList.contains('positive') ?? true;
-            const data = generateChartData(isPositive);
-
-            const chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: data.labels,
-                    datasets: [{
-                        data: data.values,
-                        borderColor: isPositive ? '#22c55e' : '#ef4444',
-                        backgroundColor: isPositive ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                        borderWidth: 1.5,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: {
-                        duration: 0
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            enabled: false
-                        }
-                    },
-                    scales: {
-                        x: {
-                            display: false
-                        },
-                        y: {
-                            display: false
-                        }
-                    }
-                }
-            });
-
-            chartInstances[canvas.id] = {
-                chart,
-                symbol,
-                canvas
-            };
-        }
-
-        function generateChartData(isPositive = true) {
-            const labels = [],
-                values = [];
-            let baseValue = 100;
-            for (let i = 0; i < CONFIG.chartPoints; i++) {
-                labels.push('');
-                baseValue += (Math.random() - 0.5) * 5 + (isPositive ? 0.5 : -0.5);
-                values.push(Math.max(baseValue, 0));
-            }
-            return {
-                labels,
-                values
-            };
-        }
-
-        function updateChart(chartId, isPositive) {
-            const chartData = chartInstances[chartId];
-            if (!chartData) return;
-
-            const chart = chartData.chart;
-            const newData = generateChartData(isPositive);
-
-            chart.data.datasets[0].borderColor = isPositive ? '#22c55e' : '#ef4444';
-            chart.data.datasets[0].backgroundColor = isPositive ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)';
-            chart.data.labels = newData.labels;
-            chart.data.datasets[0].data = newData.values;
-            chart.update('none');
-        }
-
-        function startPriceUpdates() {
-            stopPriceUpdates();
-            const symbols = getUniqueSymbols();
-            console.log(`💰 Price updates started for ${symbols.length} symbols`);
-
-            updatePrices(symbols);
-            priceUpdateTimer = setInterval(() => {
-                if (isPageVisible) updatePrices(symbols);
-            }, CONFIG.updateInterval);
-        }
-
-        function getUniqueSymbols() {
-            return [...new Set(Array.from(document.querySelectorAll('[data-symbol]'))
-                .map(el => el.getAttribute('data-symbol')))];
-        }
-
-        async function updatePrices(symbols) {
-            try {
-                console.log('🔄 Fetching prices...');
-
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000);
-
-                const response = await fetch(CONFIG.priceRoute, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': CONFIG.csrfToken
-                    },
-                    body: JSON.stringify({
-                        symbols
-                    }),
-                    signal: controller.signal
-                });
-
-                clearTimeout(timeoutId);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                const result = await response.json();
-                console.log('✅ Prices fetched:', Object.keys(result.data || {}).length);
-
-                if (result.success && result.data) {
-                    requestAnimationFrame(() => {
-                        Object.entries(result.data).forEach(([symbol, data]) => {
-                            updatePriceDisplay(symbol, data);
-                        });
+        // Sync dots on manual scroll
+        if (track) {
+            track.addEventListener('scroll', () => {
+                const idx = Math.round(track.scrollLeft / track.clientWidth);
+                if (idx !== current) {
+                    current = idx;
+                    dotsEl.querySelectorAll('.banner-dot').forEach((d, i) => {
+                        d.classList.toggle('active', i === idx);
                     });
                 }
-            } catch (error) {
-                if (error.name !== 'AbortError') {
-                    console.error('❌ Failed:', error.message);
-                }
-            }
+            }, { passive: true });
         }
+    })();
 
-        function updatePriceDisplay(symbol, data) {
-            document.querySelectorAll(`.coin-price[data-symbol="${symbol}"]`).forEach(el => {
-                el.classList.add('price-updated');
-                el.textContent = '$' + data.price;
-                setTimeout(() => el.classList.remove('price-updated'), 500);
-            });
+    // ── Mini Market Real-time Prices ──
+    (function () {
+        const ROUTE = '{{ route('member.dashboard.prices') }}';
+        const CSRF  = '{{ csrf_token() }}';
+        const SYMS  = ['BTCUSDT', 'ETHUSDT', 'DOGEUSDT', 'XAUUSD', 'EURUSDT'];
+        let timer   = null;
+        let visible = true;
 
-            document.querySelectorAll(`.price-change[data-symbol="${symbol}"], .price-change-mini[data-symbol="${symbol}"]`)
-                .forEach(el => {
-                    el.classList.remove('positive', 'negative');
-                    el.classList.add(data.isPositive ? 'positive' : 'negative');
-                    el.innerHTML = `<i class="bi bi-arrow-${data.isPositive ? 'up' : 'down'}"></i> ${data.change}%`;
-                });
-
-            document.querySelectorAll(`[data-symbol="${symbol}"] .mini-chart, [data-symbol="${symbol}"] .coin-mini-chart`)
-                .forEach(chart => {
-                    chart.classList.remove('positive', 'negative');
-                    chart.classList.add(data.isPositive ? 'positive' : 'negative');
-                });
-
-            updateChartsForSymbol(symbol, data.isPositive);
-        }
-
-        function updateChartsForSymbol(symbol, isPositive) {
-            Object.entries(chartInstances).forEach(([chartId, chartData]) => {
-                if (chartData.symbol === symbol) updateChart(chartId, isPositive);
-            });
-        }
-
-        function initializeTabNavigation() {
-            const tabButtons = document.querySelectorAll('.tab-btn');
-            tabButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const targetTab = this.getAttribute('data-tab');
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-
-                    const targetSection = document.getElementById(`section-${targetTab}`);
-                    if (targetSection) {
-                        targetSection.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                });
-            });
-
-            observeMarketSections(tabButtons);
-        }
-
-        function observeMarketSections(tabButtons) {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const category = entry.target.getAttribute('data-category');
-                        tabButtons.forEach(btn => {
-                            if (btn.getAttribute('data-tab') === category) {
-                                tabButtons.forEach(b => b.classList.remove('active'));
-                                btn.classList.add('active');
-                            }
-                        });
-                    }
-                });
-            }, {
-                rootMargin: '-100px 0px -60% 0px',
-                threshold: 0
-            });
-
-            document.querySelectorAll('.market-section').forEach(section => observer.observe(section));
-        }
-
-        window.addEventListener('beforeunload', () => {
-            stopPriceUpdates();
-            Object.values(chartInstances).forEach(d => d.chart?.destroy());
+        document.addEventListener('visibilitychange', () => {
+            visible = !document.hidden;
+            visible ? start() : stop();
         });
-    </script>
+
+        function stop() { clearInterval(timer); timer = null; }
+
+        function start() {
+            stop();
+            fetch(ROUTE, {
+                method : 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
+                body   : JSON.stringify({ symbols: SYMS })
+            }).then(r => r.json()).then(({ success, data }) => {
+                if (success && data) updateAll(data);
+            }).catch(() => {});
+
+            timer = setInterval(() => {
+                if (!visible) return;
+                fetch(ROUTE, {
+                    method : 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
+                    body   : JSON.stringify({ symbols: SYMS })
+                }).then(r => r.json()).then(({ success, data }) => {
+                    if (success && data) requestAnimationFrame(() => updateAll(data));
+                }).catch(() => {});
+            }, 10000);
+        }
+
+        function updateAll(data) {
+            Object.entries(data).forEach(([sym, d]) => {
+                document.querySelectorAll(`.coin-price[data-symbol="${sym}"]`).forEach(el => {
+                    el.textContent = '$' + d.price;
+                    el.classList.add('price-updated');
+                    setTimeout(() => el.classList.remove('price-updated'), 500);
+                });
+                document.querySelectorAll(`.price-change[data-symbol="${sym}"]`).forEach(el => {
+                    el.classList.remove('positive', 'negative');
+                    el.classList.add(d.isPositive ? 'positive' : 'negative');
+                    el.textContent = (d.isPositive ? '+' : '') + d.change + '%';
+                });
+            });
+        }
+
+        start();
+        window.addEventListener('beforeunload', stop);
+    })();
+
+});
+</script>
 @endpush

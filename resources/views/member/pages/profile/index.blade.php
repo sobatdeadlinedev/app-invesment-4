@@ -215,8 +215,8 @@
             class="wallet-item" style="display: block; text-decoration: none; margin-bottom: 0;">
             <div class="d-flex align-items-center gap-3">
                 <div class="bank-icon-circle"
-                    style="background: rgba(169, 126, 0, 0.15); border-color: rgba(169, 126, 0, 0.3);">
-                    <i class="bi bi-box-arrow-right" style="color: #a97e00;"></i>
+                    style="background: rgba(0, 229, 255, 0.15); border-color: rgba(0, 229, 255, 0.3);">
+                    <i class="bi bi-box-arrow-right" style="color: #00e5ff;"></i>
                 </div>
                 <div class="flex-grow-1">
                     <span class="text-white fw-bold" style="font-size: 14px;">{{ __('app.logout') }}</span>
@@ -246,10 +246,10 @@
                     <div class="modal-body">
                         <!-- Currency Info in Modal -->
                         <div class="mb-3 p-3"
-                            style="background: rgba(245, 166, 35, 0.05); border-radius: 8px; border: 1px solid var(--border-color);">
+                            style="background: rgba(0, 229, 255, 0.05); border-radius: 8px; border: 1px solid var(--border-color);">
                             <div class="d-flex align-items-center gap-2">
                                 <div
-                                    style="width: 36px; height: 36px; background: rgba(245, 166, 35, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    style="width: 36px; height: 36px; background: rgba(0, 229, 255, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
                                     <span style="color: var(--gold-color); font-size: 18px; font-weight: bold;">₮</span>
                                 </div>
                                 <div>
@@ -340,10 +340,10 @@
                     <div class="modal-body">
                         <!-- Currency Info in Modal -->
                         <div class="mb-3 p-3"
-                            style="background: rgba(245, 166, 35, 0.05); border-radius: 8px; border: 1px solid var(--border-color);">
+                            style="background: rgba(0, 229, 255, 0.05); border-radius: 8px; border: 1px solid var(--border-color);">
                             <div class="d-flex align-items-center gap-2">
                                 <div
-                                    style="width: 36px; height: 36px; background: rgba(245, 166, 35, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    style="width: 36px; height: 36px; background: rgba(0, 229, 255, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
                                     <span style="color: var(--gold-color); font-size: 18px; font-weight: bold;">₮</span>
                                 </div>
                                 <div>
@@ -442,7 +442,7 @@
         }
 
         .section-content {
-            background: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 16px;
             padding: 16px;
             backdrop-filter: blur(10px);
@@ -450,7 +450,7 @@
 
         .section-footer {
             padding: 16px;
-            background: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 0 0 16px 16px;
             margin-top: -12px;
         }
@@ -459,8 +459,8 @@
         .balance-icon-wrapper {
             width: 48px;
             height: 48px;
-            background: rgba(245, 166, 35, 0.15);
-            border: 1px solid rgba(245, 166, 35, 0.3);
+            background: rgba(0, 229, 255, 0.15);
+            border: 1px solid rgba(0, 229, 255, 0.3);
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -476,9 +476,9 @@
         /* Info Box */
         .info-box {
             padding: 12px;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
-            border: 1px solid rgba(169, 126, 0, 0.1);
+            border: 1px solid rgba(0, 229, 255, 0.1);
         }
 
         /* PnL Icon Wrapper */
@@ -497,8 +497,8 @@
         }
 
         .pnl-icon-wrapper.positive {
-            background: rgba(245, 166, 35, 0.15);
-            border: 1px solid rgba(245, 166, 35, 0.3);
+            background: rgba(0, 229, 255, 0.15);
+            border: 1px solid rgba(0, 229, 255, 0.3);
         }
 
         .pnl-icon-wrapper.positive i {
@@ -506,12 +506,12 @@
         }
 
         .pnl-icon-wrapper.negative {
-            background: rgba(169, 126, 0, 0.15);
-            border: 1px solid rgba(169, 126, 0, 0.3);
+            background: rgba(0, 229, 255, 0.15);
+            border: 1px solid rgba(0, 229, 255, 0.3);
         }
 
         .pnl-icon-wrapper.negative i {
-            color: #a97e00;
+            color: #00e5ff;
         }
 
         /* Action Buttons */
@@ -521,14 +521,14 @@
             align-items: center;
             gap: 8px;
             padding: 16px 8px;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             text-decoration: none;
             transition: all 0.3s ease;
         }
 
         .btn-action-main:hover {
-            background: rgba(169, 126, 0, 0.1);
+            background: rgba(0, 229, 255, 0.1);
             transform: translateY(-2px);
         }
 
@@ -548,8 +548,8 @@
 
         /* Deposit */
         .action-icon.deposit {
-            background: rgba(245, 166, 35, 0.15);
-            border-color: rgba(245, 166, 35, 0.3);
+            background: rgba(0, 229, 255, 0.15);
+            border-color: rgba(0, 229, 255, 0.3);
         }
 
         .action-icon.deposit i {
@@ -558,8 +558,8 @@
 
         /* Withdrawal */
         .action-icon.withdrawal {
-            background: rgba(245, 166, 35, 0.15);
-            border-color: rgba(245, 166, 35, 0.3);
+            background: rgba(0, 229, 255, 0.15);
+            border-color: rgba(0, 229, 255, 0.3);
         }
 
         .action-icon.withdrawal i {
@@ -568,12 +568,12 @@
 
         /* Transfer */
         .action-icon.transfer {
-            background: rgba(169, 126, 0, 0.15);
-            border-color: rgba(169, 126, 0, 0.3);
+            background: rgba(0, 229, 255, 0.15);
+            border-color: rgba(0, 229, 255, 0.3);
         }
 
         .action-icon.transfer i {
-            color: #a97e00;
+            color: #00e5ff;
         }
 
         .btn-action-main span {
@@ -585,7 +585,7 @@
         /* Account Item */
         .account-item {
             padding: 14px;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             margin-bottom: 8px;
             transition: all 0.2s ease;
@@ -593,7 +593,7 @@
         }
 
         .account-item:hover {
-            background: rgba(169, 126, 0, 0.08);
+            background: rgba(0, 229, 255, 0.08);
             transform: translateX(4px);
         }
 
@@ -618,8 +618,8 @@
 
         /* Exchange */
         .account-icon.exchange {
-            background: rgba(245, 166, 35, 0.15);
-            border-color: rgba(245, 166, 35, 0.3);
+            background: rgba(0, 229, 255, 0.15);
+            border-color: rgba(0, 229, 255, 0.3);
         }
 
         .account-icon.exchange i {
@@ -628,18 +628,18 @@
 
         /* Trade */
         .account-icon.trade {
-            background: rgba(169, 126, 0, 0.15);
-            border-color: rgba(169, 126, 0, 0.3);
+            background: rgba(0, 229, 255, 0.15);
+            border-color: rgba(0, 229, 255, 0.3);
         }
 
         .account-icon.trade i {
-            color: #a97e00;
+            color: #00e5ff;
         }
 
         /* Currency Info Banner */
         .currency-info-banner {
             padding: 12px 16px;
-            background: rgba(245, 166, 35, 0.08);
+            background: rgba(0, 229, 255, 0.08);
             border-radius: 12px;
             margin-bottom: 8px;
         }
@@ -647,7 +647,7 @@
         .currency-icon {
             width: 36px;
             height: 36px;
-            background: rgba(245, 166, 35, 0.2);
+            background: rgba(0, 229, 255, 0.2);
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -663,14 +663,14 @@
         /* Wallet Item */
         .wallet-item {
             padding: 14px 16px;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             margin-bottom: 8px;
             transition: all 0.2s ease;
         }
 
         .wallet-item:hover {
-            background: rgba(169, 126, 0, 0.08);
+            background: rgba(0, 229, 255, 0.08);
             transform: translateX(4px);
         }
 
@@ -678,7 +678,7 @@
         .empty-state {
             padding: 32px 20px;
             text-align: center;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.03);
             border-radius: 12px;
             margin-bottom: 8px;
         }
@@ -703,15 +703,15 @@
         }
 
         .wallet-type-badge.trc20 {
-            background: rgba(245, 166, 35, 0.15);
+            background: rgba(0, 229, 255, 0.15);
             color: var(--gold-color);
-            border: 1px solid rgba(245, 166, 35, 0.3);
+            border: 1px solid rgba(0, 229, 255, 0.3);
         }
 
         .wallet-type-badge.bep20 {
-            background: rgba(169, 126, 0, 0.15);
-            color: #a97e00;
-            border: 1px solid rgba(169, 126, 0, 0.3);
+            background: rgba(0, 229, 255, 0.15);
+            color: #00e5ff;
+            border: 1px solid rgba(0, 229, 255, 0.3);
         }
 
         /* Bank Icon with Color Type */
@@ -731,8 +731,8 @@
         }
 
         .bank-icon-circle.trc20 {
-            background: rgba(245, 166, 35, 0.15);
-            border-color: rgba(245, 166, 35, 0.3);
+            background: rgba(0, 229, 255, 0.15);
+            border-color: rgba(0, 229, 255, 0.3);
         }
 
         .bank-icon-circle.trc20 i {
@@ -740,12 +740,12 @@
         }
 
         .bank-icon-circle.bep20 {
-            background: rgba(169, 126, 0, 0.15);
-            border-color: rgba(169, 126, 0, 0.3);
+            background: rgba(0, 229, 255, 0.15);
+            border-color: rgba(0, 229, 255, 0.3);
         }
 
         .bank-icon-circle.bep20 i {
-            color: #a97e00;
+            color: #00e5ff;
         }
 
         /* Bank Action Buttons */
@@ -767,27 +767,27 @@
         }
 
         .btn-bank-edit {
-            border-color: rgba(245, 166, 35, 0.3);
+            border-color: rgba(0, 229, 255, 0.3);
             color: var(--gold-color);
         }
 
         .btn-bank-edit:hover {
-            background: rgba(245, 166, 35, 0.15);
+            background: rgba(0, 229, 255, 0.15);
         }
 
         .btn-bank-delete {
-            border-color: rgba(169, 126, 0, 0.3);
-            color: #a97e00;
+            border-color: rgba(0, 229, 255, 0.3);
+            color: #00e5ff;
         }
 
         .btn-bank-delete:hover {
-            background: rgba(169, 126, 0, 0.15);
+            background: rgba(0, 229, 255, 0.15);
         }
 
         /* Badge Count */
         .badge-count {
-            background: rgba(169, 126, 0, 0.15);
-            border: 1px solid rgba(169, 126, 0, 0.3);
+            background: rgba(0, 229, 255, 0.15);
+            border: 1px solid rgba(0, 229, 255, 0.3);
             padding: 4px 12px;
             border-radius: 12px;
             font-size: 11px;
@@ -823,12 +823,12 @@
         }
 
         .network-type-option:hover .network-type-card {
-            background: rgba(169, 126, 0, 0.05);
-            border-color: rgba(169, 126, 0, 0.3);
+            background: rgba(0, 229, 255, 0.05);
+            border-color: rgba(0, 229, 255, 0.3);
         }
 
         .network-type-option input[type="radio"]:checked~.network-type-card {
-            background: rgba(169, 126, 0, 0.1);
+            background: rgba(0, 229, 255, 0.1);
             border-color: var(--gold-color);
         }
 
@@ -847,8 +847,8 @@
         }
 
         .network-icon.trc20 {
-            background: rgba(245, 166, 35, 0.15);
-            border: 1px solid rgba(245, 166, 35, 0.3);
+            background: rgba(0, 229, 255, 0.15);
+            border: 1px solid rgba(0, 229, 255, 0.3);
         }
 
         .network-icon.trc20 i {
@@ -856,12 +856,12 @@
         }
 
         .network-icon.bep20 {
-            background: rgba(169, 126, 0, 0.15);
-            border: 1px solid rgba(169, 126, 0, 0.3);
+            background: rgba(0, 229, 255, 0.15);
+            border: 1px solid rgba(0, 229, 255, 0.3);
         }
 
         .network-icon.bep20 i {
-            color: #a97e00;
+            color: #00e5ff;
         }
 
         .network-info {
@@ -904,15 +904,15 @@
         }
 
         .btn-logout:hover {
-            background: rgba(169, 126, 0, 0.05);
+            background: rgba(0, 229, 255, 0.05);
             transform: translateX(4px);
         }
 
         .logout-icon {
             width: 48px;
             height: 48px;
-            background: rgba(169, 126, 0, 0.15);
-            border: 1px solid rgba(169, 126, 0, 0.3);
+            background: rgba(0, 229, 255, 0.15);
+            border: 1px solid rgba(0, 229, 255, 0.3);
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -922,7 +922,7 @@
 
         .logout-icon i {
             font-size: 22px;
-            color: #a97e00;
+            color: #00e5ff;
         }
 
         .logout-text {

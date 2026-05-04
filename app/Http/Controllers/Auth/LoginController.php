@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Support\PhoneNormalizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
@@ -21,24 +24,41 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email'    => 'required|email',
+            'login'    => 'required|string',
             'password' => 'required|string',
         ], [
-            'email.required'    => 'Email harus diisi.',
-            'email.email'       => 'Format email tidak valid.',
+            'login.required'    => 'Email, username, atau nomor telepon harus diisi.',
             'password.required' => 'Password harus diisi.',
         ]);
 
-        $credentials = $request->only('email', 'password');
+        $throttleKey = $this->throttleKey($request);
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+
+            throw ValidationException::withMessages([
+                'login' => "Terlalu banyak percobaan login. Coba lagi dalam {$seconds} detik.",
+            ]);
+        }
+
+        [$field, $value] = $this->resolveCredentialField($request->input('login'));
+
+        $credentials = [
+            $field     => $value,
+            'password' => $request->input('password'),
+        ];
 
         if (Auth::attempt($credentials, $request->filled('remember'))) {
+            RateLimiter::clear($throttleKey);
             $request->session()->regenerate();
 
             return $this->redirectBasedOnRole();
         }
 
+        RateLimiter::hit($throttleKey, 60);
+
         throw ValidationException::withMessages([
-            'email' => 'Email atau password salah.',
+            'login' => 'Email/username/nomor telepon atau password salah.',
         ]);
     }
 
@@ -50,6 +70,29 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
+    }
+
+    /**
+     * Detect whether the input is an email, phone number, or username.
+     */
+    private function resolveCredentialField(string $input): array
+    {
+        $input = trim($input);
+
+        if (filter_var($input, FILTER_VALIDATE_EMAIL)) {
+            return ['email', $input];
+        }
+
+        if (PhoneNormalizer::looksLikePhone($input)) {
+            return ['phone', PhoneNormalizer::normalize($input)];
+        }
+
+        return ['username', $input];
+    }
+
+    private function throttleKey(Request $request): string
+    {
+        return Str::lower($request->input('login', '')) . '|' . $request->ip();
     }
 
     private function redirectBasedOnRole()

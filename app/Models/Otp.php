@@ -11,8 +11,12 @@ class Otp extends Model
 
     protected $table = 'otp';
 
+    public const PURPOSE_REGISTER = 'register';
+    public const PURPOSE_RESET_PASSWORD = 'reset_password';
+
     protected $fillable = [
         'email',
+        'purpose',
         'otp',
         'is_used',
         'expired_at',
