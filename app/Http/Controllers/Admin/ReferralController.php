@@ -7,7 +7,7 @@ use App\Models\ReferralUsage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class TeamController extends Controller
+class ReferralController extends Controller
 {
     public function index()
     {

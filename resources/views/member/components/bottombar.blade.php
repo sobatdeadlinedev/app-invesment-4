@@ -10,8 +10,8 @@
         <i class="bi bi-bar-chart-fill"></i>
         <span>Market</span>
     </a>
-    <a href="{{ route('member.invest.coin', ['coin' => 'btcusdt']) }}"
-        class="nav-item nav-item-futures {{ request()->routeIs('member.invest.*') ? 'active' : '' }}">
+    <a href="{{ route('member.futures.index') }}"
+        class="nav-item nav-item-futures {{ request()->routeIs('member.futures.*') || request()->routeIs('member.invest.*') ? 'active' : '' }}">
         <div class="futures-fab">
             <i class="bi bi-graph-up-arrow"></i>
         </div>

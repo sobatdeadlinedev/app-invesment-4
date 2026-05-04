@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\DepositController as AdminDepositController;
 use App\Http\Controllers\Member\InvestController as MemberInvestController;
 use App\Http\Controllers\Member\MarketController as MemberMarketController;
 use App\Http\Controllers\Member\SignalController as MemberSignalController;
+use App\Http\Controllers\Member\FuturesController as MemberFuturesController;
 
 // Member Controllers
 use App\Http\Controllers\Member\WalletController as MemberWalletController;
@@ -172,6 +173,14 @@ Route::prefix('member')->name('member.')->middleware(['auth', 'role:member'])->g
         Route::post('/prices', [MemberMarketController::class, 'getPrices'])->name('prices');
     });
 
+
+    // Futures Trading (CALL/PUT 1-menit)
+    Route::prefix('futures')->name('futures.')->group(function () {
+        Route::get('/', [MemberFuturesController::class, 'index'])->name('index');
+        Route::post('/open', [MemberFuturesController::class, 'open'])->name('open');
+        Route::post('/close', [MemberFuturesController::class, 'close'])->name('close');
+        Route::get('/price/{coin}', [MemberFuturesController::class, 'price'])->name('price');
+    });
 
     // Trading Signals (di invest)
     Route::prefix('invest')->name('invest.')->group(function () {
