@@ -269,7 +269,7 @@ return [
     'failed_to_save_qr' => 'Failed to save QR Code',
     // ===== VERIFICATION PAGE =====
     // Page Title & Header
-    'account_verification' => 'Account Verification',
+    'account_verification' => 'KYC Verification',
     'personal_information' => 'Personal Information',
     'upload_documents' => 'Upload Documents',
     'complete_verification_data' => 'Complete data for identity verification',
@@ -476,4 +476,22 @@ return [
     'no_wallet_prefix' => 'No ',
     'no_wallet_suffix' => ' wallet',
     'minimum_withdrawal_50' => 'Minimum withdrawal is 50 USDT',
+
+    // ===== WITHDRAW PAGE REDESIGN =====
+    'withdrawal_usdt' => 'Withdrawal USDT',
+    'withdrawal_subtitle' => 'Withdraw USDT to digital currency address',
+    'blockchain_network' => 'Blockchain Network',
+    'no_withdrawal_address' => 'No withdrawal address bound',
+    'bind' => 'Bind',
+    'quantity' => 'Quantity',
+    'all' => 'All',
+    'available' => 'Available',
+    'receivable_amount' => 'Receivable Amount',
+    'withdrawal_instructions' => 'Withdrawal Instructions',
+    'wd_instr_1' => 'Withdrawal time is 24 hours.',
+    'wd_instr_2' => 'Currently, withdrawals only support USDT (TRC20 & BEP20 networks).',
+    'wd_instr_3' => 'After submitting a withdrawal request, the funds will be frozen until the withdrawal is complete.',
+    'wd_instr_4' => 'Withdrawals will arrive within 12 hours after submission. If not received, please contact customer service.',
+    'select_currency' => 'Select Currency',
+    'withdrawal_btn' => 'Withdrawal',
 ];

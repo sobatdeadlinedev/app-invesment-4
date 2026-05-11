@@ -269,7 +269,7 @@ return [
     'failed_to_save_qr' => 'Gagal menyimpan QR Code',
     // ===== VERIFICATION PAGE =====
     // Page Title & Header
-    'account_verification' => 'Verifikasi Akun',
+    'account_verification' => 'Verifikasi KYC',
     'personal_information' => 'Informasi Pribadi',
     'upload_documents' => 'Upload Dokumen',
     'complete_verification_data' => 'Lengkapi data untuk verifikasi identitas Anda',
@@ -477,4 +477,22 @@ return [
     'no_wallet_prefix' => 'Tidak ada wallet ',
     'no_wallet_suffix' => '',
     'minimum_withdrawal_50' => 'Minimum penarikan adalah 50 USDT',
+
+    // ===== WITHDRAW PAGE REDESIGN =====
+    'withdrawal_usdt' => 'Penarikan USDT',
+    'withdrawal_subtitle' => 'Tarik USDT ke alamat mata uang digital',
+    'blockchain_network' => 'Jaringan Blockchain',
+    'no_withdrawal_address' => 'Tidak ada alamat penarikan',
+    'bind' => 'Tambah',
+    'quantity' => 'Jumlah',
+    'all' => 'Semua',
+    'available' => 'Tersedia',
+    'receivable_amount' => 'Jumlah Diterima',
+    'withdrawal_instructions' => 'Instruksi Penarikan',
+    'wd_instr_1' => 'Waktu penarikan adalah 24 jam.',
+    'wd_instr_2' => 'Saat ini, penarikan hanya mendukung USDT (jaringan TRC20 & BEP20).',
+    'wd_instr_3' => 'Setelah mengajukan permintaan penarikan, dana akan dibekukan hingga proses selesai.',
+    'wd_instr_4' => 'Penarikan akan tiba dalam 12 jam setelah pengajuan. Jika tidak diterima, hubungi layanan pelanggan.',
+    'select_currency' => 'Pilih Mata Uang',
+    'withdrawal_btn' => 'Tarik Dana',
 ];

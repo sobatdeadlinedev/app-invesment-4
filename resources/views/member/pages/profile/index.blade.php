@@ -46,21 +46,21 @@
 
     {{-- ═══ ACTION BUTTONS ═══ --}}
     <div class="wo-actions">
-        <a href="{{ route('member.deposit.index') }}" class="wo-action">
+        <a href="{{ route('member.deposit.index') }}" class="wo-action-card">
             <div class="wo-action-icon"><i class="bi bi-arrow-down-circle-fill"></i></div>
-            <span>Deposit</span>
+            <span>{{ __('app.deposit') }}</span>
         </a>
-        <a href="{{ route('member.withdraw.index') }}" class="wo-action">
+        <a href="{{ route('member.withdraw.index') }}" class="wo-action-card">
             <div class="wo-action-icon"><i class="bi bi-arrow-up-circle-fill"></i></div>
-            <span>Withdrawal</span>
+            <span>{{ __('app.withdraw') }}</span>
         </a>
-        <a href="{{ route('member.balance.transfer') }}" class="wo-action">
+        <a href="{{ route('member.balance.transfer') }}" class="wo-action-card">
             <div class="wo-action-icon"><i class="bi bi-arrow-left-right"></i></div>
-            <span>Transfer</span>
+            <span>{{ __('app.transfer') }}</span>
         </a>
-        <a href="{{ route('member.deposit.history') }}" class="wo-action">
+        <a href="{{ route('member.deposit.history') }}" class="wo-action-card">
             <div class="wo-action-icon"><i class="bi bi-clock-history"></i></div>
-            <span>History</span>
+            <span>{{ __('app.history') }}</span>
         </a>
     </div>
 
@@ -182,20 +182,32 @@
 
 /* Actions */
 .wo-actions {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 4px; padding: 16px; margin: 0 0 4px;
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 10px; padding: 16px; margin: 0 0 4px;
 }
-.wo-action { display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; }
+.wo-action-card {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    background: rgba(0,229,255,0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.wo-action-card:hover {
+    background: rgba(0,229,255,0.08);
+    border-color: rgba(0,229,255,0.3);
+    transform: translateY(-1px);
+}
 .wo-action-icon {
-    width: 52px; height: 52px; border-radius: 50%;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    width: 40px; height: 40px; border-radius: 10px;
+    background: rgba(0,229,255,0.1);
+    border: 1px solid rgba(0,229,255,0.2);
     display: flex; align-items: center; justify-content: center;
-    font-size: 22px; color: #fff;
-    box-shadow: 0 4px 14px rgba(37,99,235,0.35);
-    transition: transform 0.2s;
+    font-size: 18px; color: var(--gold-color);
+    flex-shrink: 0;
 }
-.wo-action:hover .wo-action-icon { transform: translateY(-2px); }
-.wo-action span { color: var(--text-muted); font-size: 11px; font-weight: 600; }
+.wo-action-card span { color: var(--text-primary); font-size: 13px; font-weight: 600; }
 
 /* Section */
 .wo-section { margin: 12px 16px 0; }
