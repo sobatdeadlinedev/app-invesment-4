@@ -17,7 +17,7 @@
                         {{ $coinInfo['symbol'] }}
                     </h5>
                     <span class="price-live-badge">
-                        <span class="live-dot"></span> LIVE
+                        <span class="live-dot"></span> {{ __('app.live') }}
                     </span>
                 </div>
                 <small class="text-muted">{{ $coinInfo['name'] }}</small>
@@ -37,7 +37,7 @@
     <div id="coinPopupOverlay" class="coin-popup-overlay" onclick="closeCoinPopup()" style="display: none;">
         <div class="coin-popup-modal" onclick="event.stopPropagation()">
             <div class="popup-header">
-                <h6 class="mb-0 fw-bold">Pilih Instrumen</h6>
+                <h6 class="mb-0 fw-bold">{{ __('app.pick_instrument') }}</h6>
                 <button class="btn-popup-close" onclick="closeCoinPopup()">
                     <i class="bi bi-x"></i>
                 </button>
@@ -45,9 +45,9 @@
             <div class="popup-body">
                 @php
                     $categories = [
-                        'crypto' => ['label' => 'Cryptocurrency', 'icon' => 'bi-currency-bitcoin'],
-                        'forex'  => ['label' => 'Forex',          'icon' => 'bi-currency-exchange'],
-                        'metals' => ['label' => 'Precious Metals','icon' => 'bi-gem'],
+                        'crypto' => ['label' => __('app.cryptocurrency'), 'icon' => 'bi-currency-bitcoin'],
+                        'forex'  => ['label' => __('app.forex'),          'icon' => 'bi-currency-exchange'],
+                        'metals' => ['label' => __('app.precious_metals'),'icon' => 'bi-gem'],
                     ];
                 @endphp
                 @foreach ($categories as $cat => $catInfo)
@@ -94,29 +94,29 @@
     @if ($openTrade)
     <div class="active-trade-panel" id="activeTrade">
         <div class="at-header">
-            <span class="at-title">Trade Aktif</span>
+            <span class="at-title">{{ __('app.active_trade') }}</span>
             <span class="at-direction {{ $openTrade->direction }}">
                 <i class="bi bi-arrow-{{ $openTrade->direction === 'call' ? 'up' : 'down' }}-circle-fill"></i>
                 {{ strtoupper($openTrade->direction) }}
             </span>
         </div>
         <div class="at-timer" id="tradeTimer">00</div>
-        <div class="at-timer-label">detik tersisa</div>
+        <div class="at-timer-label">{{ __('app.seconds_remaining') }}</div>
         <div class="at-stats">
             <div class="at-stat">
-                <div class="at-stat-label">Entry</div>
+                <div class="at-stat-label">{{ __('app.entry') }}</div>
                 <div class="at-stat-val">${{ number_format($openTrade->entry_price, $openTrade->entry_price < 1 ? 6 : 2, '.', ',') }}</div>
             </div>
             <div class="at-stat">
-                <div class="at-stat-label">Current</div>
+                <div class="at-stat-label">{{ __('app.current') }}</div>
                 <div class="at-stat-val" id="atCurrentPrice">—</div>
             </div>
             <div class="at-stat">
-                <div class="at-stat-label">Amount</div>
+                <div class="at-stat-label">{{ __('app.amount') }}</div>
                 <div class="at-stat-val">${{ number_format($openTrade->amount, 2) }}</div>
             </div>
             <div class="at-stat">
-                <div class="at-stat-label">Potential</div>
+                <div class="at-stat-label">{{ __('app.potential') }}</div>
                 <div class="at-stat-val text-win">+${{ number_format($openTrade->amount * $openTrade->payout_rate / 100, 2) }}</div>
             </div>
         </div>
@@ -128,7 +128,7 @@
     {{-- ═══ TRADE PANEL ═══ --}}
     <div class="trade-panel" id="tradePanel" style="{{ $openTrade ? 'display:none' : '' }}">
         <div class="trade-panel-header">
-            <span class="trade-panel-title">Open Trade</span>
+            <span class="trade-panel-title">{{ __('app.open_trade') }}</span>
             <span class="trade-balance">
                 <i class="bi bi-wallet2"></i>
                 Trade: <strong id="tradeBalance">${{ number_format(auth()->user()->trade_balance, 2) }}</strong>
@@ -136,7 +136,7 @@
         </div>
 
         <div class="form-block">
-            <div class="form-block-title">Jumlah (USDT)</div>
+            <div class="form-block-title">{{ __('app.trade_amount_usdt') }}</div>
             <input type="number" id="tradeAmount" class="form-control-dark" placeholder="0.00" min="1" step="1">
             <div class="quick-btns mt-2">
                 @foreach ([10, 50, 100, 500] as $q)
@@ -147,11 +147,11 @@
 
         <div class="payout-info">
             <div class="payout-row">
-                <span>Payout (85%)</span>
+                <span>{{ __('app.payout') }} ({{ \App\Http\Controllers\Member\FuturesController::PAYOUT_RATE }}%)</span>
                 <span class="text-win" id="payoutAmount">—</span>
             </div>
             <div class="payout-row">
-                <span>Total Return</span>
+                <span>{{ __('app.total_return') }}</span>
                 <span id="totalReturn">—</span>
             </div>
         </div>
@@ -159,11 +159,11 @@
         <div class="trade-btns">
             <button class="btn-trade-call" id="btnCall" onclick="openTrade('call')">
                 <i class="bi bi-arrow-up-circle-fill"></i>
-                CALL <small>Naik</small>
+                {{ __('app.call') }} <small>{{ __('app.up') }}</small>
             </button>
             <button class="btn-trade-put" id="btnPut" onclick="openTrade('put')">
                 <i class="bi bi-arrow-down-circle-fill"></i>
-                PUT <small>Turun</small>
+                {{ __('app.put') }} <small>{{ __('app.down') }}</small>
             </button>
         </div>
     </div>
@@ -173,14 +173,14 @@
     <div class="px-4 pb-3">
         <a href="{{ route('member.invest.coin', ['coin' => $coinSlug]) }}" class="expert-signals-btn">
             <i class="bi bi-broadcast"></i>
-            Expert Signals
-            <span class="es-badge">Lama</span>
+            {{ __('app.expert_signals') }}
+            <span class="es-badge">{{ __('app.legacy_mode') }}</span>
             <i class="bi bi-chevron-right ms-auto"></i>
         </a>
     </div>
 
     {{-- ═══ RECENT TRADES ═══ --}}
-    <div class="section-label">Riwayat Trade</div>
+    <div class="section-label">{{ __('app.trade_history') }}</div>
     <div class="card-dark mx-4 mb-4">
         @forelse ($recentTrades as $t)
         <div class="txn-row">
@@ -204,7 +204,7 @@
         @empty
         <div class="pg-empty" style="padding:32px 20px;">
             <i class="bi bi-clock-history"></i>
-            <p>Belum ada trade</p>
+            <p>{{ __('app.no_trades_yet') }}</p>
         </div>
         @endforelse
     </div>
@@ -218,8 +218,8 @@
         <div class="result-title" id="resultTitle"></div>
         <div class="result-amount" id="resultAmount"></div>
         <div class="result-detail" id="resultDetail"></div>
-        <div class="result-balance">Balance baru: <strong id="resultBalance"></strong></div>
-        <button class="btn-cta mt-3" onclick="dismissResult()">Lanjut Trading</button>
+        <div class="result-balance">{{ __('app.new_balance') }} <strong id="resultBalance"></strong></div>
+        <button class="btn-cta mt-3" onclick="dismissResult()">{{ __('app.continue_trading') }}</button>
     </div>
 </div>
 @endsection
@@ -404,6 +404,19 @@ const PAYOUT = {{ \App\Http\Controllers\Member\FuturesController::PAYOUT_RATE }}
 let priceInterval, timerInterval;
 let activeTrade = @json($activeTradeData);
 
+const FTrans = {
+    activeTrade:      "{{ __('app.active_trade') }}",
+    secondsRemaining: "{{ __('app.seconds_remaining') }}",
+    entry:            "{{ __('app.entry') }}",
+    current:          "{{ __('app.current') }}",
+    amount:           "{{ __('app.amount') }}",
+    potential:        "{{ __('app.potential') }}",
+    enterMinAmount:   "{{ __('app.enter_min_amount') }}",
+    errorTryAgain:    "{{ __('app.error_try_again') }}",
+    win:              "{{ __('app.win') }}",
+    lose:             "{{ __('app.lose') }}",
+};
+
 // ─── Popup ────────────────────────────────────────────────────
 function openCoinPopup() {
     document.getElementById('coinPopupOverlay').style.display = 'flex';
@@ -459,7 +472,7 @@ function updatePayout() {
 // ─── Open trade ───────────────────────────────────────────────
 async function openTrade(direction) {
     const amount = parseFloat(document.getElementById('tradeAmount')?.value);
-    if (!amount || amount < 1) { alert('Masukkan jumlah minimal $1'); return; }
+    if (!amount || amount < 1) { alert(FTrans.enterMinAmount); return; }
     setBtnsLoading(true);
     try {
         const res  = await fetch('/member/futures/open', {
@@ -477,7 +490,7 @@ async function openTrade(direction) {
         };
         showActiveTrade(json.trade);
     } catch(e) {
-        alert('Terjadi kesalahan. Coba lagi.');
+        alert(FTrans.errorTryAgain);
         setBtnsLoading(false);
     }
 }
@@ -491,19 +504,19 @@ function showActiveTrade(trade) {
     if (!panel) { window.location.reload(); return; }
     panel.innerHTML = `
         <div class="at-header">
-            <span class="at-title">Trade Aktif</span>
+            <span class="at-title">${FTrans.activeTrade}</span>
             <span class="at-direction ${trade.direction}">
                 <i class="bi bi-arrow-${trade.direction === 'call' ? 'up' : 'down'}-circle-fill"></i>
                 ${trade.direction.toUpperCase()}
             </span>
         </div>
         <div class="at-timer" id="tradeTimer">60</div>
-        <div class="at-timer-label">detik tersisa</div>
+        <div class="at-timer-label">${FTrans.secondsRemaining}</div>
         <div class="at-stats">
-            <div class="at-stat"><div class="at-stat-label">Entry</div><div class="at-stat-val">$${formatPrice(trade.entry_price)}</div></div>
-            <div class="at-stat"><div class="at-stat-label">Current</div><div class="at-stat-val" id="atCurrentPrice">—</div></div>
-            <div class="at-stat"><div class="at-stat-label">Amount</div><div class="at-stat-val">$${parseFloat(trade.amount).toFixed(2)}</div></div>
-            <div class="at-stat"><div class="at-stat-label">Potential</div><div class="at-stat-val text-win">+$${(trade.amount * trade.payout_rate / 100).toFixed(2)}</div></div>
+            <div class="at-stat"><div class="at-stat-label">${FTrans.entry}</div><div class="at-stat-val">$${formatPrice(trade.entry_price)}</div></div>
+            <div class="at-stat"><div class="at-stat-label">${FTrans.current}</div><div class="at-stat-val" id="atCurrentPrice">—</div></div>
+            <div class="at-stat"><div class="at-stat-label">${FTrans.amount}</div><div class="at-stat-val">$${parseFloat(trade.amount).toFixed(2)}</div></div>
+            <div class="at-stat"><div class="at-stat-label">${FTrans.potential}</div><div class="at-stat-val text-win">+$${(trade.amount * trade.payout_rate / 100).toFixed(2)}</div></div>
         </div>`;
     panel.style.display = '';
     startTimer();
@@ -547,7 +560,7 @@ async function closeTrade() {
 function showResult(result) {
     const isWin = result.outcome === 'win';
     document.getElementById('resultIcon').textContent    = isWin ? '🎉' : '😔';
-    document.getElementById('resultTitle').textContent   = isWin ? 'MENANG!' : 'KALAH';
+    document.getElementById('resultTitle').textContent   = isWin ? FTrans.win : FTrans.lose;
     document.getElementById('resultTitle').className     = 'result-title ' + (isWin ? 'text-win' : 'text-lose');
     document.getElementById('resultAmount').textContent  = (isWin ? '+' : '') + '$' + Math.abs(result.profit_loss).toFixed(2);
     document.getElementById('resultAmount').className    = 'result-amount ' + (isWin ? 'text-win' : 'text-lose');

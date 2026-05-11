@@ -7,26 +7,26 @@
     <div class="dash-hero">
         <div class="d-flex align-items-center justify-content-between mb-4">
             <div>
-                <p class="hero-greeting">Welcome back,</p>
+                <p class="hero-greeting">{{ __('app.welcome_back') }}</p>
                 <h5 class="hero-name">{{ auth()->user()->name }}</h5>
             </div>
             <div class="hero-avatar">
                 <i class="bi bi-person-fill"></i>
             </div>
         </div>
-        <p class="hero-balance-label">Total Balance</p>
+        <p class="hero-balance-label">{{ __('app.total_balance') }}</p>
         <h2 class="hero-balance-amount">
             {{ number_format((auth()->user()->exchange_balance ?? 0) + (auth()->user()->trade_balance ?? 0), 2) }}
             <span class="hero-balance-currency">USDT</span>
         </h2>
         <div class="hero-stats-row">
             <div class="hero-stat">
-                <span class="hero-stat-label">Exchange</span>
+                <span class="hero-stat-label">{{ __('app.exchange') }}</span>
                 <span class="hero-stat-val">{{ number_format(auth()->user()->exchange_balance ?? 0, 2) }}</span>
             </div>
             <div class="hero-stat-sep"></div>
             <div class="hero-stat">
-                <span class="hero-stat-label">Trade</span>
+                <span class="hero-stat-label">{{ __('app.trade') }}</span>
                 <span class="hero-stat-val">{{ number_format(auth()->user()->trade_balance ?? 0, 2) }}</span>
             </div>
         </div>
@@ -38,25 +38,25 @@
             <div class="action-icon">
                 <i class="bi bi-arrow-down-circle-fill"></i>
             </div>
-            <span>Deposit</span>
+            <span>{{ __('app.deposit') }}</span>
         </a>
         <a href="{{ route('member.withdraw.index') }}" class="action-item">
             <div class="action-icon">
                 <i class="bi bi-arrow-up-circle-fill"></i>
             </div>
-            <span>Withdraw</span>
+            <span>{{ __('app.withdraw') }}</span>
         </a>
         <a href="{{ route('member.balance.transfer') }}" class="action-item">
             <div class="action-icon">
                 <i class="bi bi-arrow-left-right"></i>
             </div>
-            <span>Transfer</span>
+            <span>{{ __('app.transfer') }}</span>
         </a>
         <a href="{{ route('member.team.index') }}" class="action-item">
             <div class="action-icon">
                 <i class="bi bi-person-plus-fill"></i>
             </div>
-            <span>Invite</span>
+            <span>{{ __('app.invite') }}</span>
         </a>
     </div>
 
@@ -70,7 +70,7 @@
                     <div class="d-flex align-items-start gap-3">
                         <div class="banner-ico"><i class="bi bi-megaphone-fill"></i></div>
                         <div>
-                            <h6 class="banner-title">Announcement</h6>
+                            <h6 class="banner-title">{{ __('app.announcement') }}</h6>
                             <p class="banner-text">{{ $announcement }}</p>
                         </div>
                     </div>
@@ -85,8 +85,8 @@
                             <i class="bi bi-graph-up-arrow"></i>
                         </div>
                         <div>
-                            <h6 class="banner-title">Copy Expert Traders</h6>
-                            <p class="banner-text">Earn passive income automatically and proven strategies at your fingertips.</p>
+                            <h6 class="banner-title">{{ __('app.banner_trade_title') }}</h6>
+                            <p class="banner-text">{{ __('app.banner_trade_text') }}</p>
                         </div>
                     </div>
                 </div>
@@ -99,8 +99,8 @@
                             <i class="bi bi-trophy-fill"></i>
                         </div>
                         <div>
-                            <h6 class="banner-title">Invite & Earn</h6>
-                            <p class="banner-text">Share your referral code and earn commissions on every trade.</p>
+                            <h6 class="banner-title">{{ __('app.banner_invite_title') }}</h6>
+                            <p class="banner-text">{{ __('app.banner_invite_text') }}</p>
                         </div>
                     </div>
                 </div>
@@ -113,8 +113,8 @@
                             <i class="bi bi-broadcast"></i>
                         </div>
                         <div>
-                            <h6 class="banner-title">Trading Signals</h6>
-                            <p class="banner-text">Follow live expert signals and maximize your trading results.</p>
+                            <h6 class="banner-title">{{ __('app.trading_signals') }}</h6>
+                            <p class="banner-text">{{ __('app.banner_signal_text') }}</p>
                         </div>
                     </div>
                 </div>
@@ -129,9 +129,9 @@
 
         {{-- Section Header --}}
         <div class="mini-market-header px-3">
-            <span class="mini-market-title">Market</span>
+            <span class="mini-market-title">{{ __('app.market') }}</span>
             <a href="{{ route('member.market.index') }}" class="mini-market-see-all">
-                See All <i class="bi bi-chevron-right"></i>
+                {{ __('app.see_all') }} <i class="bi bi-chevron-right"></i>
             </a>
         </div>
 

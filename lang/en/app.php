@@ -27,7 +27,7 @@ return [
     'select_currency' => 'Please select a currency',
     'available' => 'Available',
     'amount_of_transfers' => 'Amount of transfers',
-    'enter_amount' => 'Please enter the transferred amount',
+    'enter_transfer_amount' => 'Please enter the transferred amount',
     'minimum_transfer' => 'Minimum transfer',
 
     // Warnings & Messages
@@ -140,12 +140,12 @@ return [
     'all_participants_bet_exactly' => 'All participants bet exactly',
     'regardless_of_balance' => 'regardless of balance',
 
-    // // Price Information
-    // 'opening_price' => 'Opening Price',
-    // 'settlement_price' => 'Settlement Price',
+    // Price Information
+    'opening_price' => 'Opening Price',
+    'settlement_price' => 'Settlement Price',
 
-    // // Signal Timing
-    // 'opened_at' => 'Opened At',
+    // Signal Timing
+    'opened_at' => 'Opened At',
     'win_rate' => 'Win Rate',
 
     // Good News
@@ -210,19 +210,13 @@ return [
     'wallet_list' => 'Wallet List',
 
     // Actions
-    'deposit' => 'Deposit',
     'withdrawal' => 'Withdrawal',
     'transfer' => 'Transfer',
     'logout' => 'Logout',
 
     // Account Types
     'exchange' => 'Exchange',
-    'trade' => 'Trade',
     'locked' => 'locked',
-
-    // Currency
-    'currency' => 'Currency',
-    'usdt_tether' => 'USDT (Tether)',
 
     // Wallet Management
     'add_wallet' => 'Add Wallet',
@@ -234,8 +228,6 @@ return [
     'network_type' => 'Network Type',
     'trc20' => 'TRC20',
     'bep20' => 'BEP20',
-    'tron_network' => 'TRON Network',
-    'binance_smart_chain' => 'Binance Smart Chain',
 
     // Wallet Form
     'wallet_address' => 'Wallet Address',
@@ -243,9 +235,13 @@ return [
     'ensure_address_match' => 'Make sure the address matches the selected network',
     'save' => 'Save',
     'update' => 'Update',
-    'cancel' => 'Cancel',
     // ===== TEAM / REFERRAL PAGE =====
+    // Page Header
+    'invite_friends' => 'Invite Friends',
+    'earn_commission' => 'Earn referral commissions',
+
     // QR & Invitation Section
+    'my_qr_code' => 'My QR Code',
     'my_invitation_code' => 'My invitation code',
     'my_invitation_link' => 'My invitation code link',
     'save_qr' => 'Save QR',
@@ -274,6 +270,8 @@ return [
     // ===== VERIFICATION PAGE =====
     // Page Title & Header
     'account_verification' => 'Account Verification',
+    'personal_information' => 'Personal Information',
+    'upload_documents' => 'Upload Documents',
     'complete_verification_data' => 'Complete data for identity verification',
 
     // Personal Data Section
@@ -321,8 +319,6 @@ return [
     // ===== WITHDRAWAL PAGE =====
     // Header & Navigation
     'withdraw' => 'Withdraw',
-    'back' => 'Back',
-    'history' => 'History',
 
     // Currency Section
     'currency' => 'Currency',
@@ -347,7 +343,6 @@ return [
     'select_wallet_placeholder' => '-- Select Wallet Account --',
     'no_wallet_available' => 'No wallet account available',
     // 'need_add_wallet' => 'You need to add a wallet account first.',
-    'add_wallet' => 'Add Wallet',
 
     // Withdrawal Summary
     'withdrawal_summary' => 'Withdrawal Summary',
@@ -375,26 +370,15 @@ return [
     // Page Header
     'withdrawal_history' => 'Withdrawal History',
 
-    // Summary Section
-    'pending' => 'Pending',
-    'completed' => 'Completed',
-
     // Filter Tabs
-    'all' => 'All',
-    'approved' => 'Approved',
-    'rejected' => 'Rejected',
     'cancelled' => 'Cancelled',
 
     // Transaction Item
-    'withdrawal' => 'Withdrawal',
     'wallet_account' => 'Wallet Account',
     'account_number' => 'Account Number',
-    'withdrawal_amount' => 'Withdrawal Amount',
     'fee_5_percent' => 'Fee (5%)',
     'you_receive' => 'You Receive',
-    'date' => 'Date',
     'completed_at' => 'Completed At',
-    'na' => 'N/A',
 
     // Actions
     'cancel_withdrawal' => 'Cancel Withdrawal',
@@ -402,14 +386,94 @@ return [
     // Empty State
     'no_withdrawal_history' => 'No withdrawal history',
 
-     // Profile Dropdown
-    'profile' => 'Profile',
+    // Profile Dropdown
     'verification' => 'Verification',
     'verified' => 'Verified',
+    'unverified' => 'Unverified',
     'must_verify' => 'Must Verify',
-    'logout' => 'Logout',
     'phone_copied' => 'Phone number copied!',
+
+    // ===== DASHBOARD PAGE =====
+    'welcome_back' => 'Welcome back,',
+    'total_balance' => 'Total Balance',
+    'invite' => 'Invite',
+    'announcement' => 'Announcement',
+    'see_all' => 'See All',
+    'market' => 'Market',
+    'banner_trade_title' => 'Copy Expert Traders',
+    'banner_trade_text' => 'Earn passive income automatically and proven strategies at your fingertips.',
+    'banner_invite_title' => 'Invite & Earn',
+    'banner_invite_text' => 'Share your referral code and earn commissions on every trade.',
+    'banner_signal_text' => 'Follow live expert signals and maximize your trading results.',
+
+    // ===== ACCESS PAGE =====
+    'account_management' => 'Account Management',
+    'transactions' => 'Transactions',
+    'manage_wallet_address' => 'Manage withdrawal wallet addresses',
+    'account_already_verified' => 'Account already verified',
+    'verify_your_identity' => 'Verify your identity',
+    'referral' => 'Referral',
+    'invite_and_earn' => 'Invite friends & earn commission',
+    'top_up_usdt_balance' => 'Top up USDT balance',
+    'withdraw_to_wallet' => 'Withdraw balance to your wallet',
+    'view_deposit_history' => 'View your deposit history',
+    'view_withdrawal_history' => 'View your withdrawal history',
+    'sign_out_from_account' => 'Sign out from account',
+
+    // ===== WALLET PAGE =====
+    'wallet_management' => 'Wallet Management',
+    'wallet_information' => 'Information',
+    'wallet_max_3' => 'Maximum 3 wallets per account',
+    'wallet_network_supported' => 'Only supports TRC20 & BEP20 networks',
+    'wallet_address_warning' => 'Make sure the wallet address is correct before withdrawing',
 
     // Confirmation Messages
     'confirm_cancel_withdrawal' => 'Are you sure you want to cancel this withdrawal?',
+
+    // ===== FUTURES PAGE =====
+    'live' => 'LIVE',
+    'pick_instrument' => 'Pick Instrument',
+    'cryptocurrency' => 'Cryptocurrency',
+    'forex' => 'Forex',
+    'precious_metals' => 'Precious Metals',
+    'active_trade' => 'Active Trade',
+    'seconds_remaining' => 'seconds remaining',
+    'entry' => 'Entry',
+    'current' => 'Current',
+    'potential' => 'Potential',
+    'open_trade' => 'Open Trade',
+    'trade_amount_usdt' => 'Amount (USDT)',
+    'payout' => 'Payout',
+    'total_return' => 'Total Return',
+    'up' => 'Up',
+    'down' => 'Down',
+    'expert_signals' => 'Expert Signals',
+    'legacy_mode' => 'Legacy',
+    'trade_history' => 'Trade History',
+    'no_trades_yet' => 'No trades yet',
+    'new_balance' => 'New Balance:',
+    'continue_trading' => 'Continue Trading',
+    'enter_min_amount' => 'Enter minimum amount of $1',
+    'error_try_again' => 'An error occurred. Please try again.',
+    'win' => 'WIN!',
+    'lose' => 'LOSE',
+
+    // ===== MARKET PAGE =====
+    'hot' => 'Hot',
+    'crypto' => 'Crypto',
+    'metals' => 'Metals',
+    'name_col' => 'Name',
+    'last_price' => 'Last Price',
+    'change_24h' => '24h %',
+
+    // ===== BOTTOMBAR =====
+    'nav_home' => 'Home',
+    'nav_futures' => 'Futures',
+    'nav_access' => 'Access',
+    'nav_wallet' => 'Wallet',
+
+    // ===== WALLET / WITHDRAW =====
+    'no_wallet_prefix' => 'No ',
+    'no_wallet_suffix' => ' wallet',
+    'minimum_withdrawal_50' => 'Minimum withdrawal is 50 USDT',
 ];

@@ -104,7 +104,7 @@
                         <div class="input-with-icon">
                             <span class="input-icon">₮</span>
                             <input type="number" class="form-control-dark with-icon" id="transferAmount" name="amount"
-                                placeholder="{{ __('app.enter_amount') }}" min="10" step="0.01" required>
+                                placeholder="{{ __('app.enter_transfer_amount') }}" min="10" step="0.01" required>
                         </div>
                         <small class="text-muted d-block mt-2">{{ __('app.minimum_transfer') }}: 10.00 USDT</small>
                     </div>

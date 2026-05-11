@@ -5,33 +5,33 @@
 
     {{-- ═══ HEADER ═══ --}}
     <div class="mkt-header">
-        <h5 class="mkt-title">Market</h5>
+        <h5 class="mkt-title">{{ __('app.market') }}</h5>
         <span class="mkt-live-badge">
-            <span class="live-dot"></span> Live
+            <span class="live-dot"></span> {{ __('app.live') }}
         </span>
     </div>
 
     {{-- ═══ FILTER TABS ═══ --}}
     <div class="mfilter-wrap px-3 mb-2">
         <button class="mfilter-tab active" data-filter="all">
-            <i class="bi bi-fire"></i> Hot
+            <i class="bi bi-fire"></i> {{ __('app.hot') }}
         </button>
         <button class="mfilter-tab" data-filter="crypto">
-            <i class="bi bi-currency-bitcoin"></i> Crypto
+            <i class="bi bi-currency-bitcoin"></i> {{ __('app.crypto') }}
         </button>
         <button class="mfilter-tab" data-filter="forex">
-            <i class="bi bi-currency-exchange"></i> Forex
+            <i class="bi bi-currency-exchange"></i> {{ __('app.forex') }}
         </button>
         <button class="mfilter-tab" data-filter="precious">
-            <i class="bi bi-gem"></i> Metals
+            <i class="bi bi-gem"></i> {{ __('app.metals') }}
         </button>
     </div>
 
     {{-- ═══ TABLE HEADER ═══ --}}
     <div class="mlist-header px-3">
-        <span>Name</span>
-        <span>Last Price</span>
-        <span>24h %</span>
+        <span>{{ __('app.name_col') }}</span>
+        <span>{{ __('app.last_price') }}</span>
+        <span>{{ __('app.change_24h') }}</span>
     </div>
 
     {{-- ═══ CRYPTO ═══ --}}

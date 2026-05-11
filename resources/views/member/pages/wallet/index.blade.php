@@ -8,7 +8,7 @@
             <i class="bi bi-arrow-left"></i>
         </a>
         <div class="pg-header-text">
-            <h5 class="pg-title">Daftar Wallet</h5>
+            <h5 class="pg-title">{{ __('app.wallet_list') }}</h5>
         </div>
         <span class="wl-count-badge">{{ $wallets->count() }}/3</span>
     </div>
@@ -31,7 +31,7 @@
                     <i class="bi bi-pencil"></i>
                 </button>
                 <form action="{{ route('member.wallet.destroy', $wallet->id) }}" method="POST"
-                    onsubmit="return confirm('Hapus wallet ini?')">
+                    onsubmit="return confirm('{{ __('app.delete_wallet_confirmation') }}')">
                     @csrf @method('DELETE')
                     <button type="submit" class="wo-action-btn delete">
                         <i class="bi bi-trash"></i>
@@ -42,23 +42,23 @@
         @empty
         <div class="wo-empty">
             <i class="bi bi-wallet2"></i>
-            <p>Belum ada wallet withdrawal</p>
+            <p>{{ __('app.no_wallet_yet') }}</p>
         </div>
         @endforelse
 
         @if($wallets->count() < 3)
         <button class="wo-add-btn mt-2" data-bs-toggle="modal" data-bs-target="#addWalletModal">
-            <i class="bi bi-plus-circle me-2"></i>Tambah Wallet
+            <i class="bi bi-plus-circle me-2"></i>{{ __('app.add_wallet') }}
         </button>
         @endif
 
         {{-- ═══ INFO CARD ═══ --}}
         <div class="wl-info-card">
-            <div class="wl-info-title"><i class="bi bi-info-circle-fill"></i> Informasi</div>
+            <div class="wl-info-title"><i class="bi bi-info-circle-fill"></i> {{ __('app.wallet_information') }}</div>
             <ul class="wl-info-list">
-                <li>Maksimal 3 wallet per akun</li>
-                <li>Hanya mendukung jaringan TRC20 & BEP20</li>
-                <li>Pastikan alamat wallet sudah benar sebelum melakukan penarikan</li>
+                <li>{{ __('app.wallet_max_3') }}</li>
+                <li>{{ __('app.wallet_network_supported') }}</li>
+                <li>{{ __('app.wallet_address_warning') }}</li>
             </ul>
         </div>
 
@@ -70,14 +70,14 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background:var(--card-light);border:1px solid var(--border-color);">
             <div class="modal-header" style="border-bottom:1px solid var(--border-color);">
-                <h5 class="modal-title text-white">Tambah Wallet</h5>
+                <h5 class="modal-title text-white">{{ __('app.add_wallet') }}</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form action="{{ route('member.wallet.store') }}" method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label text-white small">Network</label>
+                        <label class="form-label text-white small">{{ __('app.network') }}</label>
                         <div class="d-flex gap-2">
                             @foreach(['trc20' => 'TRC20 (Tron)', 'bep20' => 'BEP20 (BSC)'] as $val => $label)
                             <label class="flex-1" style="flex:1;">
@@ -89,15 +89,15 @@
                         @error('type')<small class="text-danger">{{ $message }}</small>@enderror
                     </div>
                     <div class="mb-2">
-                        <label class="form-label text-white small">Wallet Address</label>
+                        <label class="form-label text-white small">{{ __('app.wallet_address') }}</label>
                         <input type="text" name="account_number" class="form-control-dark"
-                            placeholder="Masukkan alamat wallet USDT" required value="{{ old('account_number') }}">
+                            placeholder="{{ __('app.enter_wallet_address') }}" required value="{{ old('account_number') }}">
                         @error('account_number')<small class="text-danger">{{ $message }}</small>@enderror
                     </div>
                 </div>
                 <div class="modal-footer" style="border-top:1px solid var(--border-color);">
-                    <button type="button" class="btn btn-outline-gold" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-gold">Simpan</button>
+                    <button type="button" class="btn btn-outline-gold" data-bs-dismiss="modal">{{ __('app.cancel') }}</button>
+                    <button type="submit" class="btn btn-gold">{{ __('app.save') }}</button>
                 </div>
             </form>
         </div>
@@ -109,14 +109,14 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background:var(--card-light);border:1px solid var(--border-color);">
             <div class="modal-header" style="border-bottom:1px solid var(--border-color);">
-                <h5 class="modal-title text-white">Edit Wallet</h5>
+                <h5 class="modal-title text-white">{{ __('app.edit_wallet') }}</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form id="editWalletForm" method="POST">
                 @csrf @method('PUT')
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label text-white small">Network</label>
+                        <label class="form-label text-white small">{{ __('app.network') }}</label>
                         <div class="d-flex gap-2">
                             @foreach(['trc20' => 'TRC20 (Tron)', 'bep20' => 'BEP20 (BSC)'] as $val => $label)
                             <label class="flex-1" style="flex:1;">
@@ -127,14 +127,14 @@
                         </div>
                     </div>
                     <div class="mb-2">
-                        <label class="form-label text-white small">Wallet Address</label>
+                        <label class="form-label text-white small">{{ __('app.wallet_address') }}</label>
                         <input type="text" name="account_number" id="edit_account_number"
-                            class="form-control-dark" placeholder="Alamat wallet" required>
+                            class="form-control-dark" placeholder="{{ __('app.wallet_address') }}" required>
                     </div>
                 </div>
                 <div class="modal-footer" style="border-top:1px solid var(--border-color);">
-                    <button type="button" class="btn btn-outline-gold" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-gold">Update</button>
+                    <button type="button" class="btn btn-outline-gold" data-bs-dismiss="modal">{{ __('app.cancel') }}</button>
+                    <button type="submit" class="btn btn-gold">{{ __('app.update') }}</button>
                 </div>
             </form>
         </div>

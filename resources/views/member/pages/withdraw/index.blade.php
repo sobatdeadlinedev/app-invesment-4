@@ -80,7 +80,7 @@
                 <div class="w-card">
                     <div class="w-card-head"><i class="bi bi-wallet2"></i>{{ __('app.select_wallet_account') }}</div>
                     <div class="form-block">
-                        <label class="text-muted small mb-2 d-block">Network</label>
+                        <label class="text-muted small mb-2 d-block">{{ __('app.network') }}</label>
                         <div class="network-selector">
                             <button type="button" class="net-pill active" data-net="trc20" onclick="selectNetwork('trc20', this)">
                                 <span class="net-dot trc20"></span> TRC20
@@ -106,7 +106,7 @@
                             @endforelse
                         </select>
                         <div id="no-wallet-msg" style="display:none; margin-top:8px;">
-                            <small class="text-warning"><i class="bi bi-exclamation-circle me-1"></i>Tidak ada wallet <span id="no-wallet-net"></span>. <a href="{{ route('member.wallet.index') }}" style="color:var(--gold-color);">Tambah wallet</a></small>
+                            <small class="text-warning"><i class="bi bi-exclamation-circle me-1"></i>{{ __('app.no_wallet_prefix') }}<span id="no-wallet-net"></span>{{ __('app.no_wallet_suffix') }}. <a href="{{ route('member.wallet.index') }}" style="color:var(--gold-color);">{{ __('app.add_wallet') }}</a></small>
                         </div>
                         @error('wallet_id')
                             <small class="text-danger mt-1 d-block">{{ $message }}</small>
@@ -216,7 +216,7 @@
                 accountNotVerifiedAlert: "{{ __('app.account_not_verified_alert') }}",
                 withdrawalNotProcessed: "{{ __('app.withdrawal_not_processed') }}",
                 enterValidAmount: "{{ __('app.enter_valid_amount') }}",
-                minimumWithdrawal50: "Minimum withdrawal is 50 USDT",
+                minimumWithdrawal50: "{{ __('app.minimum_withdrawal_50') }}",
                 insufficientBalance: "{{ __('app.insufficient_balance_withdraw') }}",
                 pleaseSelectWallet: "{{ __('app.please_select_wallet') }}",
                 amountTooSmall: "{{ __('app.amount_too_small') }}",

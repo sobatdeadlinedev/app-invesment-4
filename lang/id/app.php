@@ -27,7 +27,7 @@ return [
     'select_currency' => 'Pilih mata uang',
     'available' => 'Tersedia',
     'amount_of_transfers' => 'Jumlah transfer',
-    'enter_amount' => 'Masukkan jumlah transfer',
+    'enter_transfer_amount' => 'Masukkan jumlah transfer',
     'minimum_transfer' => 'Transfer minimum',
 
     // Warnings & Messages
@@ -209,7 +209,6 @@ return [
     'wallet_list' => 'Daftar Wallet',
 
     // Actions
-    'deposit' => 'Deposit',
     'withdrawal' => 'Penarikan',
     'transfer' => 'Transfer',
     'logout' => 'Keluar',
@@ -218,10 +217,6 @@ return [
     'exchange' => 'Exchange',
     'trade' => 'Trading',
     'locked' => 'terkunci',
-
-    // Currency
-    'currency' => 'Mata Uang',
-    'usdt_tether' => 'USDT (Tether)',
 
     // Wallet Management
     'add_wallet' => 'Tambah Wallet',
@@ -233,8 +228,6 @@ return [
     'network_type' => 'Jenis Jaringan',
     'trc20' => 'TRC20',
     'bep20' => 'BEP20',
-    'tron_network' => 'Jaringan TRON',
-    'binance_smart_chain' => 'Binance Smart Chain',
 
     // Wallet Form
     'wallet_address' => 'Alamat Wallet',
@@ -242,9 +235,13 @@ return [
     'ensure_address_match' => 'Pastikan address sesuai dengan network yang dipilih',
     'save' => 'Simpan',
     'update' => 'Update',
-    'cancel' => 'Batal',
     // ===== TEAM / REFERRAL PAGE =====
+    // Page Header
+    'invite_friends' => 'Undang Teman',
+    'earn_commission' => 'Dapatkan komisi referral',
+
     // QR & Invitation Section
+    'my_qr_code' => 'QR Code Saya',
     'my_invitation_code' => 'Kode undangan saya',
     'my_invitation_link' => 'Link kode undangan saya',
     'save_qr' => 'Simpan QR',
@@ -273,6 +270,8 @@ return [
     // ===== VERIFICATION PAGE =====
     // Page Title & Header
     'account_verification' => 'Verifikasi Akun',
+    'personal_information' => 'Informasi Pribadi',
+    'upload_documents' => 'Upload Dokumen',
     'complete_verification_data' => 'Lengkapi data untuk verifikasi identitas Anda',
 
     // Personal Data Section
@@ -320,8 +319,6 @@ return [
     // ===== WITHDRAWAL PAGE =====
     // Header & Navigation
     'withdraw' => 'Penarikan',
-    'back' => 'Kembali',
-    'history' => 'Riwayat',
 
     // Currency Section
     'currency' => 'Mata Uang',
@@ -346,7 +343,6 @@ return [
     'select_wallet_placeholder' => '-- Pilih Akun Wallet --',
     'no_wallet_available' => 'Tidak ada akun wallet tersedia',
     // 'need_add_wallet' => 'Anda perlu menambahkan akun wallet terlebih dahulu.',
-    'add_wallet' => 'Tambah Wallet',
 
     // Withdrawal Summary
     'withdrawal_summary' => 'Ringkasan Penarikan',
@@ -374,41 +370,111 @@ return [
     // Page Header
     'withdrawal_history' => 'Riwayat Penarikan',
 
-    // Summary Section
-    'pending' => 'Menunggu',
-    'completed' => 'Selesai',
-
     // Filter Tabs
-    'all' => 'Semua',
-    'approved' => 'Disetujui',
-    'rejected' => 'Ditolak',
     'cancelled' => 'Dibatalkan',
 
     // Transaction Item
-    'withdrawal' => 'Penarikan',
     'wallet_account' => 'Akun Wallet',
     'account_number' => 'Nomor Akun',
     'withdrawal_amount' => 'Jumlah Penarikan',
     'fee_5_percent' => 'Biaya (5%)',
     'you_receive' => 'Anda Terima',
-    'date' => 'Tanggal',
     'completed_at' => 'Selesai Pada',
-    'na' => 'T/A',
 
     // Actions
     'cancel_withdrawal' => 'Batalkan Penarikan',
 
-    // Empty Statem
+    // Empty State
     'no_withdrawal_history' => 'Tidak ada riwayat penarikan',
-    
+
     // Profile Dropdown
-    'profile' => 'Profil',
     'verification' => 'Verifikasi',
     'verified' => 'Sudah Terverifikasi',
+    'unverified' => 'Belum Terverifikasi',
     'must_verify' => 'Harus Verifikasi',
-    'logout' => 'Keluar',
     'phone_copied' => 'Nomor telepon tersalin!',
 
     // Confirmation Messages
     'confirm_cancel_withdrawal' => 'Yakin ingin membatalkan penarikan ini?',
+
+    // ===== DASHBOARD PAGE =====
+    'welcome_back' => 'Selamat datang,',
+    'total_balance' => 'Total Saldo',
+    'invite' => 'Undang',
+    'announcement' => 'Pengumuman',
+    'see_all' => 'Lihat Semua',
+    'market' => 'Pasar',
+    'banner_trade_title' => 'Ikuti Trader Expert',
+    'banner_trade_text' => 'Dapatkan penghasilan pasif secara otomatis dengan strategi yang telah terbukti.',
+    'banner_invite_title' => 'Undang & Dapatkan',
+    'banner_invite_text' => 'Bagikan kode referral kamu dan dapatkan komisi dari setiap transaksi.',
+    'banner_signal_text' => 'Ikuti sinyal expert secara langsung dan maksimalkan hasil trading kamu.',
+
+    // ===== ACCESS PAGE =====
+    'account_management' => 'Manajemen Akun',
+    'transactions' => 'Transaksi',
+    'manage_wallet_address' => 'Kelola alamat wallet penarikan',
+    'account_already_verified' => 'Akun sudah terverifikasi',
+    'verify_your_identity' => 'Verifikasi identitas kamu',
+    'referral' => 'Referral',
+    'invite_and_earn' => 'Undang teman & dapatkan komisi',
+    'top_up_usdt_balance' => 'Top up saldo USDT',
+    'withdraw_to_wallet' => 'Tarik saldo ke wallet kamu',
+    'view_deposit_history' => 'Lihat histori deposit kamu',
+    'view_withdrawal_history' => 'Lihat histori penarikan kamu',
+    'sign_out_from_account' => 'Keluar dari akun',
+
+    // ===== WALLET PAGE =====
+    'wallet_management' => 'Manajemen Wallet',
+    'wallet_information' => 'Informasi',
+    'wallet_max_3' => 'Maksimal 3 wallet per akun',
+    'wallet_network_supported' => 'Hanya mendukung jaringan TRC20 & BEP20',
+    'wallet_address_warning' => 'Pastikan alamat wallet sudah benar sebelum melakukan penarikan',
+
+    // ===== FUTURES PAGE =====
+    'live' => 'LIVE',
+    'pick_instrument' => 'Pilih Instrumen',
+    'cryptocurrency' => 'Cryptocurrency',
+    'forex' => 'Forex',
+    'precious_metals' => 'Logam Mulia',
+    'active_trade' => 'Trade Aktif',
+    'seconds_remaining' => 'detik tersisa',
+    'entry' => 'Entry',
+    'current' => 'Saat ini',
+    'potential' => 'Potensi',
+    'open_trade' => 'Buka Trade',
+    'trade_amount_usdt' => 'Jumlah (USDT)',
+    'payout' => 'Payout',
+    'total_return' => 'Total Kembali',
+    'up' => 'Naik',
+    'down' => 'Turun',
+    'expert_signals' => 'Sinyal Expert',
+    'legacy_mode' => 'Lama',
+    'trade_history' => 'Riwayat Trade',
+    'no_trades_yet' => 'Belum ada trade',
+    'new_balance' => 'Balance baru:',
+    'continue_trading' => 'Lanjut Trading',
+    'enter_min_amount' => 'Masukkan jumlah minimal $1',
+    'error_try_again' => 'Terjadi kesalahan. Coba lagi.',
+    'win' => 'MENANG!',
+    'lose' => 'KALAH',
+
+    // ===== MARKET PAGE =====
+    'hot' => 'Hot',
+    'crypto' => 'Crypto',
+    'metals' => 'Metals',
+    'name_col' => 'Nama',
+    'last_price' => 'Harga Terakhir',
+    'change_24h' => '24j %',
+
+    // ===== BOTTOMBAR =====
+    'nav_home' => 'Beranda',
+    'nav_futures' => 'Futures',
+    'nav_access' => 'Akses',
+    'nav_wallet' => 'Dompet',
+
+    // ===== WALLET / WITHDRAW =====
+    'no_wallet_prefix' => 'Tidak ada wallet ',
+    'no_wallet_suffix' => '',
+    'minimum_withdrawal_50' => 'Minimum penarikan adalah 50 USDT',
 ];

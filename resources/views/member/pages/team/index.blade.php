@@ -9,8 +9,8 @@
                     <i class="bi bi-arrow-left"></i>
                 </a>
                 <div class="pg-header-text">
-                    <h5 class="pg-title">{{ __('app.invite_friends') ?? 'Invite Friends' }}</h5>
-                    <p class="pg-subtitle">{{ __('app.earn_commission') ?? 'Earn referral commissions' }}</p>
+                    <h5 class="pg-title">{{ __('app.invite_friends') }}</h5>
+                    <p class="pg-subtitle">{{ __('app.earn_commission') }}</p>
                 </div>
             </div>
 
@@ -35,7 +35,7 @@
 
             <!-- QR Code -->
             <div class="w-card" style="text-align: center;">
-                <div class="w-card-head" style="justify-content: center;"><i class="bi bi-qr-code"></i>{{ __('app.my_qr_code') ?? 'My QR Code' }}</div>
+                <div class="w-card-head" style="justify-content: center;"><i class="bi bi-qr-code"></i>{{ __('app.my_qr_code') }}</div>
                 <div class="form-block" style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
                     <div class="qr-code-wrapper">
                         <div id="qrcode"></div>

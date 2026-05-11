@@ -11,18 +11,18 @@
         </div>
         @if($user->is_verified)
         <span class="ac-verified-badge">
-            <i class="bi bi-patch-check-fill"></i> Verified
+            <i class="bi bi-patch-check-fill"></i> {{ __('app.verified') }}
         </span>
         @else
         <a href="{{ route('member.verification.index') }}" class="ac-unverified-badge">
-            <i class="bi bi-shield-exclamation"></i> Unverified
+            <i class="bi bi-shield-exclamation"></i> {{ __('app.unverified') }}
         </a>
         @endif
     </div>
 
     {{-- ═══ FEATURE MENU ═══ --}}
     <div class="ac-section">
-        <div class="ac-section-title">Account Management</div>
+        <div class="ac-section-title">{{ __('app.account_management') }}</div>
 
         <div class="ac-list">
             <a href="{{ route('member.wallet.index') }}" class="ac-item">
@@ -30,8 +30,8 @@
                     <i class="bi bi-wallet2" style="color:#3b82f6;"></i>
                 </div>
                 <div class="ac-item-body">
-                    <div class="ac-item-label">Daftar Wallet</div>
-                    <div class="ac-item-sub">Kelola alamat wallet penarikan</div>
+                    <div class="ac-item-label">{{ __('app.wallet_list') }}</div>
+                    <div class="ac-item-sub">{{ __('app.manage_wallet_address') }}</div>
                 </div>
                 <i class="bi bi-chevron-right ac-chevron"></i>
             </a>
@@ -41,12 +41,12 @@
                     <i class="bi bi-shield-check" style="color:#22c55e;"></i>
                 </div>
                 <div class="ac-item-body">
-                    <div class="ac-item-label">Verifikasi Akun</div>
+                    <div class="ac-item-label">{{ __('app.account_verification') }}</div>
                     <div class="ac-item-sub">
                         @if($user->is_verified)
-                            <span style="color:#22c55e;">Akun sudah terverifikasi</span>
+                            <span style="color:#22c55e;">{{ __('app.account_already_verified') }}</span>
                         @else
-                            Verifikasi identitas kamu
+                            {{ __('app.verify_your_identity') }}
                         @endif
                     </div>
                 </div>
@@ -58,8 +58,8 @@
                     <i class="bi bi-people-fill" style="color:#a78bfa;"></i>
                 </div>
                 <div class="ac-item-body">
-                    <div class="ac-item-label">Referral</div>
-                    <div class="ac-item-sub">Undang teman & dapatkan komisi</div>
+                    <div class="ac-item-label">{{ __('app.referral') }}</div>
+                    <div class="ac-item-sub">{{ __('app.invite_and_earn') }}</div>
                 </div>
                 <i class="bi bi-chevron-right ac-chevron"></i>
             </a>
@@ -68,7 +68,7 @@
 
     {{-- ═══ OTHER MENU ═══ --}}
     <div class="ac-section">
-        <div class="ac-section-title">Transaksi</div>
+        <div class="ac-section-title">{{ __('app.transactions') }}</div>
 
         <div class="ac-list">
             <a href="{{ route('member.deposit.index') }}" class="ac-item">
@@ -76,8 +76,8 @@
                     <i class="bi bi-arrow-down-circle-fill" style="color:var(--gold-color);"></i>
                 </div>
                 <div class="ac-item-body">
-                    <div class="ac-item-label">Deposit</div>
-                    <div class="ac-item-sub">Top up saldo USDT</div>
+                    <div class="ac-item-label">{{ __('app.deposit') }}</div>
+                    <div class="ac-item-sub">{{ __('app.top_up_usdt_balance') }}</div>
                 </div>
                 <i class="bi bi-chevron-right ac-chevron"></i>
             </a>
@@ -87,8 +87,8 @@
                     <i class="bi bi-arrow-up-circle-fill" style="color:var(--gold-color);"></i>
                 </div>
                 <div class="ac-item-body">
-                    <div class="ac-item-label">Penarikan</div>
-                    <div class="ac-item-sub">Tarik saldo ke wallet kamu</div>
+                    <div class="ac-item-label">{{ __('app.withdrawal') }}</div>
+                    <div class="ac-item-sub">{{ __('app.withdraw_to_wallet') }}</div>
                 </div>
                 <i class="bi bi-chevron-right ac-chevron"></i>
             </a>
@@ -98,8 +98,8 @@
                     <i class="bi bi-clock-history" style="color:var(--gold-color);"></i>
                 </div>
                 <div class="ac-item-body">
-                    <div class="ac-item-label">Riwayat Deposit</div>
-                    <div class="ac-item-sub">Lihat histori deposit kamu</div>
+                    <div class="ac-item-label">{{ __('app.deposit_history') }}</div>
+                    <div class="ac-item-sub">{{ __('app.view_deposit_history') }}</div>
                 </div>
                 <i class="bi bi-chevron-right ac-chevron"></i>
             </a>
@@ -109,8 +109,8 @@
                     <i class="bi bi-arrow-up-circle" style="color:var(--gold-color);"></i>
                 </div>
                 <div class="ac-item-body">
-                    <div class="ac-item-label">Riwayat Penarikan</div>
-                    <div class="ac-item-sub">Lihat histori penarikan kamu</div>
+                    <div class="ac-item-label">{{ __('app.withdrawal_history') }}</div>
+                    <div class="ac-item-sub">{{ __('app.view_withdrawal_history') }}</div>
                 </div>
                 <i class="bi bi-chevron-right ac-chevron"></i>
             </a>
@@ -125,8 +125,8 @@
                     <i class="bi bi-box-arrow-right" style="color:#ef4444;"></i>
                 </div>
                 <div class="ac-item-body">
-                    <div class="ac-item-label" style="color:#ef4444;">Logout</div>
-                    <div class="ac-item-sub">Keluar dari akun</div>
+                    <div class="ac-item-label" style="color:#ef4444;">{{ __('app.logout') }}</div>
+                    <div class="ac-item-sub">{{ __('app.sign_out_from_account') }}</div>
                 </div>
                 <i class="bi bi-chevron-right ac-chevron" style="color:#ef4444;"></i>
             </a>

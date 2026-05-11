@@ -34,7 +34,7 @@
                     @csrf
 
                     <div class="w-card">
-                        <div class="w-card-head"><i class="bi bi-person-badge"></i>{{ __('app.personal_information') ?? 'Personal Information' }}</div>
+                        <div class="w-card-head"><i class="bi bi-person-badge"></i>{{ __('app.personal_information') }}</div>
                         <div class="form-block">
                             <p class="form-block-title">{{ __('app.full_name') }}</p>
                             <input type="text" name="full_name"
@@ -56,7 +56,7 @@
                     </div>
 
                     <div class="w-card">
-                        <div class="w-card-head"><i class="bi bi-images"></i>{{ __('app.upload_documents') ?? 'Upload Documents' }}</div>
+                        <div class="w-card-head"><i class="bi bi-images"></i>{{ __('app.upload_documents') }}</div>
                         <div class="form-block">
                             <p class="form-block-title">{{ __('app.upload_identity_photo') }}</p>
                             <div class="upload-area-simple" onclick="document.getElementById('identity_photo').click()">
