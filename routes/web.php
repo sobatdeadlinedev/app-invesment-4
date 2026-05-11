@@ -21,6 +21,7 @@ use App\Http\Controllers\Member\SignalController as MemberSignalController;
 use App\Http\Controllers\Member\FuturesController as MemberFuturesController;
 
 // Member Controllers
+use App\Http\Controllers\Member\AccessController as MemberAccessController;
 use App\Http\Controllers\Member\WalletController as MemberWalletController;
 use App\Http\Controllers\Admin\ReferralController as AdminReferralController;
 use App\Http\Controllers\Member\DepositController as MemberDepositController;
@@ -190,6 +191,10 @@ Route::prefix('member')->name('member.')->middleware(['auth', 'role:member'])->g
     // Signal actions
     Route::post('/signals/{id}/join', [MemberSignalController::class, 'join'])->name('signals.join');
 
+    Route::prefix('access')->name('access.')->group(function () {
+        Route::get('/', [MemberAccessController::class, 'index'])->name('index');
+    });
+
     Route::prefix('team')->name('team.')->group(function () {
         Route::get('/', [MemberTeamController::class, 'index'])->name('index');
     });
@@ -218,11 +223,12 @@ Route::prefix('member')->name('member.')->middleware(['auth', 'role:member'])->g
     });
 
     // Wallet Routes
-       Route::prefix('wallet')->name('wallet.')->group(function () {
-    Route::post('/', [MemberWalletController::class, 'store'])->name('store');
-    Route::put('/{id}', [MemberWalletController::class, 'update'])->name('update');
-    Route::delete('/{id}', [MemberWalletController::class, 'destroy'])->name('destroy');
-});
+    Route::prefix('wallet')->name('wallet.')->group(function () {
+        Route::get('/', [MemberWalletController::class, 'index'])->name('index');
+        Route::post('/', [MemberWalletController::class, 'store'])->name('store');
+        Route::put('/{id}', [MemberWalletController::class, 'update'])->name('update');
+        Route::delete('/{id}', [MemberWalletController::class, 'destroy'])->name('destroy');
+    });
 
     // Balance Transfer
     Route::prefix('balance')->name('balance.')->group(function () {

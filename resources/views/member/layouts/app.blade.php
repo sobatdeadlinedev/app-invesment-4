@@ -1799,6 +1799,28 @@
         }
         .pg-empty i { font-size: 52px; color: var(--border-color); display: block; margin-bottom: 12px; }
         .pg-empty p { color: var(--text-muted); font-size: 14px; margin: 0; }
+
+        /* ── Wallet-style card sections (used across form pages) ── */
+        .w-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            margin: 12px 16px;
+            overflow: hidden;
+        }
+        .w-card-head {
+            padding: 14px 16px 12px;
+            font-size: 13px; font-weight: 700; color: #fff;
+            border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .w-card-head i { color: var(--gold-color); font-size: 14px; }
+        .w-card > .form-block {
+            border-bottom: 1px solid var(--border-color);
+            margin: 0;
+        }
+        .w-card > .form-block:last-child { border-bottom: none; }
+        .w-page-footer { padding: 16px; }
     </style>
     @stack('styles')
 </head>

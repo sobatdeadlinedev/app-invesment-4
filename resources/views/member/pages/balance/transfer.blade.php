@@ -59,69 +59,66 @@
             <form id="transferForm" action="" method="POST">
                 @csrf
 
-                <!-- From -->
-                <div class="form-block">
-                    <label class="form-block-title">{{ __('app.from') }}</label>
-                    <div class="select-wrapper">
-                        <select class="form-select-dark" id="fromAccount" name="from_account">
-                            <option value="exchange">{{ __('app.exchange_balance') }}</option>
-                            <option value="trade">{{ __('app.trade_balance') }}</option>
-                        </select>
-                        <i class="bi bi-chevron-down select-arrow"></i>
-                    </div>
-                </div>
-
-                <!-- To -->
-                <div class="form-block">
-                    <label class="form-block-title">{{ __('app.transfer_to') }}</label>
-                    <div class="select-wrapper">
-                        <select class="form-select-dark" id="toAccount" name="to_account" disabled>
-                            <option value="trade">{{ __('app.trade_balance') }}</option>
-                        </select>
-                        <i class="bi bi-chevron-down select-arrow"></i>
-                    </div>
-                </div>
-
-                <!-- Currency -->
-                <div class="form-block">
-                    <p class="form-block-title">{{ __('app.select_currency') }}</p>
-                    <div class="currency-option selected">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="currency-icon-box">
-                                <span>₮</span>
-                            </div>
-                            <span class="text-white fw-bold">USDT</span>
+                <div class="w-card">
+                    <div class="w-card-head"><i class="bi bi-arrow-left-right"></i>{{ __('app.from') }} → {{ __('app.transfer_to') }}</div>
+                    <div class="form-block">
+                        <label class="form-block-title">{{ __('app.from') }}</label>
+                        <div class="select-wrapper">
+                            <select class="form-select-dark" id="fromAccount" name="from_account">
+                                <option value="exchange">{{ __('app.exchange_balance') }}</option>
+                                <option value="trade">{{ __('app.trade_balance') }}</option>
+                            </select>
+                            <i class="bi bi-chevron-down select-arrow"></i>
                         </div>
-                        <i class="bi bi-check-circle-fill text-gold"></i>
+                    </div>
+                    <div class="form-block">
+                        <label class="form-block-title">{{ __('app.transfer_to') }}</label>
+                        <div class="select-wrapper">
+                            <select class="form-select-dark" id="toAccount" name="to_account" disabled>
+                                <option value="trade">{{ __('app.trade_balance') }}</option>
+                            </select>
+                            <i class="bi bi-chevron-down select-arrow"></i>
+                        </div>
+                    </div>
+                    <div class="form-block">
+                        <p class="form-block-title">{{ __('app.select_currency') }}</p>
+                        <div class="currency-option selected">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="currency-icon-box"><span>₮</span></div>
+                                <span class="text-white fw-bold">USDT</span>
+                            </div>
+                            <i class="bi bi-check-circle-fill text-gold"></i>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Amount -->
-                <div class="form-block">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <p class="form-block-title mb-0">{{ __('app.amount_of_transfers') }}</p>
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="text-muted" style="font-size: 11px;">
-                                {{ __('app.available') }}: <span class="text-gold fw-bold" id="availableAmount">0</span>
+                <div class="w-card">
+                    <div class="w-card-head"><i class="bi bi-currency-dollar"></i>{{ __('app.amount_of_transfers') }}</div>
+                    <div class="form-block">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-muted" style="font-size: 12px;">
+                                {{ __('app.available') }}: <span class="text-gold fw-bold" id="availableAmount">0</span> USDT
                             </span>
                             <button type="button" class="btn-all" id="btnAll">{{ __('app.all') }}</button>
                         </div>
+                        <div class="input-with-icon">
+                            <span class="input-icon">₮</span>
+                            <input type="number" class="form-control-dark with-icon" id="transferAmount" name="amount"
+                                placeholder="{{ __('app.enter_amount') }}" min="10" step="0.01" required>
+                        </div>
+                        <small class="text-muted d-block mt-2">{{ __('app.minimum_transfer') }}: 10.00 USDT</small>
                     </div>
-                    <div class="input-with-icon">
-                        <span class="input-icon">₮</span>
-                        <input type="number" class="form-control-dark with-icon" id="transferAmount" name="amount"
-                            placeholder="{{ __('app.enter_amount') }}" min="10" step="0.01" required>
-                    </div>
-                    <small class="text-muted d-block mt-2">{{ __('app.minimum_transfer') }}: 10.00 USDT</small>
                 </div>
 
                 <!-- Penalty Warning -->
                 <div id="penaltyWarning" style="display: none;">
-                    <div class="form-block" style="background: rgba(220,53,69,0.06);">
-                        <div class="d-flex align-items-start gap-2">
-                            <i class="bi bi-exclamation-triangle-fill" style="color: #ff6b6b; font-size: 16px; margin-top: 2px; flex-shrink: 0;"></i>
-                            <div style="color: #ff6b6b; font-size: 12px;">
-                                <strong>{{ __('app.warning') }}:</strong> {{ __('app.penalty_warning') }}
+                    <div class="w-card" style="border-color: rgba(220,53,69,0.3);">
+                        <div class="form-block" style="background: rgba(220,53,69,0.06);">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="bi bi-exclamation-triangle-fill" style="color: #ff6b6b; font-size: 16px; margin-top: 2px; flex-shrink: 0;"></i>
+                                <div style="color: #ff6b6b; font-size: 12px;">
+                                    <strong>{{ __('app.warning') }}:</strong> {{ __('app.penalty_warning') }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -129,16 +126,17 @@
 
                 <!-- Volume Info -->
                 <div id="volumeInfo" style="display: none;">
-                    <div class="form-block" style="background: rgba(0,229,255,0.04);">
-                        <div class="d-flex align-items-start gap-2">
-                            <i class="bi bi-info-circle-fill text-gold" style="font-size: 16px; margin-top: 2px; flex-shrink: 0;"></i>
-                            <small class="text-muted">{{ __('app.volume_info') }}</small>
+                    <div class="w-card">
+                        <div class="form-block">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="bi bi-info-circle-fill text-gold" style="font-size: 16px; margin-top: 2px; flex-shrink: 0;"></i>
+                                <small class="text-muted">{{ __('app.volume_info') }}</small>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Submit -->
-                <div class="form-block">
+                <div class="w-page-footer">
                     <button type="submit" class="btn-cta">
                         <i class="bi bi-check-circle me-2"></i>{{ __('app.confirm') }}
                     </button>

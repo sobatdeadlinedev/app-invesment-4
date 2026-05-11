@@ -33,62 +33,61 @@
                     id="verificationForm">
                     @csrf
 
-                    <!-- Full Name -->
-                    <div class="form-block">
-                        <p class="form-block-title">{{ __('app.full_name') }}</p>
-                        <input type="text" name="full_name"
-                            class="form-control-dark @error('full_name') is-invalid @enderror"
-                            placeholder="{{ __('app.enter_full_name') }}" value="{{ old('full_name') }}" required>
-                        @error('full_name')
-                            <small class="text-danger d-block mt-1">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- Identity Number -->
-                    <div class="form-block">
-                        <p class="form-block-title">{{ __('app.identity_number') }}</p>
-                        <input type="text" name="identity_number"
-                            class="form-control-dark @error('identity_number') is-invalid @enderror"
-                            placeholder="{{ __('app.enter_identity_number') }}" value="{{ old('identity_number') }}" required>
-                        @error('identity_number')
-                            <small class="text-danger d-block mt-1">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- Identity Photo -->
-                    <div class="form-block">
-                        <p class="form-block-title">{{ __('app.upload_identity_photo') }}</p>
-                        <div class="upload-area-simple" onclick="document.getElementById('identity_photo').click()">
-                            <input type="file" id="identity_photo" name="identity_photo" accept="image/*" class="d-none"
-                                onchange="previewImage(this, 'identityPreview')" required>
-                            <div id="identityPreview" class="preview-container-simple">
-                                <i class="bi bi-card-image" style="font-size: 24px; color: var(--text-muted);"></i>
-                                <span class="text-muted ms-2">{{ __('app.upload_identity_photo') }}</span>
-                            </div>
+                    <div class="w-card">
+                        <div class="w-card-head"><i class="bi bi-person-badge"></i>{{ __('app.personal_information') ?? 'Personal Information' }}</div>
+                        <div class="form-block">
+                            <p class="form-block-title">{{ __('app.full_name') }}</p>
+                            <input type="text" name="full_name"
+                                class="form-control-dark @error('full_name') is-invalid @enderror"
+                                placeholder="{{ __('app.enter_full_name') }}" value="{{ old('full_name') }}" required>
+                            @error('full_name')
+                                <small class="text-danger d-block mt-1">{{ $message }}</small>
+                            @enderror
                         </div>
-                        @error('identity_photo')
-                            <small class="text-danger d-block mt-2">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- Selfie Photo -->
-                    <div class="form-block">
-                        <p class="form-block-title">{{ __('app.upload_selfie_photo') }}</p>
-                        <div class="upload-area-simple" onclick="document.getElementById('selfie_photo').click()">
-                            <input type="file" id="selfie_photo" name="selfie_photo" accept="image/*" class="d-none"
-                                onchange="previewImage(this, 'selfiePreview')" required>
-                            <div id="selfiePreview" class="preview-container-simple">
-                                <i class="bi bi-camera-fill" style="font-size: 24px; color: var(--text-muted);"></i>
-                                <span class="text-muted ms-2">{{ __('app.upload_selfie_photo') }}</span>
-                            </div>
+                        <div class="form-block">
+                            <p class="form-block-title">{{ __('app.identity_number') }}</p>
+                            <input type="text" name="identity_number"
+                                class="form-control-dark @error('identity_number') is-invalid @enderror"
+                                placeholder="{{ __('app.enter_identity_number') }}" value="{{ old('identity_number') }}" required>
+                            @error('identity_number')
+                                <small class="text-danger d-block mt-1">{{ $message }}</small>
+                            @enderror
                         </div>
-                        @error('selfie_photo')
-                            <small class="text-danger d-block mt-2">{{ $message }}</small>
-                        @enderror
                     </div>
 
-                    <!-- Submit -->
-                    <div class="form-block">
+                    <div class="w-card">
+                        <div class="w-card-head"><i class="bi bi-images"></i>{{ __('app.upload_documents') ?? 'Upload Documents' }}</div>
+                        <div class="form-block">
+                            <p class="form-block-title">{{ __('app.upload_identity_photo') }}</p>
+                            <div class="upload-area-simple" onclick="document.getElementById('identity_photo').click()">
+                                <input type="file" id="identity_photo" name="identity_photo" accept="image/*" class="d-none"
+                                    onchange="previewImage(this, 'identityPreview')" required>
+                                <div id="identityPreview" class="preview-container-simple">
+                                    <i class="bi bi-card-image" style="font-size: 24px; color: var(--text-muted);"></i>
+                                    <span class="text-muted ms-2">{{ __('app.upload_identity_photo') }}</span>
+                                </div>
+                            </div>
+                            @error('identity_photo')
+                                <small class="text-danger d-block mt-2">{{ $message }}</small>
+                            @enderror
+                        </div>
+                        <div class="form-block">
+                            <p class="form-block-title">{{ __('app.upload_selfie_photo') }}</p>
+                            <div class="upload-area-simple" onclick="document.getElementById('selfie_photo').click()">
+                                <input type="file" id="selfie_photo" name="selfie_photo" accept="image/*" class="d-none"
+                                    onchange="previewImage(this, 'selfiePreview')" required>
+                                <div id="selfiePreview" class="preview-container-simple">
+                                    <i class="bi bi-camera-fill" style="font-size: 24px; color: var(--text-muted);"></i>
+                                    <span class="text-muted ms-2">{{ __('app.upload_selfie_photo') }}</span>
+                                </div>
+                            </div>
+                            @error('selfie_photo')
+                                <small class="text-danger d-block mt-2">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="w-page-footer">
                         <button type="submit" class="btn-cta">
                             {{ __('app.submit_verification') }}
                         </button>
@@ -97,54 +96,63 @@
 
             @elseif($verification->submitted_at && !$user->is_verified)
                 <!-- Status: Pending -->
-                <div class="form-block" style="text-align: center; padding-top: 40px; padding-bottom: 40px;">
-                    <div class="status-icon-circle pending mx-auto mb-3">
-                        <i class="bi bi-clock-history"></i>
+                <div class="w-card" style="text-align: center;">
+                    <div class="form-block" style="padding-top: 36px; padding-bottom: 36px;">
+                        <div class="status-icon-circle pending mx-auto mb-3">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <h5 class="text-white fw-bold mb-2">{{ __('app.verification_pending') }}</h5>
+                        <p class="text-muted mb-3" style="font-size: 14px;">{{ __('app.verification_pending_message') }}</p>
+                        <small class="text-muted">{{ __('app.submitted_on') }}:
+                            {{ $verification->submitted_at->format('d M Y, H:i') }}</small>
                     </div>
-                    <h5 class="text-white fw-bold mb-2">{{ __('app.verification_pending') }}</h5>
-                    <p class="text-muted mb-3" style="font-size: 14px;">{{ __('app.verification_pending_message') }}</p>
-                    <small class="text-muted">{{ __('app.submitted_on') }}:
-                        {{ $verification->submitted_at->format('d M Y, H:i') }}</small>
                 </div>
 
-                <div class="form-block">
-                    <p class="form-block-title">{{ __('app.submitted_data') }}</p>
-                    <div class="verif-data-row">
-                        <span class="text-muted small">{{ __('app.full_name') }}</span>
-                        <span class="text-white fw-bold small">{{ $verification->full_name }}</span>
-                    </div>
-                    <div class="verif-data-row" style="border-bottom: none;">
-                        <span class="text-muted small">{{ __('app.identity_number') }}</span>
-                        <span class="text-white fw-bold small">{{ $verification->identity_number }}</span>
+                <div class="w-card">
+                    <div class="w-card-head"><i class="bi bi-person-lines-fill"></i>{{ __('app.submitted_data') }}</div>
+                    <div class="form-block">
+                        <div class="verif-data-row">
+                            <span class="text-muted small">{{ __('app.full_name') }}</span>
+                            <span class="text-white fw-bold small">{{ $verification->full_name }}</span>
+                        </div>
+                        <div class="verif-data-row" style="border-bottom: none;">
+                            <span class="text-muted small">{{ __('app.identity_number') }}</span>
+                            <span class="text-white fw-bold small">{{ $verification->identity_number }}</span>
+                        </div>
                     </div>
                 </div>
 
             @elseif($user->is_verified)
                 <!-- Status: Verified -->
-                <div class="form-block" style="text-align: center; padding-top: 40px; padding-bottom: 40px;">
-                    <div class="status-icon-circle verified mx-auto mb-3">
-                        <i class="bi bi-check-circle-fill"></i>
+                <div class="w-card" style="text-align: center;">
+                    <div class="form-block" style="padding-top: 36px; padding-bottom: 36px;">
+                        <div class="status-icon-circle verified mx-auto mb-3">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                        <h5 class="text-white fw-bold mb-2">{{ __('app.account_verified') }}</h5>
+                        <p class="text-muted mb-3" style="font-size: 14px;">{{ __('app.account_verified_message') }}</p>
+                        @if ($verification->verified_at)
+                            <small class="text-muted">{{ __('app.verified_on') }}:
+                                {{ $verification->verified_at->format('d M Y, H:i') }}</small>
+                        @endif
                     </div>
-                    <h5 class="text-white fw-bold mb-2">{{ __('app.account_verified') }}</h5>
-                    <p class="text-muted mb-3" style="font-size: 14px;">{{ __('app.account_verified_message') }}</p>
-                    @if ($verification->verified_at)
-                        <small class="text-muted">{{ __('app.verified_on') }}:
-                            {{ $verification->verified_at->format('d M Y, H:i') }}</small>
-                    @endif
                 </div>
 
-                <div class="form-block">
-                    <p class="form-block-title">{{ __('app.verified_data') }}</p>
-                    <div class="verif-data-row">
-                        <span class="text-muted small">{{ __('app.full_name') }}</span>
-                        <span class="text-white fw-bold small">{{ $verification->full_name }}</span>
-                    </div>
-                    <div class="verif-data-row" style="border-bottom: none;">
-                        <span class="text-muted small">{{ __('app.identity_number') }}</span>
-                        <span class="text-white fw-bold small">{{ $verification->identity_number }}</span>
+                <div class="w-card">
+                    <div class="w-card-head"><i class="bi bi-shield-check"></i>{{ __('app.verified_data') }}</div>
+                    <div class="form-block">
+                        <div class="verif-data-row">
+                            <span class="text-muted small">{{ __('app.full_name') }}</span>
+                            <span class="text-white fw-bold small">{{ $verification->full_name }}</span>
+                        </div>
+                        <div class="verif-data-row" style="border-bottom: none;">
+                            <span class="text-muted small">{{ __('app.identity_number') }}</span>
+                            <span class="text-white fw-bold small">{{ $verification->identity_number }}</span>
+                        </div>
                     </div>
                 </div>
             @endif
+            <div style="height: 16px;"></div>
 
         </div>
     </div>

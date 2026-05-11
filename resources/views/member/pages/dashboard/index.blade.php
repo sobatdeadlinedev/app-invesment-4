@@ -259,16 +259,16 @@
         transition: all 0.2s ease;
     }
     .action-item:hover { color: var(--gold-color); }
-    .action-item:hover .action-icon { background: rgba(0,229,255,0.12); border-color: rgba(0,229,255,0.3); }
+    .action-item:hover .action-icon { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,0.45); }
     .action-icon {
         width: 52px; height: 52px;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 14px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        border-radius: 50%;
+        box-shadow: 0 4px 14px rgba(37,99,235,0.35);
         display: flex; align-items: center; justify-content: center;
         transition: all 0.2s ease;
     }
-    .action-icon i { font-size: 22px; color: var(--gold-color); }
+    .action-icon i { font-size: 22px; color: #fff; }
 
     /* ── BANNERS ── */
     .dash-banners { padding-top: 20px; }

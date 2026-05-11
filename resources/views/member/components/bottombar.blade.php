@@ -17,8 +17,8 @@
         </div>
         <span>Futures</span>
     </a>
-    <a href="{{ route('member.team.index') }}"
-        class="nav-item {{ request()->routeIs('member.team.*') ? 'active' : '' }}">
+    <a href="{{ route('member.access.index') }}"
+        class="nav-item {{ request()->routeIs('member.access.*') || request()->routeIs('member.wallet.*') || request()->routeIs('member.verification.*') || request()->routeIs('member.team.*') ? 'active' : '' }}">
         <i class="bi bi-shield-lock-fill"></i>
         <span>Access</span>
     </a>

@@ -3,51 +3,23 @@
     <div class="scrollable-content">
         <div class="content-section" style="padding: 0;">
 
+            <!-- Header -->
+            <div class="pg-header">
+                <a href="{{ route('member.profile.index') }}" class="pg-back">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <div class="pg-header-text">
+                    <h5 class="pg-title">{{ __('app.invite_friends') ?? 'Invite Friends' }}</h5>
+                    <p class="pg-subtitle">{{ __('app.earn_commission') ?? 'Earn referral commissions' }}</p>
+                </div>
+            </div>
+
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show mx-3 mt-3" role="alert">
                     <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             @endif
-
-            <!-- QR Code -->
-            <div class="form-block" style="text-align: center; padding-top: 32px; padding-bottom: 24px;">
-                <div class="qr-code-wrapper">
-                    <div id="qrcode"></div>
-                </div>
-                <div class="mt-3">
-                    @if ($user->level)
-                        <span class="badge-level">Level {{ $user->level }}</span>
-                    @else
-                        <span class="badge-level-empty">—</span>
-                    @endif
-                </div>
-            </div>
-
-            <!-- Invitation Code & Link -->
-            <div class="form-block">
-                <p class="form-block-title">{{ __('app.my_invitation_code') }}</p>
-                <div class="invite-value-row mb-3">
-                    <span class="invite-value" id="invitationCode">{{ $user->refferal_code }}</span>
-                    <button class="btn-copy-icon" onclick="copyInvitationCode()" title="{{ __('app.copy_code') }}">
-                        <i class="bi bi-clipboard" id="copyCodeIcon"></i>
-                    </button>
-                </div>
-                <p class="form-block-title">{{ __('app.my_invitation_link') }}</p>
-                <div class="invite-value-row">
-                    <span class="invite-value link" id="invitationLink">{{ $referralLink }}</span>
-                    <button class="btn-copy-icon" onclick="copyInvitationLink()" title="{{ __('app.copy_link') }}">
-                        <i class="bi bi-link-45deg" id="copyLinkIcon"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Save QR -->
-            <div class="form-block">
-                <button class="btn-cta" onclick="saveQRCode()">
-                    <i class="bi bi-download me-2"></i>{{ __('app.save_qr') }}
-                </button>
-            </div>
 
             <!-- Stats -->
             <div class="stat-row">
@@ -61,21 +33,61 @@
                 </div>
             </div>
 
-            <!-- Rules -->
-            <div class="form-block">
-                <div class="d-flex align-items-center gap-2 mb-3">
-                    <i class="bi bi-info-circle text-gold" style="font-size: 16px;"></i>
-                    <span class="text-white fw-bold" style="font-size: 14px;">{{ __('app.rules') }}</span>
-                </div>
-                <div class="rules-box">
-                    <ul>
-                        <li>{{ __('app.rule_share_code') }}</li>
-                        <li>{{ __('app.rule_earn_commission') }}</li>
-                        <li>{{ __('app.rule_build_network') }}</li>
-                        <li>{{ __('app.rule_higher_levels') }}</li>
-                    </ul>
+            <!-- QR Code -->
+            <div class="w-card" style="text-align: center;">
+                <div class="w-card-head" style="justify-content: center;"><i class="bi bi-qr-code"></i>{{ __('app.my_qr_code') ?? 'My QR Code' }}</div>
+                <div class="form-block" style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+                    <div class="qr-code-wrapper">
+                        <div id="qrcode"></div>
+                    </div>
+                    @if ($user->level)
+                        <span class="badge-level">Level {{ $user->level }}</span>
+                    @else
+                        <span class="badge-level-empty">—</span>
+                    @endif
+                    <button class="btn-cta" onclick="saveQRCode()" style="max-width: 200px;">
+                        <i class="bi bi-download me-2"></i>{{ __('app.save_qr') }}
+                    </button>
                 </div>
             </div>
+
+            <!-- Invitation Code & Link -->
+            <div class="w-card">
+                <div class="w-card-head"><i class="bi bi-share"></i>{{ __('app.my_invitation_code') }}</div>
+                <div class="form-block">
+                    <p class="form-block-title">{{ __('app.my_invitation_code') }}</p>
+                    <div class="invite-value-row mb-3">
+                        <span class="invite-value" id="invitationCode">{{ $user->refferal_code }}</span>
+                        <button class="btn-copy-icon" onclick="copyInvitationCode()" title="{{ __('app.copy_code') }}">
+                            <i class="bi bi-clipboard" id="copyCodeIcon"></i>
+                        </button>
+                    </div>
+                    <p class="form-block-title">{{ __('app.my_invitation_link') }}</p>
+                    <div class="invite-value-row">
+                        <span class="invite-value link" id="invitationLink">{{ $referralLink }}</span>
+                        <button class="btn-copy-icon" onclick="copyInvitationLink()" title="{{ __('app.copy_link') }}">
+                            <i class="bi bi-link-45deg" id="copyLinkIcon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rules -->
+            <div class="w-card">
+                <div class="w-card-head"><i class="bi bi-info-circle"></i>{{ __('app.rules') }}</div>
+                <div class="form-block">
+                    <div class="rules-box">
+                        <ul>
+                            <li>{{ __('app.rule_share_code') }}</li>
+                            <li>{{ __('app.rule_earn_commission') }}</li>
+                            <li>{{ __('app.rule_build_network') }}</li>
+                            <li>{{ __('app.rule_higher_levels') }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div style="height: 16px;"></div>
 
         </div>
     </div>

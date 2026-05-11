@@ -61,11 +61,9 @@
                     </div>
                 </div>
 
-                <!-- Withdrawal Amount -->
-                <div class="form-block">
-                    <h6 class="mb-3 fw-bold" style="color: var(--text-primary); font-size: 14px;">
-                        {{ __('app.withdrawal_amount') }}</h6>
-                    <div class="mb-3">
+                <div class="w-card">
+                    <div class="w-card-head"><i class="bi bi-currency-dollar"></i>{{ __('app.withdrawal_amount') }}</div>
+                    <div class="form-block">
                         <label class="text-muted small mb-2 d-block">{{ __('app.amount_usdt') }}</label>
                         <div class="input-with-icon">
                             <span class="input-icon">₮</span>
@@ -79,51 +77,63 @@
                     </div>
                 </div>
 
-                <!-- Select Wallet -->
-                <div class="form-block">
-                    <h6 class="mb-3 fw-bold" style="color: var(--text-primary); font-size: 14px;">
-                        {{ __('app.select_wallet_account') }}</h6>
-                    <div>
+                <div class="w-card">
+                    <div class="w-card-head"><i class="bi bi-wallet2"></i>{{ __('app.select_wallet_account') }}</div>
+                    <div class="form-block">
+                        <label class="text-muted small mb-2 d-block">Network</label>
+                        <div class="network-selector">
+                            <button type="button" class="net-pill active" data-net="trc20" onclick="selectNetwork('trc20', this)">
+                                <span class="net-dot trc20"></span> TRC20
+                            </button>
+                            <button type="button" class="net-pill" data-net="bep20" onclick="selectNetwork('bep20', this)">
+                                <span class="net-dot bep20"></span> BEP20
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-block">
                         <label class="text-muted small mb-2 d-block">{{ __('app.choose_wallet_account') }}</label>
                         <select name="wallet_id" id="wallet-account" class="form-control-dark-select"
                             {{ !auth()->user()->is_verified || $wallets->isEmpty() ? 'disabled' : 'required' }}>
                             <option value="">{{ __('app.select_wallet_placeholder') }}</option>
                             @forelse($wallets as $wallet)
                                 <option value="{{ $wallet->id }}"
+                                    data-type="{{ $wallet->type }}"
                                     {{ old('wallet_id') == $wallet->id ? 'selected' : '' }}>
-                                    {{ $wallet->account_number }} - {{ $wallet->type }}
+                                    {{ substr($wallet->account_number, 0, 12) }}...{{ substr($wallet->account_number, -6) }}
                                 </option>
                             @empty
                                 <option value="" disabled>{{ __('app.no_wallet_available') }}</option>
                             @endforelse
                         </select>
+                        <div id="no-wallet-msg" style="display:none; margin-top:8px;">
+                            <small class="text-warning"><i class="bi bi-exclamation-circle me-1"></i>Tidak ada wallet <span id="no-wallet-net"></span>. <a href="{{ route('member.wallet.index') }}" style="color:var(--gold-color);">Tambah wallet</a></small>
+                        </div>
                         @error('wallet_id')
                             <small class="text-danger mt-1 d-block">{{ $message }}</small>
                         @enderror
                     </div>
                 </div>
 
-                <!-- Fee Calculation -->
-                <div class="form-block" id="fee-card" style="display: none; background: rgba(0,229,255,0.04);">
-                    <h6 class="mb-3 fw-bold" style="color: var(--text-primary); font-size: 14px;">
-                        {{ __('app.withdrawal_summary') }}</h6>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted small">{{ __('app.withdrawal_amount') }}</span>
-                        <span class="fw-bold" style="color: var(--text-primary);" id="display-amount">0.00 USDT</span>
-                    </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted small">{{ __('app.withdrawal_fee') }}</span>
-                        <span class="fw-bold" style="color: var(--text-primary);" id="display-fee">0.00 USDT</span>
-                    </div>
-                    <hr style="border-color: var(--border-color);">
-                    <div class="d-flex justify-content-between">
-                        <span class="fw-bold" style="color: var(--text-primary);">{{ __('app.you_will_receive') }}</span>
-                        <span class="text-gold fw-bold" id="display-total">0.00 USDT</span>
+                <div class="w-card" id="fee-card" style="display: none;">
+                    <div class="w-card-head"><i class="bi bi-receipt"></i>{{ __('app.withdrawal_summary') }}</div>
+                    <div class="form-block">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted small">{{ __('app.withdrawal_amount') }}</span>
+                            <span class="fw-bold" style="color: var(--text-primary);" id="display-amount">0.00 USDT</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted small">{{ __('app.withdrawal_fee') }}</span>
+                            <span class="fw-bold" style="color: var(--text-primary);" id="display-fee">0.00 USDT</span>
+                        </div>
+                        <hr style="border-color: var(--border-color);">
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-bold" style="color: var(--text-primary);">{{ __('app.you_will_receive') }}</span>
+                            <span class="text-gold fw-bold" id="display-total">0.00 USDT</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Submit Button -->
-                <div class="form-block">
+                <div class="w-page-footer">
                     <button type="button" class="btn-cta" onclick="submitWithdraw()"
                         {{ !auth()->user()->is_verified || $wallets->isEmpty() ? 'disabled' : '' }}>
                         {{ __('app.submit_withdrawal') }}
@@ -173,6 +183,25 @@
                 border-radius: 8px; padding: 12px;
                 display: flex; align-items: flex-start; color: var(--gold-color);
             }
+
+            /* Network selector */
+            .network-selector { display: flex; gap: 10px; }
+            .net-pill {
+                flex: 1; padding: 10px 12px;
+                background: rgba(255,255,255,0.03); border: 1px solid var(--border-color);
+                border-radius: 10px; color: var(--text-muted);
+                font-size: 13px; font-weight: 700; cursor: pointer;
+                display: flex; align-items: center; justify-content: center; gap: 8px;
+                transition: all 0.2s;
+            }
+            .net-pill.active {
+                background: rgba(0,229,255,0.1); border-color: var(--gold-color); color: var(--gold-color);
+            }
+            .net-dot {
+                width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+            }
+            .net-dot.trc20 { background: var(--gold-color); }
+            .net-dot.bep20 { background: #00e5ff; }
 
             @media (max-width: 480px) { .form-control-dark-select { font-size: 16px; } }
         </style>
@@ -249,14 +278,42 @@
                 this.style.backgroundColor = this.value ? 'rgba(0, 229, 255, 0.1)' : 'rgba(0, 229, 255, 0.05)';
             });
 
+            function selectNetwork(net, btn) {
+                document.querySelectorAll('.net-pill').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+
+                const select = document.getElementById('wallet-account');
+                const noMsg  = document.getElementById('no-wallet-msg');
+                const noNet  = document.getElementById('no-wallet-net');
+
+                select.value = '';
+                select.dispatchEvent(new Event('change'));
+
+                let visibleCount = 0;
+                select.querySelectorAll('option[data-type]').forEach(opt => {
+                    const show = opt.dataset.type === net;
+                    opt.style.display = show ? '' : 'none';
+                    opt.disabled = !show;
+                    if (show) visibleCount++;
+                });
+
+                if (visibleCount === 0) {
+                    noNet.textContent = net.toUpperCase();
+                    noMsg.style.display = 'block';
+                    select.disabled = true;
+                } else {
+                    noMsg.style.display = 'none';
+                    select.disabled = false;
+                    if (visibleCount === 1) {
+                        const only = select.querySelector('option[data-type="' + net + '"]');
+                        if (only) { select.value = only.value; select.dispatchEvent(new Event('change')); }
+                    }
+                }
+            }
+
             window.addEventListener('DOMContentLoaded', function() {
                 if (!isVerified) return;
-                const walletSelect = document.getElementById('wallet-account');
-                const options = walletSelect.querySelectorAll('option[value]:not([value=""])');
-                if (options.length === 1 && !walletSelect.value) {
-                    walletSelect.value = options[0].value;
-                    walletSelect.dispatchEvent(new Event('change'));
-                }
+                selectNetwork('trc20', document.querySelector('.net-pill[data-net="trc20"]'));
             });
         </script>
     @endpush

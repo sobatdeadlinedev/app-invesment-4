@@ -1,987 +1,302 @@
 @extends('member.layouts.app')
 @section('content')
-    <!-- Scrollable Content Area -->
-    <div class="scrollable-content">
-        <div class="content-section">
+<div class="scrollable-content wallet-overview">
 
-            <!-- Flash Messages -->
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-circle me-2"></i>{{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-
-            <!-- Section 1: Total Assets & PnL -->
-            <div class="seamless-section mb-4">
-                <div class="section-content">
-                    <!-- Total Assets -->
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <p class="text-muted mb-1 small">{{ __('app.total_assets') }}</p>
-                            <h2 class="text-white mb-0 fw-bold" style="font-size: 36px;">
-                                {{ number_format($balanceBreakdown['total_balance'], 2) }}
-                            </h2>
-                            <small class="text-muted">USDT</small>
-                        </div>
-                    </div>
-
-                    <!-- Today's PnL -->
-                    <div class="info-box pnl-box">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-muted d-block mb-1" style="font-size: 10px;">
-                                    {{ __('app.today_pnl') }}
-                                </small>
-                                <h6 class="mb-0 fw-bold {{ $todayPnl >= 0 ? 'text-success' : 'text-danger' }}" style="font-size: 16px;">
-                                    {{ $todayPnl >= 0 ? '+' : '' }}{{ number_format($todayPnl, 2) }} USDT
-                                </h6>
-                            </div>
-                            <div class="pnl-icon-wrapper {{ $todayPnl >= 0 ? 'positive' : 'negative' }}">
-                                <i
-                                    class="bi bi-{{ $todayPnl >= 0 ? 'arrow-up-circle-fill' : 'arrow-down-circle-fill' }}"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    {{-- ═══ HEADER ═══ --}}
+    <div class="wo-header">
+        <div class="wo-header-left">
+            <div class="wo-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
+            <div>
+                <div class="wo-name">{{ auth()->user()->name }}</div>
+                <div class="wo-uid">UID: {{ auth()->user()->id }}</div>
             </div>
+        </div>
+    </div>
 
-            <!-- Section 2: Action Buttons -->
-            <div class="seamless-section mb-4">
-                <div class="section-content">
-                    <div class="row g-2">
-                        <div class="col-4">
-                            <a href="{{ route('member.deposit.index') }}" class="btn-action-main">
-                                <div class="action-icon deposit">
-                                    <i class="bi bi-arrow-down-circle"></i>
-                                </div>
-                                <span>{{ __('app.deposit') }}</span>
-                            </a>
-                        </div>
-                        <div class="col-4">
-                            <a href="{{ route('member.withdraw.index') }}" class="btn-action-main">
-                                <div class="action-icon withdrawal">
-                                    <i class="bi bi-arrow-up-circle"></i>
-                                </div>
-                                <span>{{ __('app.withdrawal') }}</span>
-                            </a>
-                        </div>
-                        <div class="col-4">
-                            <a href="{{ route('member.balance.transfer') }}" class="btn-action-main">
-                                <div class="action-icon transfer">
-                                    <i class="bi bi-arrow-left-right"></i>
-                                </div>
-                                <span>{{ __('app.transfer') }}</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section 3: My Account -->
-            <div class="seamless-section mb-4">
-                <div class="section-header">
-                    <h6 class="section-title">{{ __('app.my_account') }}</h6>
-                </div>
-                <div class="section-content">
-                    <!-- Exchange Balance -->
-                    <div class="account-item">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="account-icon exchange">
-                                <i class="bi bi-wallet2"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <p class="text-muted mb-1 small">{{ __('app.exchange') }}</p>
-                                <h5 class="text-white mb-0 fw-bold">
-                                    {{ number_format($balanceBreakdown['exchange_balance'], 2) }}
-                                </h5>
-                            </div>
-                            <div class="text-end">
-                                <i class="bi bi-chevron-right text-muted"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Trade Balance -->
-                    <div class="account-item">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="account-icon trade">
-                                <i class="bi bi-graph-up"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <p class="text-muted mb-1 small">{{ __('app.trade') }}</p>
-                                <h5 class="text-white mb-0 fw-bold">
-                                    {{ number_format($balanceBreakdown['trade_balance'], 2) }}
-                                </h5>
-                                @if ($balanceBreakdown['locked_balance'] > 0)
-                                    <small class="text-warning" style="font-size: 10px;">
-                                        <i class="bi bi-lock-fill"></i>
-                                        {{ number_format($balanceBreakdown['locked_balance'], 2) }} {{ __('app.locked') }}
-                                    </small>
-                                @endif
-                            </div>
-                            <div class="text-end">
-                                <i class="bi bi-chevron-right text-muted"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section 4: Wallet List -->
-            <div class="seamless-section mb-4">
-                <div class="section-header">
-                    <h6 class="section-title">{{ __('app.wallet_list') }}</h6>
-                    <span class="badge-count">{{ $wallets->count() }}/3</span>
-                </div>
-
-                <!-- Currency Info -->
-                <div class="currency-info-banner">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="currency-icon">
-                            <span>₮</span>
-                        </div>
-                        <div>
-                            <p class="text-muted mb-0 small" style="font-size: 11px;">{{ __('app.currency') }}</p>
-                            <h6 class="text-white mb-0 fw-bold" style="font-size: 13px;">{{ __('app.usdt_tether') }}</h6>
-                        </div>
-                    </div>
-                </div>
-
-                @forelse($wallets as $wallet)
-                    <div class="wallet-item">
-                        <div class="d-flex align-items-start justify-content-between">
-                            <div class="d-flex align-items-start gap-3 flex-grow-1">
-                                <div class="bank-icon-circle {{ $wallet->type }}">
-                                    <i class="bi bi-wallet-fill"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex align-items-center gap-2 mb-1">
-                                        <span class="wallet-type-badge {{ $wallet->type }}">
-                                            {{ strtoupper(__('app.' . $wallet->type)) }}
-                                        </span>
-                                    </div>
-                                    <div class="text-white fw-bold mb-1" style="font-size: 13px;">
-                                        {{ $wallet->account_number }}
-                                    </div>
-                                    <small class="text-gold" style="font-size: 11px;">
-                                        <i class="bi bi-info-circle me-1"></i>{{ $wallet->getTypeLabel() }}
-                                    </small>
-                                </div>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <button class="btn-bank-action btn-bank-edit"
-                                    onclick="openEditModal({{ $wallet->id }}, '{{ $wallet->type }}', '{{ $wallet->account_number }}')">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <form action="{{ route('member.wallet.destroy', $wallet->id) }}" method="POST"
-                                    onsubmit="return confirm('{{ __('app.delete_wallet_confirmation') }}')"
-                                    style="display: inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn-bank-action btn-bank-delete">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="empty-state">
-                        <i class="bi bi-wallet2"></i>
-                        <p class="text-muted mb-0">{{ __('app.no_wallet_yet') }}</p>
-                    </div>
-                @endforelse
-
-                <!-- Add Wallet Button -->
-                <div class="section-footer">
-                    <button class="btn btn-outline-gold w-100" data-bs-toggle="modal" data-bs-target="#addWalletModal"
-                        @if ($wallets->count() >= 3) disabled @endif>
-                        <i class="bi bi-plus-circle me-2"></i>{{ __('app.add_wallet') }}
+    {{-- ═══ BALANCE CARD ═══ --}}
+    <div class="wo-balance-card">
+        <div class="d-flex align-items-start justify-content-between">
+            <div class="flex-grow-1">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="wo-balance-label">Total Balance</span>
+                    <button class="wo-eye-btn" onclick="toggleBalance()" id="eyeBtn">
+                        <i class="bi bi-eye" id="eyeIcon"></i>
                     </button>
+                    <span class="wo-usdt-badge"><span>₮</span> USDT</span>
+                </div>
+                <div class="wo-balance-amount" id="balanceDisplay">
+                    {{ number_format($balanceBreakdown['total_balance'], 2) }}
                 </div>
             </div>
-            <!-- Section 5: Logout -->
-           <div class="seamless-section mb-4">
-    <div class="section-content">
-        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" 
-            class="wallet-item" style="display: block; text-decoration: none; margin-bottom: 0;">
-            <div class="d-flex align-items-center gap-3">
-                <div class="bank-icon-circle"
-                    style="background: rgba(0, 229, 255, 0.15); border-color: rgba(0, 229, 255, 0.3);">
-                    <i class="bi bi-box-arrow-right" style="color: #00e5ff;"></i>
+            <div class="wo-earnings-box">
+                <div class="wo-earnings-label">Today's Earnings</div>
+                <div class="wo-earnings-val {{ $todayPnl >= 0 ? 'positive' : 'negative' }}">
+                    {{ $todayPnl >= 0 ? '+' : '' }}{{ number_format($todayPnl, 2) }}
                 </div>
-                <div class="flex-grow-1">
-                    <span class="text-white fw-bold" style="font-size: 14px;">{{ __('app.logout') }}</span>
+                @php
+                    $total = $balanceBreakdown['total_balance'];
+                    $pct = $total > 0 ? round(abs($todayPnl) / $total * 100, 2) : 0;
+                @endphp
+                <div class="wo-earnings-pct {{ $todayPnl >= 0 ? 'positive' : 'negative' }}">
+                    {{ $todayPnl >= 0 ? '+' : '-' }}{{ $pct }}%
                 </div>
-                <i class="bi bi-chevron-right text-muted"></i>
             </div>
+        </div>
+    </div>
+
+    {{-- ═══ ACTION BUTTONS ═══ --}}
+    <div class="wo-actions">
+        <a href="{{ route('member.deposit.index') }}" class="wo-action">
+            <div class="wo-action-icon"><i class="bi bi-arrow-down-circle-fill"></i></div>
+            <span>Deposit</span>
         </a>
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-            @csrf
-        </form>
+        <a href="{{ route('member.withdraw.index') }}" class="wo-action">
+            <div class="wo-action-icon"><i class="bi bi-arrow-up-circle-fill"></i></div>
+            <span>Withdrawal</span>
+        </a>
+        <a href="{{ route('member.balance.transfer') }}" class="wo-action">
+            <div class="wo-action-icon"><i class="bi bi-arrow-left-right"></i></div>
+            <span>Transfer</span>
+        </a>
+        <a href="{{ route('member.deposit.history') }}" class="wo-action">
+            <div class="wo-action-icon"><i class="bi bi-clock-history"></i></div>
+            <span>History</span>
+        </a>
     </div>
+
+    {{-- ═══ ASSET ALLOCATION ═══ --}}
+    @php
+        $spot    = (float) $balanceBreakdown['exchange_balance'];
+        $trade   = (float) $balanceBreakdown['trade_balance'];
+        $futures = (float) $openFuturesAmount;
+        $totalAssets = $spot + $trade + $futures;
+    @endphp
+    <div class="wo-section">
+        <div class="wo-section-head">
+            <span>Asset Allocation</span>
+            <a href="{{ route('member.profile.index') }}" class="wo-refresh-btn">
+                <i class="bi bi-arrow-clockwise"></i>
+            </a>
+        </div>
+        <div class="wo-total-assets">Total Assets: <strong>{{ number_format($totalAssets, 2) }}</strong></div>
+
+        <div class="wo-donut-wrap">
+            <canvas id="donutChart" width="160" height="160"></canvas>
+            <div class="wo-donut-center" id="donutCenter">
+                <span class="wo-donut-val">{{ number_format($totalAssets, 2) }}</span>
+            </div>
+        </div>
+
+        <div class="wo-asset-list">
+            <a href="{{ route('member.deposit.index') }}" class="wo-asset-row">
+                <div class="wo-asset-dot" style="background:#F7931A;"></div>
+                <div class="flex-grow-1">
+                    <div class="wo-asset-name">Spot Wallet</div>
+                </div>
+                <div class="text-end">
+                    <div class="wo-asset-amount">{{ number_format($spot, 2) }} USDT</div>
+                    <div class="wo-asset-usd">≈ ${{ number_format($spot, 0) }}</div>
+                </div>
+                <i class="bi bi-chevron-right wo-asset-chevron"></i>
+            </a>
+            <a href="{{ route('member.balance.transfer') }}" class="wo-asset-row">
+                <div class="wo-asset-dot" style="background:#2A5ADA;"></div>
+                <div class="flex-grow-1">
+                    <div class="wo-asset-name">Trading Wallet</div>
+                </div>
+                <div class="text-end">
+                    <div class="wo-asset-amount">{{ number_format($trade, 2) }} USDT</div>
+                    <div class="wo-asset-usd">≈ ${{ number_format($trade, 0) }}</div>
+                </div>
+                <i class="bi bi-chevron-right wo-asset-chevron"></i>
+            </a>
+            <a href="{{ route('member.futures.index') }}" class="wo-asset-row">
+                <div class="wo-asset-dot" style="background:#E6007A;"></div>
+                <div class="flex-grow-1">
+                    <div class="wo-asset-name">Futures Account</div>
+                    @if($futures > 0)
+                    <div class="wo-asset-sub">In-play</div>
+                    @endif
+                </div>
+                <div class="text-end">
+                    <div class="wo-asset-amount">{{ number_format($futures, 2) }} USDT</div>
+                    <div class="wo-asset-usd">≈ ${{ number_format($futures, 0) }}</div>
+                </div>
+                <i class="bi bi-chevron-right wo-asset-chevron"></i>
+            </a>
+        </div>
+    </div>
+
+    <div style="height:16px;"></div>
 </div>
-        </div>
-    </div>
 
-    <!-- Modal Add Wallet -->
-    <div class="modal fade" id="addWalletModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content"
-                style="background-color: var(--card-light); border: 1px solid var(--border-color);">
-                <div class="modal-header" style="border-bottom: 1px solid var(--border-color);">
-                    <h5 class="modal-title text-white">{{ __('app.add_wallet') }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form action="{{ route('member.wallet.store') }}" method="POST">
-                    @csrf
-                    <div class="modal-body">
-                        <!-- Currency Info in Modal -->
-                        <div class="mb-3 p-3"
-                            style="background: rgba(0, 229, 255, 0.05); border-radius: 8px; border: 1px solid var(--border-color);">
-                            <div class="d-flex align-items-center gap-2">
-                                <div
-                                    style="width: 36px; height: 36px; background: rgba(0, 229, 255, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                                    <span style="color: var(--gold-color); font-size: 18px; font-weight: bold;">₮</span>
-                                </div>
-                                <div>
-                                    <p class="text-muted mb-0 small" style="font-size: 11px;">{{ __('app.currency') }}
-                                    </p>
-                                    <h6 class="text-white mb-0 fw-bold" style="font-size: 13px;">
-                                        {{ __('app.usdt_tether') }}</h6>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Type Selection -->
-                        <div class="mb-3">
-                            <label class="form-label text-white">{{ __('app.network_type') }}</label>
-                            <div class="network-type-selector">
-                                <label class="network-type-option">
-                                    <input type="radio" name="type" value="trc20" checked>
-                                    <div class="network-type-card">
-                                        <div class="network-icon trc20">
-                                            <i class="bi bi-circle-fill"></i>
-                                        </div>
-                                        <div class="network-info">
-                                            <div class="network-name">{{ __('app.trc20') }}</div>
-                                            <small class="network-desc">{{ __('app.tron_network') }}</small>
-                                        </div>
-                                        <div class="network-check">
-                                            <i class="bi bi-check-circle-fill"></i>
-                                        </div>
-                                    </div>
-                                </label>
-                                <label class="network-type-option">
-                                    <input type="radio" name="type" value="bep20">
-                                    <div class="network-type-card">
-                                        <div class="network-icon bep20">
-                                            <i class="bi bi-circle-fill"></i>
-                                        </div>
-                                        <div class="network-info">
-                                            <div class="network-name">{{ __('app.bep20') }}</div>
-                                            <small class="network-desc">{{ __('app.binance_smart_chain') }}</small>
-                                        </div>
-                                        <div class="network-check">
-                                            <i class="bi bi-check-circle-fill"></i>
-                                        </div>
-                                    </div>
-                                </label>
-                            </div>
-                            @error('type')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        <!-- Wallet Address -->
-                        <div class="mb-3">
-                            <label class="form-label text-white">{{ __('app.wallet_address') }}</label>
-                            <input type="text" name="account_number" class="form-control-dark"
-                                placeholder="{{ __('app.enter_wallet_address') }}" required
-                                value="{{ old('account_number') }}">
-                            <small class="text-muted d-block mt-1" style="font-size: 11px;">
-                                <i class="bi bi-info-circle me-1"></i>{{ __('app.ensure_address_match') }}
-                            </small>
-                            @error('account_number')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="modal-footer" style="border-top: 1px solid var(--border-color);">
-                        <button type="button" class="btn btn-outline-gold"
-                            data-bs-dismiss="modal">{{ __('app.cancel') }}</button>
-                        <button type="submit" class="btn btn-gold">{{ __('app.save') }}</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Edit Wallet -->
-    <div class="modal fade" id="editWalletModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content"
-                style="background-color: var(--card-light); border: 1px solid var(--border-color);">
-                <div class="modal-header" style="border-bottom: 1px solid var(--border-color);">
-                    <h5 class="modal-title text-white">{{ __('app.edit_wallet') }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form id="editWalletForm" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="modal-body">
-                        <!-- Currency Info in Modal -->
-                        <div class="mb-3 p-3"
-                            style="background: rgba(0, 229, 255, 0.05); border-radius: 8px; border: 1px solid var(--border-color);">
-                            <div class="d-flex align-items-center gap-2">
-                                <div
-                                    style="width: 36px; height: 36px; background: rgba(0, 229, 255, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                                    <span style="color: var(--gold-color); font-size: 18px; font-weight: bold;">₮</span>
-                                </div>
-                                <div>
-                                    <p class="text-muted mb-0 small" style="font-size: 11px;">{{ __('app.currency') }}
-                                    </p>
-                                    <h6 class="text-white mb-0 fw-bold" style="font-size: 13px;">
-                                        {{ __('app.usdt_tether') }}</h6>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Type Selection -->
-                        <div class="mb-3">
-                            <label class="form-label text-white">{{ __('app.network_type') }}</label>
-                            <div class="network-type-selector">
-                                <label class="network-type-option">
-                                    <input type="radio" name="type" value="trc20" id="edit_type_trc20">
-                                    <div class="network-type-card">
-                                        <div class="network-icon trc20">
-                                            <i class="bi bi-circle-fill"></i>
-                                        </div>
-                                        <div class="network-info">
-                                            <div class="network-name">{{ __('app.trc20') }}</div>
-                                            <small class="network-desc">{{ __('app.tron_network') }}</small>
-                                        </div>
-                                        <div class="network-check">
-                                            <i class="bi bi-check-circle-fill"></i>
-                                        </div>
-                                    </div>
-                                </label>
-                                <label class="network-type-option">
-                                    <input type="radio" name="type" value="bep20" id="edit_type_bep20">
-                                    <div class="network-type-card">
-                                        <div class="network-icon bep20">
-                                            <i class="bi bi-circle-fill"></i>
-                                        </div>
-                                        <div class="network-info">
-                                            <div class="network-name">{{ __('app.bep20') }}</div>
-                                            <small class="network-desc">{{ __('app.binance_smart_chain') }}</small>
-                                        </div>
-                                        <div class="network-check">
-                                            <i class="bi bi-check-circle-fill"></i>
-                                        </div>
-                                    </div>
-                                </label>
-                            </div>
-                            @error('type')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        <!-- Wallet Address -->
-                        <div class="mb-3">
-                            <label class="form-label text-white">{{ __('app.wallet_address') }}</label>
-                            <input type="text" name="account_number" id="edit_account_number"
-                                class="form-control-dark" placeholder="{{ __('app.enter_wallet_address') }}" required>
-                            <small class="text-muted d-block mt-1" style="font-size: 11px;">
-                                <i class="bi bi-info-circle me-1"></i>{{ __('app.ensure_address_match') }}
-                            </small>
-                            @error('account_number')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="modal-footer" style="border-top: 1px solid var(--border-color);">
-                        <button type="button" class="btn btn-outline-gold"
-                            data-bs-dismiss="modal">{{ __('app.cancel') }}</button>
-                        <button type="submit" class="btn btn-gold">{{ __('app.update') }}</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <style>
-        /* Seamless Section Styles */
-        .seamless-section {
-            background: transparent;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            margin-bottom: 12px;
-        }
-
-        .section-title {
-            color: var(--text-primary);
-            font-size: 14px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin: 0;
-        }
-
-        .section-content {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 16px;
-            backdrop-filter: blur(10px);
-        }
-
-        .section-footer {
-            padding: 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 0 0 16px 16px;
-            margin-top: -12px;
-        }
-
-        /* Balance Icon Wrapper */
-        .balance-icon-wrapper {
-            width: 48px;
-            height: 48px;
-            background: rgba(0, 229, 255, 0.15);
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .balance-icon-wrapper i {
-            font-size: 24px;
-            color: var(--gold-color);
-        }
-
-        /* Info Box */
-        .info-box {
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            border: 1px solid rgba(0, 229, 255, 0.1);
-        }
-
-        /* PnL Icon Wrapper */
-        .pnl-icon-wrapper {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .pnl-icon-wrapper i {
-            font-size: 20px;
-        }
-
-        .pnl-icon-wrapper.positive {
-            background: rgba(0, 229, 255, 0.15);
-            border: 1px solid rgba(0, 229, 255, 0.3);
-        }
-
-        .pnl-icon-wrapper.positive i {
-            color: var(--gold-color);
-        }
-
-        .pnl-icon-wrapper.negative {
-            background: rgba(0, 229, 255, 0.15);
-            border: 1px solid rgba(0, 229, 255, 0.3);
-        }
-
-        .pnl-icon-wrapper.negative i {
-            color: #00e5ff;
-        }
-
-        /* Action Buttons */
-        .btn-action-main {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            padding: 16px 8px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .btn-action-main:hover {
-            background: rgba(0, 229, 255, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .action-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid;
-        }
-
-        .action-icon i {
-            font-size: 24px;
-        }
-
-        /* Deposit */
-        .action-icon.deposit {
-            background: rgba(0, 229, 255, 0.15);
-            border-color: rgba(0, 229, 255, 0.3);
-        }
-
-        .action-icon.deposit i {
-            color: var(--gold-color);
-        }
-
-        /* Withdrawal */
-        .action-icon.withdrawal {
-            background: rgba(0, 229, 255, 0.15);
-            border-color: rgba(0, 229, 255, 0.3);
-        }
-
-        .action-icon.withdrawal i {
-            color: var(--gold-color);
-        }
-
-        /* Transfer */
-        .action-icon.transfer {
-            background: rgba(0, 229, 255, 0.15);
-            border-color: rgba(0, 229, 255, 0.3);
-        }
-
-        .action-icon.transfer i {
-            color: #00e5ff;
-        }
-
-        .btn-action-main span {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        /* Account Item */
-        .account-item {
-            padding: 14px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            margin-bottom: 8px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .account-item:hover {
-            background: rgba(0, 229, 255, 0.08);
-            transform: translateX(4px);
-        }
-
-        .account-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .account-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid;
-            flex-shrink: 0;
-        }
-
-        .account-icon i {
-            font-size: 22px;
-        }
-
-        /* Exchange */
-        .account-icon.exchange {
-            background: rgba(0, 229, 255, 0.15);
-            border-color: rgba(0, 229, 255, 0.3);
-        }
-
-        .account-icon.exchange i {
-            color: var(--gold-color);
-        }
-
-        /* Trade */
-        .account-icon.trade {
-            background: rgba(0, 229, 255, 0.15);
-            border-color: rgba(0, 229, 255, 0.3);
-        }
-
-        .account-icon.trade i {
-            color: #00e5ff;
-        }
-
-        /* Currency Info Banner */
-        .currency-info-banner {
-            padding: 12px 16px;
-            background: rgba(0, 229, 255, 0.08);
-            border-radius: 12px;
-            margin-bottom: 8px;
-        }
-
-        .currency-icon {
-            width: 36px;
-            height: 36px;
-            background: rgba(0, 229, 255, 0.2);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .currency-icon span {
-            color: var(--gold-color);
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        /* Wallet Item */
-        .wallet-item {
-            padding: 14px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            margin-bottom: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .wallet-item:hover {
-            background: rgba(0, 229, 255, 0.08);
-            transform: translateX(4px);
-        }
-
-        /* Empty State */
-        .empty-state {
-            padding: 32px 20px;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            margin-bottom: 8px;
-        }
-
-        .empty-state i {
-            font-size: 42px;
-            color: var(--text-muted);
-            opacity: 0.3;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        /* Wallet Type Badge */
-        .wallet-type-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 9px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .wallet-type-badge.trc20 {
-            background: rgba(0, 229, 255, 0.15);
-            color: var(--gold-color);
-            border: 1px solid rgba(0, 229, 255, 0.3);
-        }
-
-        .wallet-type-badge.bep20 {
-            background: rgba(0, 229, 255, 0.15);
-            color: #00e5ff;
-            border: 1px solid rgba(0, 229, 255, 0.3);
-        }
-
-        /* Bank Icon with Color Type */
-        .bank-icon-circle {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid;
-            flex-shrink: 0;
-        }
-
-        .bank-icon-circle i {
-            font-size: 22px;
-        }
-
-        .bank-icon-circle.trc20 {
-            background: rgba(0, 229, 255, 0.15);
-            border-color: rgba(0, 229, 255, 0.3);
-        }
-
-        .bank-icon-circle.trc20 i {
-            color: var(--gold-color);
-        }
-
-        .bank-icon-circle.bep20 {
-            background: rgba(0, 229, 255, 0.15);
-            border-color: rgba(0, 229, 255, 0.3);
-        }
-
-        .bank-icon-circle.bep20 i {
-            color: #00e5ff;
-        }
-
-        /* Bank Action Buttons */
-        .btn-bank-action {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            border: 1px solid;
-            background: transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-bank-action i {
-            font-size: 14px;
-        }
-
-        .btn-bank-edit {
-            border-color: rgba(0, 229, 255, 0.3);
-            color: var(--gold-color);
-        }
-
-        .btn-bank-edit:hover {
-            background: rgba(0, 229, 255, 0.15);
-        }
-
-        .btn-bank-delete {
-            border-color: rgba(0, 229, 255, 0.3);
-            color: #00e5ff;
-        }
-
-        .btn-bank-delete:hover {
-            background: rgba(0, 229, 255, 0.15);
-        }
-
-        /* Badge Count */
-        .badge-count {
-            background: rgba(0, 229, 255, 0.15);
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--gold-color);
-        }
-
-        /* Network Type Selector */
-        .network-type-selector {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .network-type-option {
-            cursor: pointer;
-            margin: 0;
-        }
-
-        .network-type-option input[type="radio"] {
-            display: none;
-        }
-
-        .network-type-card {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .network-type-option:hover .network-type-card {
-            background: rgba(0, 229, 255, 0.05);
-            border-color: rgba(0, 229, 255, 0.3);
-        }
-
-        .network-type-option input[type="radio"]:checked~.network-type-card {
-            background: rgba(0, 229, 255, 0.1);
-            border-color: var(--gold-color);
-        }
-
-        .network-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .network-icon i {
-            font-size: 20px;
-        }
-
-        .network-icon.trc20 {
-            background: rgba(0, 229, 255, 0.15);
-            border: 1px solid rgba(0, 229, 255, 0.3);
-        }
-
-        .network-icon.trc20 i {
-            color: var(--gold-color);
-        }
-
-        .network-icon.bep20 {
-            background: rgba(0, 229, 255, 0.15);
-            border: 1px solid rgba(0, 229, 255, 0.3);
-        }
-
-        .network-icon.bep20 i {
-            color: #00e5ff;
-        }
-
-        .network-info {
-            flex-grow: 1;
-        }
-
-        .network-name {
-            color: var(--text-white);
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 2px;
-        }
-
-        .network-desc {
-            color: var(--text-muted);
-            font-size: 11px;
-        }
-
-        .network-check {
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
-
-        .network-check i {
-            font-size: 20px;
-            color: var(--gold-color);
-        }
-
-        .network-type-option input[type="radio"]:checked~.network-type-card .network-check {
-            opacity: 1;
-        }
-
-        /* Logout Button */
-        .btn-logout {
-            display: block;
-            padding: 14px 16px;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            border-radius: 12px;
-        }
-
-        .btn-logout:hover {
-            background: rgba(0, 229, 255, 0.05);
-            transform: translateX(4px);
-        }
-
-        .logout-icon {
-            width: 48px;
-            height: 48px;
-            background: rgba(0, 229, 255, 0.15);
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .logout-icon i {
-            font-size: 22px;
-            color: #00e5ff;
-        }
-
-        .logout-text {
-            color: var(--text-white);
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        /* Responsive */
-        @media (max-width: 375px) {
-            .section-content {
-                padding: 14px;
-            }
-
-            .section-footer {
-                padding: 14px;
-            }
-
-            .btn-action-main {
-                padding: 12px 6px;
-            }
-
-            .action-icon {
-                width: 40px;
-                height: 40px;
-            }
-
-            .action-icon i {
-                font-size: 20px;
-            }
-
-            .btn-action-main span {
-                font-size: 11px;
-            }
-        }
-    </style>
-
-    <script>
-        function openEditModal(id, type, accountNumber) {
-            document.getElementById('editWalletForm').action = "{{ url('member/wallet') }}/" + id;
-            document.getElementById('edit_account_number').value = accountNumber;
-
-            if (type === 'trc20') {
-                document.getElementById('edit_type_trc20').checked = true;
-            } else {
-                document.getElementById('edit_type_bep20').checked = true;
-            }
-
-            var editModal = new bootstrap.Modal(document.getElementById('editWalletModal'));
-            editModal.show();
-        }
-
-        // Auto hide alerts after 5 seconds
-        setTimeout(function() {
-            var alerts = document.querySelectorAll('.alert');
-            alerts.forEach(function(alert) {
-                var bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            });
-        }, 5000);
-    </script>
 @endsection
+
+@push('styles')
+<style>
+.wallet-overview { background: var(--bg-dark); }
+
+/* Header */
+.wo-header {
+    display: flex; align-items: center;
+    padding: 16px 20px; border-bottom: 1px solid var(--border-color);
+}
+.wo-header-left { display: flex; align-items: center; gap: 12px; }
+.wo-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-color), #00b8d4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 800; color: #0a0f1e; flex-shrink: 0;
+}
+.wo-name { color: #fff; font-size: 15px; font-weight: 700; }
+.wo-uid { color: var(--text-muted); font-size: 11px; }
+
+/* Balance Card */
+.wo-balance-card {
+    margin: 16px 16px 0; padding: 20px;
+    background: linear-gradient(135deg, #0d1928 0%, #0a1420 100%);
+    border-radius: 16px; border: 1px solid rgba(0,229,255,0.15);
+}
+.wo-balance-label { color: var(--text-muted); font-size: 12px; }
+.wo-eye-btn {
+    background: none; border: none; color: var(--text-muted);
+    padding: 0; cursor: pointer; font-size: 15px; line-height: 1;
+}
+.wo-usdt-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.2);
+    border-radius: 20px; padding: 2px 8px; font-size: 11px; font-weight: 700; color: var(--gold-color);
+}
+.wo-balance-amount { font-size: 32px; font-weight: 900; color: #fff; letter-spacing: -1px; margin-top: 6px; }
+.wo-earnings-box {
+    background: rgba(255,255,255,0.05); border-radius: 10px;
+    padding: 10px 12px; min-width: 100px; text-align: right; flex-shrink: 0;
+}
+.wo-earnings-label { color: var(--text-muted); font-size: 10px; margin-bottom: 4px; }
+.wo-earnings-val { font-size: 14px; font-weight: 700; }
+.wo-earnings-val.positive { color: #22c55e; }
+.wo-earnings-val.negative { color: #ef4444; }
+.wo-earnings-pct { font-size: 11px; margin-top: 2px; }
+.wo-earnings-pct.positive { color: #22c55e; }
+.wo-earnings-pct.negative { color: #ef4444; }
+
+/* Actions */
+.wo-actions {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 4px; padding: 16px; margin: 0 0 4px;
+}
+.wo-action { display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; }
+.wo-action-icon {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: #fff;
+    box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+    transition: transform 0.2s;
+}
+.wo-action:hover .wo-action-icon { transform: translateY(-2px); }
+.wo-action span { color: var(--text-muted); font-size: 11px; font-weight: 600; }
+
+/* Section */
+.wo-section { margin: 12px 16px 0; }
+.wo-section-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px; padding: 0 2px;
+}
+.wo-section-head > span { color: #fff; font-size: 14px; font-weight: 700; }
+.wo-refresh-btn { background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer; }
+.wo-total-assets { color: var(--text-muted); font-size: 12px; margin-bottom: 16px; }
+.wo-total-assets strong { color: #fff; }
+
+/* Donut Chart */
+.wo-donut-wrap {
+    position: relative; width: 160px; height: 160px; margin: 0 auto 20px;
+    display: flex; align-items: center; justify-content: center;
+}
+.wo-donut-center {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; pointer-events: none;
+}
+.wo-donut-val { color: #fff; font-size: 14px; font-weight: 800; }
+
+/* Asset List */
+.wo-asset-list {
+    background: rgba(255,255,255,0.03); border-radius: 14px;
+    border: 1px solid var(--border-color); overflow: hidden;
+}
+.wo-asset-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; border-bottom: 1px solid var(--border-color);
+    text-decoration: none; transition: background 0.15s;
+}
+.wo-asset-row:last-child { border-bottom: none; }
+.wo-asset-row:hover { background: rgba(255,255,255,0.03); }
+.wo-asset-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.wo-asset-name { color: #fff; font-size: 13px; font-weight: 600; }
+.wo-asset-sub { color: var(--text-muted); font-size: 10px; margin-top: 1px; }
+.wo-asset-amount { color: #fff; font-size: 13px; font-weight: 700; }
+.wo-asset-usd { color: var(--text-muted); font-size: 11px; }
+.wo-asset-chevron { color: var(--text-muted); font-size: 12px; margin-left: 4px; }
+
+
+</style>
+@endpush
+
+@push('scripts')
+<script>
+// ── Balance hide/show ─────────────────────────────────────────
+const REAL_BALANCE = '{{ number_format($balanceBreakdown['total_balance'], 2) }}';
+let balanceHidden = false;
+function toggleBalance() {
+    balanceHidden = !balanceHidden;
+    document.getElementById('balanceDisplay').textContent = balanceHidden ? '••••••' : REAL_BALANCE;
+    document.getElementById('eyeIcon').className = balanceHidden ? 'bi bi-eye-slash' : 'bi bi-eye';
+}
+
+// ── Donut Chart ───────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('donutChart');
+    const ctx    = canvas.getContext('2d');
+    const cx = 80, cy = 80, r = 58, inner = 38;
+
+    const data = [
+        { val: {{ $spot }},    color: '#F7931A' },
+        { val: {{ $trade }},   color: '#2A5ADA' },
+        { val: {{ $futures }}, color: '#E6007A' },
+    ];
+    const total = data.reduce((s, d) => s + d.val, 0);
+
+    if (total <= 0) {
+        // Empty state: gray ring with 3 equal dashed segments
+        const segAngle = (Math.PI * 2) / 3;
+        const gap = 0.08;
+        data.forEach((d, i) => {
+            ctx.beginPath();
+            ctx.arc(cx, cy, (r + inner) / 2, i * segAngle + gap, (i + 1) * segAngle - gap);
+            ctx.strokeStyle = d.color;
+            ctx.lineWidth = r - inner;
+            ctx.stroke();
+        });
+    } else {
+        let angle = -Math.PI / 2;
+        data.forEach(d => {
+            if (d.val <= 0) return;
+            const sweep = (d.val / total) * Math.PI * 2;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, r, angle, angle + sweep);
+            ctx.closePath();
+            ctx.fillStyle = d.color;
+            ctx.fill();
+            angle += sweep;
+        });
+        // Punch inner hole
+        ctx.beginPath();
+        ctx.arc(cx, cy, inner, 0, Math.PI * 2);
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg-dark').trim() || '#0a0f1e';
+        ctx.fill();
+    }
+});
+
+</script>
+@endpush

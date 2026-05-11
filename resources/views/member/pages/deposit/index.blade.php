@@ -45,57 +45,57 @@
                     </div>
                 </div>
 
-                <!-- Amount Input -->
-                <div class="form-block">
-                    <h6 class="mb-3 fw-bold" style="color: var(--text-primary); font-size: 14px;">
-                        {{ __('app.deposit_amount') }}</h6>
-                    <div class="mb-2">
-                        <label class="text-muted small mb-2 d-block">{{ __('app.enter_amount_usdt') }}</label>
-                        <div class="input-with-icon">
-                            <span class="input-icon">₮</span>
-                            <input type="number" id="deposit-amount" class="form-control-dark with-icon"
-                                placeholder="{{ __('app.enter_amount_manually') }}" value="" step="0.01" min="200">
+                <div class="w-card">
+                    <div class="w-card-head"><i class="bi bi-currency-dollar"></i>{{ __('app.deposit_amount') }}</div>
+                    <div class="form-block">
+                        <div class="mb-2">
+                            <label class="text-muted small mb-2 d-block">{{ __('app.enter_amount_usdt') }}</label>
+                            <div class="input-with-icon">
+                                <span class="input-icon">₮</span>
+                                <input type="number" id="deposit-amount" class="form-control-dark with-icon"
+                                    placeholder="{{ __('app.enter_amount_manually') }}" value="" step="0.01" min="200">
+                            </div>
                         </div>
+                        <small class="text-muted d-block mt-1">
+                            <i class="bi bi-info-circle me-1"></i>{{ __('app.minimum_deposit_hint') }}
+                        </small>
                     </div>
-                    <small class="text-muted d-block mt-1">
-                        <i class="bi bi-info-circle me-1"></i>{{ __('app.minimum_deposit_hint') }}
-                    </small>
                 </div>
 
-                <!-- Wallet Type Selection -->
-                <div class="form-block">
-                    <h6 class="mb-3 fw-bold" style="color: var(--text-primary); font-size: 14px;">
-                        {{ __('app.select_network') }}</h6>
-                    <div class="wallet-type-selection">
-                        <div class="wallet-type-option" onclick="selectWalletType('trc20')">
-                            <input type="radio" name="wallet_type_display" id="wallet-trc20" value="trc20" checked>
-                            <label for="wallet-trc20" class="wallet-type-label">
-                                <div class="wallet-type-header">
-                                    <i class="bi bi-circle-fill me-2"></i>
-                                    <span class="fw-bold">TRC20</span>
-                                </div>
-                                <div class="wallet-type-details">
-                                    <small class="text-muted">{{ __('app.tron_network') }}</small>
-                                </div>
-                            </label>
-                        </div>
-                        <div class="wallet-type-option" onclick="selectWalletType('bep20')">
-                            <input type="radio" name="wallet_type_display" id="wallet-bep20" value="bep20">
-                            <label for="wallet-bep20" class="wallet-type-label">
-                                <div class="wallet-type-header">
-                                    <i class="bi bi-circle-fill me-2"></i>
-                                    <span class="fw-bold">BEP20</span>
-                                </div>
-                                <div class="wallet-type-details">
-                                    <small class="text-muted">{{ __('app.binance_smart_chain') }}</small>
-                                </div>
-                            </label>
+                <div class="w-card">
+                    <div class="w-card-head"><i class="bi bi-hdd-network"></i>{{ __('app.select_network') }}</div>
+                    <div class="form-block">
+                        <div class="wallet-type-selection">
+                            <div class="wallet-type-option" onclick="selectWalletType('trc20')">
+                                <input type="radio" name="wallet_type_display" id="wallet-trc20" value="trc20" checked>
+                                <label for="wallet-trc20" class="wallet-type-label">
+                                    <div class="wallet-type-header">
+                                        <i class="bi bi-circle-fill me-2"></i>
+                                        <span class="fw-bold">TRC20</span>
+                                    </div>
+                                    <div class="wallet-type-details">
+                                        <small class="text-muted">{{ __('app.tron_network') }}</small>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="wallet-type-option" onclick="selectWalletType('bep20')">
+                                <input type="radio" name="wallet_type_display" id="wallet-bep20" value="bep20">
+                                <label for="wallet-bep20" class="wallet-type-label">
+                                    <div class="wallet-type-header">
+                                        <i class="bi bi-circle-fill me-2"></i>
+                                        <span class="fw-bold">BEP20</span>
+                                    </div>
+                                    <div class="wallet-type-details">
+                                        <small class="text-muted">{{ __('app.binance_smart_chain') }}</small>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Continue Button -->
-                <div class="form-block">
+                <div class="w-page-footer">
                     <button class="btn-cta" type="button" onclick="goToStep2()">
                         {{ __('app.continue') }} <i class="bi bi-arrow-right ms-2"></i>
                     </button>
@@ -116,70 +116,69 @@
                         <h5 class="text-gold mb-0 fw-bold" id="summary-amount">200.00 USDT</h5>
                     </div>
 
-                    <!-- Payment Details: E-Wallet -->
-                    <div class="form-block">
-                        <h6 class="mb-3 fw-bold" style="color: var(--text-primary); font-size: 14px;">
-                            {{ __('app.transfer_usdt_to_ewallet') }}</h6>
-
-                        <div class="payment-info-item">
-                            <div class="payment-info-row">
-                                <span class="text-muted small payment-label">{{ __('app.network') }}</span>
-                                <div class="payment-value-with-copy">
-                                    <span class="fw-bold payment-value-text" style="color: var(--text-primary);"
-                                        id="display-network-name">{{ $walletTrc20['name'] }}</span>
-                                    <button type="button" class="btn-copy-mini" onclick="copyNetworkName()"
-                                        title="{{ __('app.copy') }}">
-                                        <i class="bi bi-clipboard"></i>
-                                    </button>
+                    <div class="w-card">
+                        <div class="w-card-head"><i class="bi bi-arrow-up-circle"></i>{{ __('app.transfer_usdt_to_ewallet') }}</div>
+                        <div class="form-block">
+                            <div class="payment-info-item">
+                                <div class="payment-info-row">
+                                    <span class="text-muted small payment-label">{{ __('app.network') }}</span>
+                                    <div class="payment-value-with-copy">
+                                        <span class="fw-bold payment-value-text" style="color: var(--text-primary);"
+                                            id="display-network-name">{{ $walletTrc20['name'] }}</span>
+                                        <button type="button" class="btn-copy-mini" onclick="copyNetworkName()"
+                                            title="{{ __('app.copy') }}">
+                                            <i class="bi bi-clipboard"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="payment-info-item">
-                            <div class="payment-info-row">
-                                <span class="text-muted small payment-label">{{ __('app.deposit_address') }}</span>
-                                <div class="payment-value-with-copy">
-                                    <span class="fw-bold payment-value-text wallet-address"
-                                        style="color: var(--text-primary);"
-                                        id="display-wallet-address">{{ $walletTrc20['address'] }}</span>
-                                    <button type="button" class="btn-copy-mini" onclick="copyWalletAddress()"
-                                        title="{{ __('app.copy') }}">
-                                        <i class="bi bi-clipboard"></i>
-                                    </button>
+                            <div class="payment-info-item">
+                                <div class="payment-info-row">
+                                    <span class="text-muted small payment-label">{{ __('app.deposit_address') }}</span>
+                                    <div class="payment-value-with-copy">
+                                        <span class="fw-bold payment-value-text wallet-address"
+                                            style="color: var(--text-primary);"
+                                            id="display-wallet-address">{{ $walletTrc20['address'] }}</span>
+                                        <button type="button" class="btn-copy-mini" onclick="copyWalletAddress()"
+                                            title="{{ __('app.copy') }}">
+                                            <i class="bi bi-clipboard"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="alert-info-box mt-3">
-                            <i class="bi bi-info-circle-fill me-2"></i>
-                            <span class="small">{!! __('app.transfer_info', ['network' => '<span id="display-network-type">TRC20</span>']) !!}</span>
+                            <div class="alert-info-box mt-3">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                <span class="small">{!! __('app.transfer_info', ['network' => '<span id="display-network-type">TRC20</span>']) !!}</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Upload Proof -->
-                    <div class="form-block">
-                        <h6 class="mb-3 fw-bold" style="color: var(--text-primary); font-size: 14px;">
-                            {{ __('app.upload_proof_of_transfer') }}</h6>
-                        <div class="upload-area" onclick="document.getElementById('file-upload').click()">
-                            <input type="file" name="payment_proof" id="file-upload" accept="image/*"
-                                style="display: none;" onchange="handleFileUpload(event)" required>
-                            <div id="upload-placeholder">
-                                <i class="bi bi-cloud-upload upload-icon"></i>
-                                <p class="mb-1" style="color: var(--text-primary);">{{ __('app.click_to_upload') }}</p>
-                                <small class="text-muted">{{ __('app.file_size_limit') }}</small>
+                    <div class="w-card">
+                        <div class="w-card-head"><i class="bi bi-cloud-upload"></i>{{ __('app.upload_proof_of_transfer') }}</div>
+                        <div class="form-block">
+                            <div class="upload-area" onclick="document.getElementById('file-upload').click()">
+                                <input type="file" name="payment_proof" id="file-upload" accept="image/*"
+                                    style="display: none;" onchange="handleFileUpload(event)" required>
+                                <div id="upload-placeholder">
+                                    <i class="bi bi-cloud-upload upload-icon"></i>
+                                    <p class="mb-1" style="color: var(--text-primary);">{{ __('app.click_to_upload') }}</p>
+                                    <small class="text-muted">{{ __('app.file_size_limit') }}</small>
+                                </div>
+                                <div id="upload-preview" style="display: none;">
+                                    <img id="preview-image" src="" alt="Preview" class="preview-image">
+                                    <p class="mb-0 mt-2" style="color: var(--text-primary);" id="file-name"></p>
+                                </div>
                             </div>
-                            <div id="upload-preview" style="display: none;">
-                                <img id="preview-image" src="" alt="Preview" class="preview-image">
-                                <p class="mb-0 mt-2" style="color: var(--text-primary);" id="file-name"></p>
-                            </div>
+                            @error('payment_proof')
+                                <small class="text-danger mt-1 d-block">{{ $message }}</small>
+                            @enderror
                         </div>
-                        @error('payment_proof')
-                            <small class="text-danger mt-1 d-block">{{ $message }}</small>
-                        @enderror
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="form-block">
+                    <div class="w-page-footer">
                         <div class="row g-2">
                             <div class="col-6">
                                 <button type="button" class="btn btn-outline-gold w-100" onclick="goToStep1()">

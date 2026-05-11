@@ -40,7 +40,7 @@
             </div>
 
             <!-- Filter Tabs -->
-            <div class="form-block" style="padding-bottom: 12px;">
+            <div style="padding: 12px 16px 0;">
                 <div class="filter-tabs">
                     <button class="filter-tab active" onclick="filterTransactions('all', event)">{{ __('app.all') }}</button>
                     <button class="filter-tab" onclick="filterTransactions('pending', event)">{{ __('app.pending') }}</button>

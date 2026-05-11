@@ -9,6 +9,13 @@ use App\Http\Controllers\Controller;
 
 class WalletController extends Controller
 {
+    public function index()
+    {
+        $user    = User::current();
+        $wallets = $user->wallets()->get();
+        return view('member.pages.wallet.index', compact('wallets'));
+    }
+
     public function store(Request $request)
     {
         $user = User::current();
