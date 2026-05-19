@@ -24,7 +24,7 @@ return [
     'trade_balance' => 'Saldo Trading',
     'from' => 'Dari',
     'transfer_to' => 'Transfer ke',
-    'select_currency' => 'Pilih mata uang',
+    'select_currency' => 'Pilih Mata Uang',
     'available' => 'Tersedia',
     'amount_of_transfers' => 'Jumlah transfer',
     'enter_transfer_amount' => 'Masukkan jumlah transfer',
@@ -182,6 +182,7 @@ return [
     'put' => 'PUT',
     'pending_status' => 'MENUNGGU',
     'na' => 'T/A',
+    'direction' => 'Arah',
 
     // Order Details
     'time_period' => 'periode waktu',
@@ -219,7 +220,6 @@ return [
 
     // Account Types
     'exchange' => 'Exchange',
-    'trade' => 'Trading',
     'locked' => 'terkunci',
 
     // Wallet Management
@@ -380,7 +380,6 @@ return [
     // Transaction Item
     'wallet_account' => 'Akun Wallet',
     'account_number' => 'Nomor Akun',
-    'withdrawal_amount' => 'Jumlah Penarikan',
     'fee_5_percent' => 'Biaya (5%)',
     'you_receive' => 'Anda Terima',
     'completed_at' => 'Selesai Pada',
@@ -489,14 +488,11 @@ return [
     'no_withdrawal_address' => 'Tidak ada alamat penarikan',
     'bind' => 'Tambah',
     'quantity' => 'Jumlah',
-    'all' => 'Semua',
-    'available' => 'Tersedia',
     'receivable_amount' => 'Jumlah Diterima',
     'withdrawal_instructions' => 'Instruksi Penarikan',
     'wd_instr_1' => 'Waktu penarikan adalah 24 jam.',
     'wd_instr_2' => 'Saat ini, penarikan hanya mendukung USDT (jaringan TRC20 & BEP20).',
     'wd_instr_3' => 'Setelah mengajukan permintaan penarikan, dana akan dibekukan hingga proses selesai.',
     'wd_instr_4' => 'Penarikan akan tiba dalam 12 jam setelah pengajuan. Jika tidak diterima, hubungi layanan pelanggan.',
-    'select_currency' => 'Pilih Mata Uang',
     'withdrawal_btn' => 'Tarik Dana',
 ];

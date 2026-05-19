@@ -183,6 +183,7 @@ return [
     'put' => 'PUT',
     'pending_status' => 'PENDING',
     'na' => 'N/A',
+    'direction' => 'Direction',
 
     // Order Details
     'time_period' => 'time period',
