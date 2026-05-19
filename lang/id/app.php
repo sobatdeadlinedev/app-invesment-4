@@ -162,6 +162,10 @@ return [
 
     // Join Confirmation
     'join_signal_confirmation' => 'Gabung sinyal ini?\n\nTaruhan Anda: $:bet_amount akan dikunci hingga penyelesaian.\n\nAnda akan menerima hadiah berdasarkan tingkat kemenangan.\n\nApakah Anda ingin melanjutkan?',
+    'new_signal_available'   => 'Sinyal Baru Tersedia',
+    'confirm_follow_signal'  => 'Konfirmasi Ikut Sinyal',
+    'signal_joined_success'  => 'Berhasil mengikuti sinyal: :title. Taruhan :amount USDT telah dikunci.',
+    'later'                  => 'Nanti',
     // Empty States
     'no_open_signals_for' => 'Tidak ada sinyal terbuka untuk',
     'check_back_later' => 'Periksa kembali nanti untuk sinyal trading baru',

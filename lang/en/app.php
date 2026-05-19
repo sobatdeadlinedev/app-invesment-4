@@ -162,7 +162,11 @@ return [
     'transfer_now' => 'Transfer now',
 
     // Join Confirmation
-   'join_signal_confirmation' => 'Join this signal?\n\nYour bet: $:bet_amount will be locked until settlement.\n\nYou will receive rewards based on the win rate.\n\nDo you want to continue?',
+    'join_signal_confirmation' => 'Join this signal?\n\nYour bet: $:bet_amount will be locked until settlement.\n\nYou will receive rewards based on the win rate.\n\nDo you want to continue?',
+    'new_signal_available'   => 'New Signal Available',
+    'confirm_follow_signal'  => 'Confirm Follow Signal',
+    'signal_joined_success'  => 'Successfully joined signal: :title. Bet :amount USDT has been locked.',
+    'later'                  => 'Later',
     // Empty States
     'no_open_signals_for' => 'No open signals for',
     'check_back_later' => 'Check back later for new trading signals',

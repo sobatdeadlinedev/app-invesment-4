@@ -57,6 +57,15 @@ class InvestController extends Controller
             $signal->betAmountPreview = $signal->calculateUserBetAmount($user);
         });
 
+        // Find first unjoined signal with sufficient balance for auto-popup
+        $unjoinedOpenSignal = $openSignals->first(function ($s) use ($user, $joinedSignalIds) {
+            if (in_array($s->id, $joinedSignalIds)) return false;
+            if ($s->bet_type === 'percentage') return $user->canJoinSignal();
+            return $user->getAvailableTradeBalance() >= $s->betAmountPreview;
+        });
+
+        $tab = $request->query('tab', 'signals');
+
         // ========================================
         // TAB 2: Historical Orders untuk coin ini
         // ========================================
@@ -110,26 +119,14 @@ $historyForThisCoin = SignalParticipant::where('user_id', $user->id)
             : 0;
 
         return view('member.pages.invest.coin-signals', compact(
-            // Current coin
-            'coin',
-            'coinInfo',
-
-            // Popup data
-            'allCoins',
-            'signalCounts',
-
-            // Tab 1: Trading Signals
-            'openSignals',
-            'joinedSignalIds',
-
-            // Tab 2: Historical Orders
+            'coin', 'coinInfo',
+            'allCoins', 'signalCounts',
+            'openSignals', 'joinedSignalIds',
+            'unjoinedOpenSignal', 'tab',
             'historyForThisCoin',
-            'totalJoinedThisCoin',
-            'totalSettledThisCoin',
-            'totalProfitLossThisCoin',
-            'totalFeesThisCoin',
-            'totalWinsThisCoin',
-            'winRateThisCoin'
+            'totalJoinedThisCoin', 'totalSettledThisCoin',
+            'totalProfitLossThisCoin', 'totalFeesThisCoin',
+            'totalWinsThisCoin', 'winRateThisCoin'
         ));
     }
 }

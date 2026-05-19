@@ -91,8 +91,8 @@ class SignalController extends Controller
             ]);
 
             return redirect()
-                ->back()
-                ->with('success', 'Successfully joined signal: ' . $signal->title . '. Bet amount: ' . number_format($betAmount, 2) . ' USDT has been locked.');
+                ->route('member.invest.coin', ['coin' => strtolower($signal->coin), 'tab' => 'history'])
+                ->with('success', __('app.signal_joined_success', ['title' => $signal->title, 'amount' => number_format($betAmount, 2)]));
         } catch (\Exception $e) {
             DB::rollBack();
 
