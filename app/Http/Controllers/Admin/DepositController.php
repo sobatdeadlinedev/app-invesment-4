@@ -186,27 +186,14 @@ class DepositController extends Controller
 
         $depositAmount = $deposit->total_amount;
 
-        // Level 1: 3%
-        $level1Commission = $depositAmount * 0.03;
+        // Referrer: 6%
+        $referrerCommission = $depositAmount * 0.06;
         $this->createCommissionTransaction(
             $referralUsage->referrer_id,
             $deposit->user_id,
-            $level1Commission,
-            'Level 1 Commission - First Deposit'
+            $referrerCommission,
+            'Referral Commission - First Deposit'
         );
-
-        // Level 2: 1%
-        $level2ReferralUsage = ReferralUsage::where('referred_id', $referralUsage->referrer_id)->first();
-
-        if ($level2ReferralUsage) {
-            $level2Commission = $depositAmount * 0.01;
-            $this->createCommissionTransaction(
-                $level2ReferralUsage->referrer_id,
-                $deposit->user_id,
-                $level2Commission,
-                'Level 2 Commission - First Deposit'
-            );
-        }
     }
 
     /**

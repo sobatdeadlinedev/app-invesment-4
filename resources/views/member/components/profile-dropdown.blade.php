@@ -16,43 +16,16 @@
                 @endif
             </div>
             <div class="profile-info">
+                <div class="profile-name">{{ auth()->user()->name }}</div>
                 <div class="profile-email">{{ auth()->user()->email }}</div>
-                <div class="profile-phone">
-                    <i class="bi bi-gift-fill"></i>
+                <div class="profile-id">
+                    <span class="profile-id-label">ID</span>
                     <span>{{ auth()->user()->refferal_code ?? '-' }}</span>
                     <button class="btn-copy" onclick="copyToClipboard('{{ auth()->user()->refferal_code ?? '' }}')">
                         <i class="bi bi-clipboard"></i>
                     </button>
                 </div>
             </div>
-        </div>
-
-        <!-- Verification Section -->
-        <div class="verification-section">
-            <!-- Single Verification -->
-            @if(auth()->user()->is_verified ?? false)
-                <!-- Already Verified -->
-                <a href="{{ route('member.verification.index') }}" class="verification-item verified">
-                    <div class="verification-content">
-                        <div class="verification-title">{{ app()->getLocale() == 'id' ? 'Verifikasi' : 'Verification' }}</div>
-                        <div class="verification-status">{{ app()->getLocale() == 'id' ? 'Sudah Terverifikasi' : 'Verified' }}</div>
-                    </div>
-                    <div class="verification-icon">
-                        <i class="bi bi-shield-check"></i>
-                    </div>
-                </a>
-            @else
-                <!-- Need Verification -->
-                <a href="{{ route('member.verification.index') }}" class="verification-item not-verified">
-                    <div class="verification-content">
-                        <div class="verification-title">{{ app()->getLocale() == 'id' ? 'Verifikasi' : 'Verification' }}</div>
-                        <div class="verification-status">{{ app()->getLocale() == 'id' ? 'Harus Verifikasi' : 'Must Verify' }}</div>
-                    </div>
-                    <div class="verification-icon">
-                        <i class="bi bi-shield-exclamation"></i>
-                    </div>
-                </a>
-            @endif
         </div>
 
         <!-- Logout Button -->
@@ -181,15 +154,21 @@
     margin-top: 8px;
 }
 
-.profile-email {
+.profile-name {
     color: #111827;
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.profile-email {
+    color: #6b7280;
+    font-size: 13px;
     margin-bottom: 8px;
     word-break: break-all;
 }
 
-.profile-phone {
+.profile-id {
     color: #6b7280;
     font-size: 13px;
     display: flex;
@@ -197,8 +176,14 @@
     gap: 6px;
 }
 
-.profile-phone i {
-    font-size: 12px;
+.profile-id-label {
+    background: #f3f4f6;
+    color: #374151;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
 }
 
 .btn-copy {
@@ -214,110 +199,6 @@
 
 .btn-copy:hover {
     color: #111827;
-}
-
-/* Verification Section */
-.verification-section {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    background: #ffffff;
-}
-
-.verification-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-    border-radius: 12px;
-    text-decoration: none;
-    transition: all 0.3s;
-    border: 1px solid transparent;
-    position: relative;
-    z-index: 1;
-    pointer-events: auto;
-    cursor: pointer;
-}
-
-.verification-item:hover {
-    transform: translateX(4px);
-    border-color: #d1d5db;
-}
-
-.verification-item * {
-    pointer-events: none;
-}
-
-.basic-verification {
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(14, 165, 233, 0.15));
-}
-
-.basic-verification:hover {
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(14, 165, 233, 0.25));
-}
-
-.advanced-verification {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(22, 163, 74, 0.15));
-}
-
-.advanced-verification:hover {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.25), rgba(22, 163, 74, 0.25));
-}
-
-/* Verified Status - Green */
-.verified {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(22, 163, 74, 0.15));
-}
-
-.verified:hover {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.25), rgba(22, 163, 74, 0.25));
-}
-
-.verified .verification-icon {
-    color: rgba(34, 197, 94, 0.9);
-}
-
-/* Not Verified Status - Orange/Red */
-.not-verified {
-    background: linear-gradient(135deg, rgba(234, 88, 12, 0.15), rgba(249, 115, 22, 0.15));
-}
-
-.not-verified:hover {
-    background: linear-gradient(135deg, rgba(234, 88, 12, 0.25), rgba(249, 115, 22, 0.25));
-}
-
-.not-verified .verification-icon {
-    color: rgba(234, 88, 12, 0.9);
-}
-
-.verification-content {
-    flex: 1;
-}
-
-.verification-title {
-    color: #111827;
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 4px;
-}
-
-.verification-status {
-    color: #6b7280;
-    font-size: 13px;
-}
-
-.verification-icon {
-    font-size: 28px;
-    color: rgba(255,255,255,0.5);
-}
-
-.basic-verification .verification-icon {
-    color: rgba(56, 189, 248, 0.8);
-}
-
-.advanced-verification .verification-icon {
-    color: rgba(34, 197, 94, 0.8);
 }
 
 /* Logout Section */
