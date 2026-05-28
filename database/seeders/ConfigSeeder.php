@@ -40,7 +40,7 @@ class ConfigSeeder extends Seeder
             ],
             [
                 'key' => 'app_email',
-                'value' => ['value' => 'jamesbond130694@gmail.com'],
+                'value' => ['value' => 'jameb6377@gmail.com'],
             ],
         ];
 
