@@ -473,7 +473,7 @@ return [
     // ===== BOTTOMBAR =====
     'nav_home' => 'Beranda',
     'nav_futures' => 'Futures',
-    'nav_access' => 'Akses',
+    'nav_access' => 'Validasi',
     'nav_wallet' => 'Dompet',
 
     // ===== WALLET / WITHDRAW =====

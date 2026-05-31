@@ -474,7 +474,7 @@ return [
     // ===== BOTTOMBAR =====
     'nav_home' => 'Home',
     'nav_futures' => 'Futures',
-    'nav_access' => 'Access',
+    'nav_access' => 'Validation',
     'nav_wallet' => 'Wallet',
 
     // ===== WALLET / WITHDRAW =====
