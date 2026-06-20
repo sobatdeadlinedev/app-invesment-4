@@ -19,15 +19,34 @@ class DepositController extends Controller
      */
     public function index()
     {
-        // Get both wallet types
-        $walletTrc20 = Config::get('app_wallet_trc20', ['name' => 'TRON Network (TRC20)', 'address' => '']);
-        $walletBep20 = Config::get('app_wallet_bep20', ['name' => 'Binance Smart Chain (BEP20)', 'address' => '']);
+        $walletTrc20Raw = Config::get('app_wallet_trc20', ['name' => 'TRON Network (TRC20)', 'addresses' => []]);
+        $walletBep20Raw = Config::get('app_wallet_bep20', ['name' => 'Binance Smart Chain (BEP20)', 'addresses' => []]);
 
-        // Get user balance
-        $user = auth()->user();
+        // Backward-compat: key lama 'address' (string)
+        if (!isset($walletTrc20Raw['addresses']) && isset($walletTrc20Raw['address'])) {
+            $walletTrc20Raw['addresses'] = array_filter([$walletTrc20Raw['address']]);
+        }
+        if (!isset($walletBep20Raw['addresses']) && isset($walletBep20Raw['address'])) {
+            $walletBep20Raw['addresses'] = array_filter([$walletBep20Raw['address']]);
+        }
+
+        // Ambil 1 alamat random per network
+        $trc20Addresses = array_values(array_filter($walletTrc20Raw['addresses'] ?? []));
+        $bep20Addresses = array_values(array_filter($walletBep20Raw['addresses'] ?? []));
+
+        $walletTrc20 = [
+            'name'    => $walletTrc20Raw['name'],
+            'address' => !empty($trc20Addresses) ? $trc20Addresses[array_rand($trc20Addresses)] : '',
+        ];
+        $walletBep20 = [
+            'name'    => $walletBep20Raw['name'],
+            'address' => !empty($bep20Addresses) ? $bep20Addresses[array_rand($bep20Addresses)] : '',
+        ];
+
+        $user            = auth()->user();
         $exchangeBalance = $user->exchange_balance;
-        $tradeBalance = $user->trade_balance;
-        $userBalance = $user->exchange_balance + $user->trade_balance;
+        $tradeBalance    = $user->trade_balance;
+        $userBalance     = $user->exchange_balance + $user->trade_balance;
 
         return view('member.pages.deposit.index', compact(
             'walletTrc20',
@@ -48,14 +67,14 @@ class DepositController extends Controller
             'wallet_type'   => 'required|in:trc20,bep20',
             'payment_proof' => 'required|image|mimes:jpeg,png,jpg|max:5120',
         ], [
-            'amount.required'       => __('app.amount_required'),
-            'amount.min'            => __('app.minimum_deposit_alert'),
-            'wallet_type.required'  => __('app.wallet_type_required'),
-            'wallet_type.in'        => __('app.wallet_type_invalid'),
-            'payment_proof.required'=> __('app.payment_proof_required'),
-            'payment_proof.image'   => __('app.payment_proof_image'),
-            'payment_proof.mimes'   => __('app.payment_proof_mimes'),
-            'payment_proof.max'     => __('app.file_size_exceeded'),
+            'amount.required'        => __('app.amount_required'),
+            'amount.min'             => __('app.minimum_deposit_alert'),
+            'wallet_type.required'   => __('app.wallet_type_required'),
+            'wallet_type.in'         => __('app.wallet_type_invalid'),
+            'payment_proof.required' => __('app.payment_proof_required'),
+            'payment_proof.image'    => __('app.payment_proof_image'),
+            'payment_proof.mimes'    => __('app.payment_proof_mimes'),
+            'payment_proof.max'      => __('app.file_size_exceeded'),
         ]);
 
         try {
