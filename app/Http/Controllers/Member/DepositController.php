@@ -19,6 +19,13 @@ class DepositController extends Controller
      */
     public function index()
     {
+        // Cek apakah ada deposit pending
+        $pendingDeposit = Transaction::forUser(auth()->id())
+            ->deposit()
+            ->pending()
+            ->latest()
+            ->first();
+
         $walletTrc20Raw = Config::get('app_wallet_trc20', ['name' => 'TRON Network (TRC20)', 'addresses' => []]);
         $walletBep20Raw = Config::get('app_wallet_bep20', ['name' => 'Binance Smart Chain (BEP20)', 'addresses' => []]);
 
@@ -30,18 +37,48 @@ class DepositController extends Controller
             $walletBep20Raw['addresses'] = array_filter([$walletBep20Raw['address']]);
         }
 
-        // Ambil 1 alamat random per network
         $trc20Addresses = array_values(array_filter($walletTrc20Raw['addresses'] ?? []));
         $bep20Addresses = array_values(array_filter($walletBep20Raw['addresses'] ?? []));
 
-        $walletTrc20 = [
-            'name'    => $walletTrc20Raw['name'],
-            'address' => !empty($trc20Addresses) ? $trc20Addresses[array_rand($trc20Addresses)] : '',
-        ];
-        $walletBep20 = [
-            'name'    => $walletBep20Raw['name'],
-            'address' => !empty($bep20Addresses) ? $bep20Addresses[array_rand($bep20Addresses)] : '',
-        ];
+        $sessionKey = 'deposit_wallet_' . auth()->id();
+
+        if ($pendingDeposit) {
+            // Ada pending → pakai alamat yang tersimpan di transaksi, bersihkan session
+            session()->forget($sessionKey);
+            $walletTrc20 = [
+                'name'    => $walletTrc20Raw['name'],
+                'address' => $pendingDeposit->wallet_address ?? (!empty($trc20Addresses) ? $trc20Addresses[0] : ''),
+            ];
+            $walletBep20 = [
+                'name'    => $walletBep20Raw['name'],
+                'address' => $pendingDeposit->wallet_address ?? (!empty($bep20Addresses) ? $bep20Addresses[0] : ''),
+            ];
+        } else {
+            // Tidak ada pending → cek session dulu, kalau belum ada baru random
+            $cached = session($sessionKey);
+
+            if ($cached) {
+                // Pakai alamat yang sudah di-assign sebelumnya (tidak berubah saat refresh)
+                $walletTrc20 = $cached['trc20'];
+                $walletBep20 = $cached['bep20'];
+            } else {
+                // Pertama kali buka (atau setelah deposit selesai) → random alamat baru
+                $walletTrc20 = [
+                    'name'    => $walletTrc20Raw['name'],
+                    'address' => !empty($trc20Addresses) ? $trc20Addresses[array_rand($trc20Addresses)] : '',
+                ];
+                $walletBep20 = [
+                    'name'    => $walletBep20Raw['name'],
+                    'address' => !empty($bep20Addresses) ? $bep20Addresses[array_rand($bep20Addresses)] : '',
+                ];
+
+                // Simpan ke session supaya refresh tidak berubah
+                session([$sessionKey => [
+                    'trc20' => $walletTrc20,
+                    'bep20' => $walletBep20,
+                ]]);
+            }
+        }
 
         $user            = auth()->user();
         $exchangeBalance = $user->exchange_balance;
@@ -53,7 +90,8 @@ class DepositController extends Controller
             'walletBep20',
             'exchangeBalance',
             'tradeBalance',
-            'userBalance'
+            'userBalance',
+            'pendingDeposit'
         ));
     }
 
@@ -62,10 +100,23 @@ class DepositController extends Controller
      */
     public function store(Request $request)
     {
+        // Guard: tolak kalau masih ada pending
+        $hasPending = Transaction::forUser(auth()->id())
+            ->deposit()
+            ->pending()
+            ->exists();
+
+        if ($hasPending) {
+            return redirect()
+                ->route('member.deposit.index')
+                ->with('error', 'You have a pending deposit. Please wait until it is processed before submitting a new one.');
+        }
+
         $request->validate([
-            'amount'        => 'required|numeric|min:200',
-            'wallet_type'   => 'required|in:trc20,bep20',
-            'payment_proof' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+            'amount'         => 'required|numeric|min:200',
+            'wallet_type'    => 'required|in:trc20,bep20',
+            'wallet_address' => 'required|string',
+            'payment_proof'  => 'required|image|mimes:jpeg,png,jpg|max:5120',
         ], [
             'amount.required'        => __('app.amount_required'),
             'amount.min'             => __('app.minimum_deposit_alert'),
@@ -80,18 +131,12 @@ class DepositController extends Controller
         try {
             DB::beginTransaction();
 
-            // Upload payment proof
             $proofPath = $this->uploadPaymentProof($request->file('payment_proof'));
-
-            // Generate unique reference
             $reference = Transaction::generateReference('DEP');
 
-            $depositAmount = $request->amount;
-
-            // Get wallet type label for payment method
+            $depositAmount   = $request->amount;
             $walletTypeLabel = $request->wallet_type === 'trc20' ? 'TRC20 (TRON)' : 'BEP20 (BSC)';
 
-            // Create transaction
             $transaction = Transaction::create([
                 'user_id'        => auth()->id(),
                 'reference'      => $reference,
@@ -104,14 +149,17 @@ class DepositController extends Controller
                 'source_user_id' => null,
                 'status'         => 'pending',
                 'payment_method' => $walletTypeLabel,
+                'wallet_address' => $request->wallet_address, // simpan alamat yang dipakai
                 'payment_proof'  => $proofPath,
                 'approved_by'    => null,
             ]);
 
-            // Send email notification to admin
             $this->sendAdminNotification($transaction);
 
             DB::commit();
+
+            // Hapus session wallet supaya deposit berikutnya dapat alamat random baru
+            session()->forget('deposit_wallet_' . auth()->id());
 
             return redirect()
                 ->route('member.deposit.history')
@@ -151,6 +199,7 @@ class DepositController extends Controller
                 'reference'      => $transaction->reference,
                 'amount'         => $transaction->amount,
                 'payment_method' => $transaction->payment_method,
+                'wallet_address' => $transaction->wallet_address,
                 'created_at'     => $transaction->created_at->format('d M Y H:i'),
             ];
 

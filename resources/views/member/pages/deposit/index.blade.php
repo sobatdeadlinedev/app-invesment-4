@@ -16,10 +16,95 @@
         </a>
     </div>
 
+    @if ($pendingDeposit)
+    {{-- ══════════════════════════════════════════════════════
+         ADA DEPOSIT PENDING → tampilkan info, kunci form baru
+    ══════════════════════════════════════════════════════ --}}
+
+    <div class="dp-pending-wrap">
+        <div class="dp-pending-icon">
+            <i class="bi bi-hourglass-split"></i>
+        </div>
+        <div class="dp-pending-body">
+            <div class="dp-pending-title">Deposit Sedang Diproses</div>
+            <div class="dp-pending-sub">Tunggu hingga deposit sebelumnya selesai sebelum membuat deposit baru.</div>
+        </div>
+    </div>
+
+    <!-- Detail deposit pending -->
+    <div class="dp-section">
+        <div class="dp-label">Detail Deposit Aktif</div>
+
+        <div class="dp-info-row">
+            <span class="dp-info-label">Referensi</span>
+            <div class="dp-info-val-wrap">
+                <span class="dp-info-val dp-mono">{{ $pendingDeposit->reference }}</span>
+                <button type="button" class="dp-copy-btn" onclick="copyRaw('{{ $pendingDeposit->reference }}', 'copy-ref-icon')" title="Salin">
+                    <i class="bi bi-clipboard" id="copy-ref-icon"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="dp-info-row">
+            <span class="dp-info-label">Jumlah</span>
+            <div class="dp-info-val-wrap">
+                <span class="dp-info-val">{{ number_format($pendingDeposit->amount, 2) }} USDT</span>
+            </div>
+        </div>
+
+        <div class="dp-info-row">
+            <span class="dp-info-label">Network</span>
+            <div class="dp-info-val-wrap">
+                <span class="dp-info-val">{{ $pendingDeposit->payment_method }}</span>
+            </div>
+        </div>
+
+        @if ($pendingDeposit->wallet_address)
+        <div class="dp-info-row">
+            <span class="dp-info-label">Alamat Tujuan</span>
+            <div class="dp-info-val-wrap">
+                <span class="dp-info-val dp-mono">{{ $pendingDeposit->wallet_address }}</span>
+                <button type="button" class="dp-copy-btn" onclick="copyRaw('{{ $pendingDeposit->wallet_address }}', 'copy-addr-icon')" title="Salin">
+                    <i class="bi bi-clipboard" id="copy-addr-icon"></i>
+                </button>
+            </div>
+        </div>
+        @endif
+
+        <div class="dp-info-row">
+            <span class="dp-info-label">Waktu</span>
+            <div class="dp-info-val-wrap">
+                <span class="dp-info-val">{{ $pendingDeposit->created_at->format('d M Y H:i') }}</span>
+            </div>
+        </div>
+
+        <div class="dp-info-row" style="border-bottom:none;">
+            <span class="dp-info-label">Status</span>
+            <div class="dp-info-val-wrap">
+                <span class="dp-badge-pending">
+                    <i class="bi bi-clock me-1"></i>Pending
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tombol ke riwayat -->
+    <div class="dp-footer">
+        <a href="{{ route('member.deposit.history') }}" class="dp-submit-btn dp-hist-link">
+            <i class="bi bi-clock-history me-2"></i>Lihat Riwayat Deposit
+        </a>
+    </div>
+
+    @else
+    {{-- ══════════════════════════════════════════════════════
+         TIDAK ADA PENDING → form deposit normal
+    ══════════════════════════════════════════════════════ --}}
+
     <form id="deposit-form" action="{{ route('member.deposit.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="amount" id="form-amount">
         <input type="hidden" name="wallet_type" id="form-wallet-type" value="trc20">
+        <input type="hidden" name="wallet_address" id="form-wallet-address" value="{{ $walletTrc20['address'] }}">
 
         <!-- Amount -->
         <div class="dp-section">
@@ -113,6 +198,8 @@
         </div>
 
     </form>
+    @endif
+
 </div>
 
 @push('styles')
@@ -134,6 +221,39 @@
 .dp-subtitle { color: var(--text-muted); font-size: 11px; margin: 3px 0 0; }
 .dp-hist-btn { color: var(--text-muted); font-size: 19px; flex-shrink: 0; text-decoration: none; }
 .dp-hist-btn:hover { color: var(--gold-color); }
+
+/* Pending banner */
+.dp-pending-wrap {
+    display: flex; align-items: flex-start; gap: 14px;
+    margin: 16px 20px 0;
+    background: rgba(234,179,8,0.08);
+    border: 1px solid rgba(234,179,8,0.25);
+    border-radius: 12px; padding: 14px 16px;
+}
+.dp-pending-icon {
+    width: 40px; height: 40px; flex-shrink: 0;
+    background: rgba(234,179,8,0.15); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #eab308; font-size: 18px;
+}
+.dp-pending-title { color: #eab308; font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.dp-pending-sub   { color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+
+/* Badge pending */
+.dp-badge-pending {
+    display: inline-flex; align-items: center;
+    background: rgba(234,179,8,0.12); border: 1px solid rgba(234,179,8,0.3);
+    color: #eab308; font-size: 12px; font-weight: 600;
+    padding: 4px 10px; border-radius: 20px;
+}
+
+/* History link styled as button */
+.dp-hist-link {
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+}
+.dp-hist-link:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59,130,246,0.35) !important; }
 
 /* Sections */
 .dp-section { padding: 16px 20px; border-bottom: 1px solid var(--border-color); }
@@ -176,7 +296,7 @@
     border-bottom: 1px solid var(--border-color);
 }
 .dp-info-row:last-of-type { border-bottom: none; }
-.dp-info-label { color: var(--text-muted); font-size: 12px; flex-shrink: 0; min-width: 90px; padding-top: 2px; }
+.dp-info-label { color: var(--text-muted); font-size: 12px; flex-shrink: 0; min-width: 100px; padding-top: 2px; }
 .dp-info-val-wrap { display: flex; align-items: center; gap: 8px; flex: 1; justify-content: flex-end; }
 .dp-info-val { color: #fff; font-size: 13px; font-weight: 600; text-align: right; word-break: break-all; line-height: 1.5; }
 .dp-mono { font-family: monospace; font-size: 12px; letter-spacing: 0.3px; }
@@ -226,13 +346,26 @@
 
 @push('scripts')
 <script>
-let selectedWalletType = 'trc20';
-const MIN_DEPOSIT = 200;
+// Copy universal — dipakai di halaman pending maupun form normal
+function copyRaw(text, iconId) {
+    navigator.clipboard.writeText(text).then(function () {
+        var icon = document.getElementById(iconId);
+        if (icon) {
+            icon.className = 'bi bi-check-lg';
+            setTimeout(function () { icon.className = 'bi bi-clipboard'; }, 2000);
+        }
+    });
+}
 
+@if (!$pendingDeposit)
+// ─── Data wallet dari server (fresh random karena tidak ada pending) ──────────
 const walletData = {
     trc20: { name: '{{ $walletTrc20['name'] }}', address: '{{ $walletTrc20['address'] }}' },
     bep20: { name: '{{ $walletBep20['name'] }}', address: '{{ $walletBep20['address'] }}' }
 };
+
+let selectedWalletType = 'trc20';
+const MIN_DEPOSIT = 200;
 
 const translations = {
     pleaseEnterValidAmount: "{{ __('app.please_enter_valid_amount') }}",
@@ -241,70 +374,82 @@ const translations = {
     fileSizeExceeded:       "{{ __('app.file_size_exceeded') }}",
     fileTypeNotAllowed:     "{{ __('app.file_type_not_allowed') }}",
     depositConfirmation:    "{{ __('app.deposit_confirmation') }}",
-    copied:                 "{{ __('app.copied') }}"
 };
-
-@if (session('success')) alert('{{ session('success') }}'); @endif
-@if (session('error'))   alert('{{ session('error') }}'); @endif
-@if ($errors->any())     alert('{{ $errors->first() }}'); @endif
 
 function selectWalletType(type) {
     selectedWalletType = type;
     document.getElementById('wallet-' + type).checked = true;
-    document.querySelectorAll('.dp-net-option').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.dp-net-option').forEach(function (el) {
+        el.classList.remove('active');
+    });
     document.getElementById('opt-' + type).classList.add('active');
 
-    const wallet = walletData[type];
-    document.getElementById('display-network-name').textContent = wallet.name;
+    var wallet = walletData[type];
+    document.getElementById('display-network-name').textContent   = wallet.name;
     document.getElementById('display-wallet-address').textContent = wallet.address;
-    document.getElementById('display-network-type').textContent = type.toUpperCase();
+    document.getElementById('display-network-type').textContent   = type.toUpperCase();
+
+    // Update hidden input → wallet_address yang akan disimpan ke DB
+    document.getElementById('form-wallet-address').value = wallet.address;
 }
 
 function copyText(target) {
-    const text = target === 'network'
+    var text = target === 'network'
         ? document.getElementById('display-network-name').textContent
         : document.getElementById('display-wallet-address').textContent;
-    const iconId = target === 'network' ? 'copy-network-icon' : 'copy-address-icon';
-    const icon = document.getElementById(iconId);
-
-    navigator.clipboard.writeText(text).then(() => {
-        icon.className = 'bi bi-check-lg';
-        setTimeout(() => icon.className = 'bi bi-clipboard', 2000);
-    });
+    var iconId = target === 'network' ? 'copy-network-icon' : 'copy-address-icon';
+    copyRaw(text, iconId);
 }
 
 function handleFileUpload(event) {
-    const file = event.target.files[0];
+    var file = event.target.files[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { alert(translations.fileSizeExceeded); event.target.value = ''; return; }
-    const allowed = ['image/jpeg', 'image/png', 'image/jpg'];
-    if (!allowed.includes(file.type)) { alert(translations.fileTypeNotAllowed); event.target.value = ''; return; }
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        document.getElementById('preview-image').src = e.target.result;
-        document.getElementById('file-name').textContent = file.name;
-        document.getElementById('upload-placeholder').style.display = 'none';
-        document.getElementById('upload-preview').style.display = 'block';
+    if (file.size > 5 * 1024 * 1024) {
+        alert(translations.fileSizeExceeded);
+        event.target.value = '';
+        return;
+    }
+    var allowed = ['image/jpeg', 'image/png', 'image/jpg'];
+    if (!allowed.includes(file.type)) {
+        alert(translations.fileTypeNotAllowed);
+        event.target.value = '';
+        return;
+    }
+    var reader = new FileReader();
+    reader.onload = function (e) {
+        document.getElementById('preview-image').src                    = e.target.result;
+        document.getElementById('file-name').textContent                = file.name;
+        document.getElementById('upload-placeholder').style.display     = 'none';
+        document.getElementById('upload-preview').style.display         = 'block';
     };
     reader.readAsDataURL(file);
 }
 
 function submitDeposit() {
-    const amount = parseFloat(document.getElementById('deposit-amount').value);
+    var amount = parseFloat(document.getElementById('deposit-amount').value);
     if (!amount || amount <= 0) { alert(translations.pleaseEnterValidAmount); return; }
     if (amount < MIN_DEPOSIT)   { alert(translations.minimumDepositAlert); return; }
 
-    const fileInput = document.getElementById('file-upload');
+    var fileInput = document.getElementById('file-upload');
     if (!fileInput.files || !fileInput.files[0]) { alert(translations.pleaseUploadProof); return; }
 
     document.getElementById('form-amount').value      = amount;
     document.getElementById('form-wallet-type').value = selectedWalletType;
+    // form-wallet-address sudah di-update oleh selectWalletType()
 
     if (confirm(translations.depositConfirmation)) {
         document.getElementById('deposit-form').submit();
     }
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    selectWalletType('trc20');
+});
+@endif
+
+@if (session('success')) alert('{{ session('success') }}'); @endif
+@if (session('error'))   alert('{{ session('error') }}'); @endif
+@if ($errors->any())     alert('{{ $errors->first() }}'); @endif
 </script>
 @endpush
 @endsection
