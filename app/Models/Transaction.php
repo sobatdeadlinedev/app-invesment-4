@@ -10,25 +10,28 @@ class Transaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
-        'reference',
-        'amount',
-        'total_amount',
-        'type',
-        'balance_type',
-        'wallet_id',
-        'withdrawal_fee',
-        'source_user_id',
-        'status',
-        'payment_method',
-        'payment_proof',
-        'approved_by',
-    ];
+    'user_id',
+    'reference',
+    'amount',
+    'total_amount',
+    'type',
+    'balance_type',
+    'wallet_id',
+    'withdrawal_fee',
+    'source_user_id',
+    'status',
+    'payment_method',
+    'wallet_address',  // ✅ tambah ini
+    'payment_proof',
+    'approved_by',
+    'expired_at',      // ✅ tambah ini
+];
 
     protected $casts = [
         'amount' => 'decimal:2',
         'total_amount' => 'decimal:2',
         'withdrawal_fee' => 'decimal:2',
+        'expired_at' => 'datetime',
     ];
 
     // ==================== RELATIONSHIPS ====================

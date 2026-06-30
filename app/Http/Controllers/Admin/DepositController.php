@@ -13,6 +13,13 @@ class DepositController extends Controller
 {
     public function index()
     {
+        // Auto-expire deposit yang sudah lewat waktu (global, semua user)
+        Transaction::where('type', 'deposit')
+            ->where('status', 'pending')
+            ->where('expired_at', '<', now())
+            ->whereNotNull('expired_at')
+            ->update(['status' => 'expired']);
+
         // Gabungkan deposit dan adjustment
         $deposits = Transaction::with(['user'])
             ->whereIn('type', ['deposit', 'adjustment'])
@@ -41,22 +48,22 @@ class DepositController extends Controller
 
         if ($deposit->status !== 'pending') {
             return redirect()->route('admin.deposit.index')
-                ->with('error', 'This deposit has already been processed.');
+                ->with('error', 'Deposit ini sudah diproses sebelumnya (status: ' . $deposit->status . ').');
         }
 
         DB::beginTransaction();
         try {
             // Update deposit status
             $deposit->update([
-                'status' => 'approved',
+                'status'      => 'approved',
                 'approved_by' => auth()->id(),
             ]);
 
-            // Add to exchange balance
+            // Tambah saldo exchange
             $user = $deposit->user;
             $user->addExchangeBalance($deposit->total_amount);
 
-            // Check if this is first deposit
+            // Cek apakah ini deposit pertama yang diapprove
             $previousApprovedDeposits = Transaction::where('user_id', $deposit->user_id)
                 ->where('type', 'deposit')
                 ->where('status', 'approved')
@@ -65,28 +72,26 @@ class DepositController extends Controller
 
             $isFirstDeposit = ($previousApprovedDeposits === 0);
 
-            // Give 4% bonus for first deposit
+            // Bonus 4% untuk deposit pertama
             if ($isFirstDeposit) {
                 $bonusAmount = $deposit->total_amount * 0.04;
 
-                // Add bonus to exchange balance
                 $user->addExchangeBalance($bonusAmount);
 
-                // Create bonus transaction record
                 Transaction::create([
-                    'user_id' => $user->id,
+                    'user_id'        => $user->id,
                     'source_user_id' => null,
-                    'reference' => Transaction::generateReference('DP'),
-                    'amount' => $bonusAmount,
-                    'total_amount' => $bonusAmount,
-                    'type' => 'deposit',
-                    'balance_type' => 'exchange',
-                    'status' => 'approved',
-                    'approved_by' => auth()->id(),
+                    'reference'      => Transaction::generateReference('DP'),
+                    'amount'         => $bonusAmount,
+                    'total_amount'   => $bonusAmount,
+                    'type'           => 'deposit',
+                    'balance_type'   => 'exchange',
+                    'status'         => 'approved',
+                    'approved_by'    => auth()->id(),
                 ]);
             }
 
-            // Process referral commissions ONLY for first deposit
+            // Proses komisi referral hanya untuk deposit pertama
             if ($isFirstDeposit) {
                 $this->processReferralCommissions($deposit);
             }
@@ -94,8 +99,8 @@ class DepositController extends Controller
             DB::commit();
 
             $message = $isFirstDeposit
-                ? 'Deposit has been approved successfully and added to Exchange Balance. Bonus 4% has been credited!'
-                : 'Deposit has been approved successfully and added to Exchange Balance.';
+                ? 'Deposit berhasil diapprove dan saldo Exchange telah ditambahkan. Bonus 4% telah dikreditkan!'
+                : 'Deposit berhasil diapprove dan saldo Exchange telah ditambahkan.';
 
             return redirect()->route('admin.deposit.index')
                 ->with('success', $message);
@@ -103,7 +108,7 @@ class DepositController extends Controller
             DB::rollBack();
 
             return redirect()->route('admin.deposit.index')
-                ->with('error', 'Failed to approve deposit: ' . $e->getMessage());
+                ->with('error', 'Gagal approve deposit: ' . $e->getMessage());
         }
     }
 
@@ -113,48 +118,46 @@ class DepositController extends Controller
 
         if ($deposit->status !== 'pending') {
             return redirect()->route('admin.deposit.index')
-                ->with('error', 'This deposit has already been processed.');
+                ->with('error', 'Deposit ini sudah diproses sebelumnya (status: ' . $deposit->status . ').');
         }
 
         $deposit->update([
-            'status' => 'rejected',
+            'status'      => 'rejected',
             'approved_by' => auth()->id(),
         ]);
 
         return redirect()->route('admin.deposit.index')
-            ->with('success', 'Deposit has been rejected.');
+            ->with('success', 'Deposit telah ditolak.');
     }
 
     /**
-     * NEW: Manual adjustment (add balance)
+     * Manual adjustment (tambah saldo)
      */
     public function adjustment(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'amount' => 'required|numeric|min:0.01',
+            'user_id'      => 'required|exists:users,id',
+            'amount'       => 'required|numeric|min:0.01',
             'balance_type' => 'required|in:exchange,trade',
         ]);
 
         DB::beginTransaction();
         try {
-            $user = User::findOrFail($request->user_id);
-            $amount = $request->amount;
+            $user        = User::findOrFail($request->user_id);
+            $amount      = $request->amount;
             $balanceType = $request->balance_type;
 
-            // Create adjustment transaction
             Transaction::create([
-                'user_id' => $user->id,
-                'reference' => Transaction::generateReference('ADJ'),
-                'amount' => $amount,
+                'user_id'      => $user->id,
+                'reference'    => Transaction::generateReference('ADJ'),
+                'amount'       => $amount,
                 'total_amount' => $amount,
-                'type' => 'adjustment',
+                'type'         => 'adjustment',
                 'balance_type' => $balanceType,
-                'status' => 'approved',
-                'approved_by' => auth()->id(),
+                'status'       => 'approved',
+                'approved_by'  => auth()->id(),
             ]);
 
-            // Add balance based on type
             if ($balanceType === 'trade') {
                 $user->addTradeBalance($amount);
             } else {
@@ -164,17 +167,17 @@ class DepositController extends Controller
             DB::commit();
 
             return redirect()->route('admin.deposit.index')
-                ->with('success', "Successfully added {$amount} USDT to {$user->name}'s {$balanceType} balance.");
+                ->with('success', "Berhasil menambahkan {$amount} USDT ke saldo {$balanceType} milik {$user->name}.");
         } catch (\Exception $e) {
             DB::rollBack();
 
             return redirect()->route('admin.deposit.index')
-                ->with('error', 'Failed to add balance: ' . $e->getMessage());
+                ->with('error', 'Gagal menambahkan saldo: ' . $e->getMessage());
         }
     }
 
     /**
-     * Process referral commissions - UPDATED to add to exchange balance
+     * Proses komisi referral — hanya untuk deposit pertama
      */
     private function processReferralCommissions(Transaction $deposit)
     {
@@ -184,10 +187,9 @@ class DepositController extends Controller
             return;
         }
 
-        $depositAmount = $deposit->total_amount;
-
-        // Referrer: 6%
+        $depositAmount     = $deposit->total_amount;
         $referrerCommission = $depositAmount * 0.06;
+
         $this->createCommissionTransaction(
             $referralUsage->referrer_id,
             $deposit->user_id,
@@ -197,24 +199,23 @@ class DepositController extends Controller
     }
 
     /**
-     * Create commission transaction - UPDATED to add to exchange balance
+     * Buat transaksi komisi dan tambah saldo exchange referrer
      */
     private function createCommissionTransaction($userId, $sourceUserId, $amount, $note = '')
     {
-        // Add commission to exchange balance
         $user = \App\Models\User::find($userId);
         $user->addExchangeBalance($amount);
 
         return Transaction::create([
-            'user_id' => $userId,
+            'user_id'        => $userId,
             'source_user_id' => $sourceUserId,
-            'reference' => Transaction::generateReference('CM'),
-            'amount' => $amount,
-            'total_amount' => $amount,
-            'type' => 'commission',
-            'balance_type' => 'exchange',
-            'status' => 'approved',
-            'approved_by' => auth()->id(),
+            'reference'      => Transaction::generateReference('CM'),
+            'amount'         => $amount,
+            'total_amount'   => $amount,
+            'type'           => 'commission',
+            'balance_type'   => 'exchange',
+            'status'         => 'approved',
+            'approved_by'    => auth()->id(),
         ]);
     }
 }

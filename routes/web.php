@@ -62,14 +62,14 @@ Route::middleware('guest')->group(function () {
 
     // Register
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
- 
-// Register - Step 2: OTP Verification
-Route::get('/register/verify-otp', [RegisterController::class, 'showVerifyOtpForm'])->name('register.verify-otp');
-Route::post('/register/verify-otp', [RegisterController::class, 'verifyOtp'])->name('register.verify-otp.post');
- 
-// Register - Resend OTP
-Route::get('/register/resend-otp', [RegisterController::class, 'resendOtp'])->name('register.resend-otp');
+    Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
+
+    // Register - Step 2: OTP Verification
+    Route::get('/register/verify-otp', [RegisterController::class, 'showVerifyOtpForm'])->name('register.verify-otp');
+    Route::post('/register/verify-otp', [RegisterController::class, 'verifyOtp'])->name('register.verify-otp.post');
+
+    // Register - Resend OTP
+    Route::get('/register/resend-otp', [RegisterController::class, 'resendOtp'])->name('register.resend-otp');
 
     // Forgot password
     Route::get('/forget-password', [ForgetPasswordController::class, 'showForgetPasswordForm'])->name('forget-password');
@@ -113,22 +113,18 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
 
     Route::prefix('deposit')->name('deposit.')->group(function () {
         Route::get('/', [AdminDepositController::class, 'index'])->name('index');
+        Route::post('/adjustment', [AdminDepositController::class, 'adjustment'])->name('adjustment');
         Route::get('/{deposit}', [AdminDepositController::class, 'show'])->name('show');
         Route::post('/{deposit}/approve', [AdminDepositController::class, 'approve'])->name('approve');
         Route::post('/{deposit}/reject', [AdminDepositController::class, 'reject'])->name('reject');
-
-        // NEW: Manual adjustment (add balance)
-        Route::post('/adjustment', [AdminDepositController::class, 'adjustment'])->name('adjustment');
     });
 
     Route::prefix('withdrawal')->name('withdrawal.')->group(function () {
         Route::get('/', [AdminWithdrawalController::class, 'index'])->name('index');
+        Route::post('/deduction', [AdminWithdrawalController::class, 'deduction'])->name('deduction');
         Route::get('/{withdrawal}', [AdminWithdrawalController::class, 'show'])->name('show');
         Route::post('/{withdrawal}/approve', [AdminWithdrawalController::class, 'approve'])->name('approve');
         Route::post('/{withdrawal}/reject', [AdminWithdrawalController::class, 'reject'])->name('reject');
-
-        // NEW: Manual deduction (reduce balance)
-        Route::post('/deduction', [AdminWithdrawalController::class, 'deduction'])->name('deduction');
     });
 
     Route::prefix('balance')->name('balance.')->group(function () {
@@ -174,7 +170,6 @@ Route::prefix('member')->name('member.')->middleware(['auth', 'role:member'])->g
         Route::post('/prices', [MemberMarketController::class, 'getPrices'])->name('prices');
     });
 
-
     // Futures Trading (CALL/PUT 1-menit)
     Route::prefix('futures')->name('futures.')->group(function () {
         Route::get('/', [MemberFuturesController::class, 'index'])->name('index');
@@ -185,7 +180,7 @@ Route::prefix('member')->name('member.')->middleware(['auth', 'role:member'])->g
 
     // Trading Signals (di invest)
     Route::prefix('invest')->name('invest.')->group(function () {
-        Route::get('/coin', [MemberInvestController::class, 'coinSignals'])->name('coin'); // All-in-one page
+        Route::get('/coin', [MemberInvestController::class, 'coinSignals'])->name('coin');
     });
 
     // Signal actions
@@ -207,6 +202,7 @@ Route::prefix('member')->name('member.')->middleware(['auth', 'role:member'])->g
         Route::get('/', [MemberDepositController::class, 'index'])->name('index');
         Route::post('/store', [MemberDepositController::class, 'store'])->name('store');
         Route::get('/history', [MemberDepositController::class, 'history'])->name('history');
+        Route::patch('/{id}/cancel', [MemberDepositController::class, 'cancel'])->name('cancel');
     });
 
     Route::prefix('withdraw')->name('withdraw.')->group(function () {

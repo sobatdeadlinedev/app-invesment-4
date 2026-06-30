@@ -5,14 +5,17 @@
 
     {{-- ═══ HEADER ═══ --}}
     <div class="mkt-header">
-        <h5 class="mkt-title">{{ __('app.market') }}</h5>
+        <div>
+            <h5 class="mkt-title">{{ __('app.market') }}</h5>
+            <p class="mkt-sub">Real-time prices</p>
+        </div>
         <span class="mkt-live-badge">
             <span class="live-dot"></span> {{ __('app.live') }}
         </span>
     </div>
 
     {{-- ═══ FILTER TABS ═══ --}}
-    <div class="mfilter-wrap px-3 mb-2">
+    <div class="mfilter-wrap">
         <button class="mfilter-tab active" data-filter="all">
             <i class="bi bi-fire"></i> {{ __('app.hot') }}
         </button>
@@ -28,7 +31,7 @@
     </div>
 
     {{-- ═══ TABLE HEADER ═══ --}}
-    <div class="mlist-header px-3">
+    <div class="mlist-header">
         <span>{{ __('app.name_col') }}</span>
         <span>{{ __('app.last_price') }}</span>
         <span>{{ __('app.change_24h') }}</span>
@@ -43,7 +46,7 @@
         <a href="{{ route('member.invest.coin', ['coin' => strtolower($coin['symbol'])]) }}"
            class="mlist-row" data-symbol="{{ $coin['symbol'] }}" data-category="crypto">
             <div class="mlist-coin">
-                <div class="mlist-icon" style="background:{{ $coin['color'] }}20; border-color:{{ $coin['color'] }}50;">
+                <div class="mlist-icon" style="background:{{ $coin['color'] }}18; border-color:{{ $coin['color'] }}40;">
                     <i class="{{ $coin['icon'] }}" style="color:{{ $coin['color'] }};"></i>
                 </div>
                 <div>
@@ -67,7 +70,7 @@
         <a href="{{ route('member.invest.coin', ['coin' => strtolower($coin['symbol'])]) }}"
            class="mlist-row" data-symbol="{{ $coin['symbol'] }}" data-category="forex">
             <div class="mlist-coin">
-                <div class="mlist-icon" style="background:{{ $coin['color'] }}20; border-color:{{ $coin['color'] }}50;">
+                <div class="mlist-icon" style="background:{{ $coin['color'] }}18; border-color:{{ $coin['color'] }}40;">
                     <i class="{{ $coin['icon'] }}" style="color:{{ $coin['color'] }};"></i>
                 </div>
                 <div>
@@ -91,7 +94,7 @@
         <a href="{{ route('member.invest.coin', ['coin' => strtolower($coin['symbol'])]) }}"
            class="mlist-row" data-symbol="{{ $coin['symbol'] }}" data-category="precious">
             <div class="mlist-coin">
-                <div class="mlist-icon" style="background:{{ $coin['color'] }}20; border-color:{{ $coin['color'] }}50;">
+                <div class="mlist-icon" style="background:{{ $coin['color'] }}18; border-color:{{ $coin['color'] }}40;">
                     <i class="{{ $coin['icon'] }}" style="color:{{ $coin['color'] }};"></i>
                 </div>
                 <div>
@@ -112,132 +115,179 @@
 
 @push('styles')
 <style>
-    /* ── HEADER ── */
-    .mkt-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px 20px 12px;
-        border-bottom: 1px solid var(--border-color);
-    }
-    .mkt-title {
-        color: #fff;
-        font-size: 18px;
-        font-weight: 700;
-        margin: 0;
-    }
-    .mkt-live-badge {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        background: rgba(34,197,94,0.1);
-        border: 1px solid rgba(34,197,94,0.3);
-        border-radius: 20px;
-        padding: 4px 10px;
-        font-size: 12px;
-        font-weight: 600;
-        color: #22c55e;
-    }
-    .live-dot {
-        width: 7px;
-        height: 7px;
-        background: #22c55e;
-        border-radius: 50%;
-        animation: livePulse 1.5s infinite;
-    }
-    @keyframes livePulse {
-        0%, 100% { opacity: 1; }
-        50%       { opacity: 0.3; }
-    }
+/* ── HEADER ── */
+.mkt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 16px;
+    background: #070e1a;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.mkt-title {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0 0 2px;
+    letter-spacing: -0.3px;
+}
+.mkt-sub {
+    color: rgba(255,255,255,0.3);
+    font-size: 11px;
+    margin: 0;
+    letter-spacing: 0.3px;
+}
+.mkt-live-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.25);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #10b981;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+.live-dot {
+    width: 6px; height: 6px;
+    background: #10b981;
+    border-radius: 50%;
+    animation: livePulse 1.5s infinite;
+}
+@keyframes livePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.3; transform: scale(0.7); }
+}
 
-    /* ── FILTER TABS ── */
-    .mfilter-wrap {
-        display: flex;
-        gap: 8px;
-        overflow-x: auto;
-        padding: 16px 20px 8px;
-        scrollbar-width: none;
-    }
-    .mfilter-wrap::-webkit-scrollbar { display: none; }
-    .mfilter-tab {
-        flex-shrink: 0;
-        padding: 7px 14px;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid var(--border-color);
-        border-radius: 20px;
-        color: var(--text-muted);
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        white-space: nowrap;
-    }
-    .mfilter-tab:hover { background: rgba(0,229,255,0.08); color: var(--text-primary); }
-    .mfilter-tab.active {
-        background: rgba(0,229,255,0.12);
-        border-color: rgba(0,229,255,0.4);
-        color: var(--gold-color);
-    }
-    .mfilter-tab i { font-size: 12px; }
+/* ── FILTER TABS ── */
+.mfilter-wrap {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 14px 20px;
+    scrollbar-width: none;
+    background: #070e1a;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.mfilter-wrap::-webkit-scrollbar { display: none; }
+.mfilter-tab {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.4);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+}
+.mfilter-tab:hover {
+    background: rgba(59,130,246,0.08);
+    border-color: rgba(59,130,246,0.2);
+    color: #fff;
+}
+.mfilter-tab.active {
+    background: rgba(59,130,246,0.15);
+    border-color: rgba(59,130,246,0.4);
+    color: #60a5fa;
+}
+.mfilter-tab i { font-size: 12px; }
 
-    /* ── TABLE HEADER ── */
-    .mlist-header {
-        display: grid;
-        grid-template-columns: 1fr auto auto;
-        gap: 8px;
-        padding: 10px 20px;
-        border-bottom: 1px solid var(--border-color);
-        color: var(--text-muted);
-        font-size: 11px;
-        font-weight: 600;
-    }
-    .mlist-header span:nth-child(2) { min-width: 80px; text-align: right; }
-    .mlist-header span:nth-child(3) { min-width: 64px; text-align: right; }
+/* ── TABLE HEADER ── */
+.mlist-header {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 8px;
+    padding: 8px 20px;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.25);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+.mlist-header span:nth-child(2) { min-width: 86px; text-align: right; }
+.mlist-header span:nth-child(3) { min-width: 66px; text-align: right; }
 
-    /* ── ROWS ── */
-    .mlist-row {
-        display: grid;
-        grid-template-columns: 1fr auto auto;
-        gap: 8px;
-        align-items: center;
-        padding: 12px 20px;
-        border-bottom: 1px solid var(--border-color);
-        text-decoration: none;
-        transition: background 0.2s ease;
-        cursor: pointer;
-    }
-    .mlist-row:hover { background: rgba(0,229,255,0.03); }
-    .mlist-row:last-of-type { border-bottom: none; }
+/* ── ROWS ── */
+.mlist-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 8px;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    text-decoration: none;
+    transition: background 0.15s;
+    position: relative;
+    cursor: pointer;
+}
+.mlist-row::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: transparent;
+    transition: background 0.2s;
+    border-radius: 0 2px 2px 0;
+}
+.mlist-row:hover { background: rgba(59,130,246,0.04); }
+.mlist-row:hover::before { background: #3b82f6; }
+.mlist-row:last-of-type { border-bottom: none; }
 
-    .mlist-coin { display: flex; align-items: center; gap: 12px; }
-    .mlist-icon {
-        width: 38px; height: 38px; flex-shrink: 0;
-        border-radius: 50%; border: 1px solid;
-        display: flex; align-items: center; justify-content: center;
-    }
-    .mlist-icon i { font-size: 18px; }
-    .mlist-symbol { color: #fff; font-size: 13px; font-weight: 700; }
-    .mlist-quote  { color: var(--text-muted); font-size: 11px; font-weight: 400; }
-    .mlist-name   { color: var(--text-muted); font-size: 11px; margin-top: 1px; }
+.mlist-coin { display: flex; align-items: center; gap: 11px; }
+.mlist-icon {
+    width: 36px; height: 36px; flex-shrink: 0;
+    border-radius: 9px; border: 1px solid;
+    display: flex; align-items: center; justify-content: center;
+}
+.mlist-icon i { font-size: 17px; }
+.mlist-symbol {
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+}
+.mlist-quote  { color: rgba(255,255,255,0.3); font-size: 10px; font-weight: 500; }
+.mlist-name   { color: rgba(255,255,255,0.35); font-size: 10px; margin-top: 2px; }
 
-    .mlist-price {
-        min-width: 80px; text-align: right;
-        color: #fff; font-size: 13px; font-weight: 600;
-    }
-    .mlist-change {
-        min-width: 64px; text-align: right;
-        font-size: 12px; font-weight: 700;
-        padding: 4px 8px; border-radius: 6px;
-    }
-    .mlist-change.positive { color: #22c55e; background: rgba(34,197,94,0.1); }
-    .mlist-change.negative { color: #ef4444; background: rgba(239,68,68,0.1); }
+.mlist-price {
+    min-width: 86px;
+    text-align: right;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.3px;
+}
+.mlist-change {
+    min-width: 66px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-variant-numeric: tabular-nums;
+}
+.mlist-change.positive { color: #10b981; background: rgba(16,185,129,0.1); }
+.mlist-change.negative { color: #ef4444; background: rgba(239,68,68,0.08); }
 
-    /* ── PRICE FLASH ── */
-    @keyframes priceFlash {
-        0%   { background: rgba(0,229,255,0.15); }
-        100% { background: transparent; }
-    }
-    .price-updated { animation: priceFlash 0.5s ease; }
+/* ── PRICE FLASH ── */
+@keyframes priceFlash {
+    0%   { color: #60a5fa; }
+    100% { color: #fff; }
+}
+.price-updated { animation: priceFlash 0.6s ease; }
 </style>
 @endpush
 
@@ -313,7 +363,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll(`.coin-price[data-symbol="${symbol}"]`).forEach(el => {
             el.textContent = '$' + d.price;
             el.classList.add('price-updated');
-            setTimeout(() => el.classList.remove('price-updated'), 500);
+            setTimeout(() => el.classList.remove('price-updated'), 600);
         });
         document.querySelectorAll(`.price-change[data-symbol="${symbol}"]`).forEach(el => {
             el.classList.remove('positive', 'negative');
