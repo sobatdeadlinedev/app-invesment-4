@@ -11,20 +11,14 @@
         <span>{{ __('app.market') }}</span>
     </a>
     <a href="{{ route('member.futures.index') }}"
-        class="nav-item nav-item-futures {{ request()->routeIs('member.futures.*') || request()->routeIs('member.invest.*') ? 'active' : '' }}">
-        <div class="futures-fab">
-            <i class="bi bi-graph-up-arrow"></i>
-        </div>
+        class="nav-item {{ request()->routeIs('member.futures.*') || request()->routeIs('member.invest.*') ? 'active' : '' }}">
+        <i class="bi bi-graph-up-arrow"></i>
         <span>{{ __('app.nav_futures') }}</span>
-    </a>
-    <a href="{{ route('member.access.index') }}"
-        class="nav-item {{ request()->routeIs('member.access.*') || request()->routeIs('member.wallet.*') || request()->routeIs('member.verification.*') || request()->routeIs('member.team.*') ? 'active' : '' }}">
-        <i class="bi bi-shield-lock-fill"></i>
-        <span>{{ __('app.nav_access') }}</span>
     </a>
     <a href="{{ route('member.profile.index') }}"
         class="nav-item {{ request()->routeIs('member.profile.*') || request()->routeIs('member.deposit.*') || request()->routeIs('member.withdraw.*') || request()->routeIs('member.balance.*') ? 'active' : '' }}">
         <i class="bi bi-wallet-fill"></i>
         <span>{{ __('app.nav_wallet') }}</span>
     </a>
+    
 </div>

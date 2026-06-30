@@ -3,52 +3,95 @@
     <button class="btn-header-icon profile-trigger" id="profileDropdownBtn">
         <i class="bi bi-person-circle"></i>
     </button>
-    
+
     <div class="profile-dropdown-menu" id="profileDropdownMenu">
-        <!-- User Info Section -->
-        <div class="profile-header">
-            <div class="profile-avatar">
-                <div class="avatar-circle">
-                    <i class="bi bi-person-fill"></i>
-                </div>
-                @if(auth()->user()->vip_level)
-                    <span class="vip-badge">VIP{{ auth()->user()->vip_level }}</span>
-                @endif
-            </div>
-            <div class="profile-info">
-                <div class="profile-name">{{ auth()->user()->name }}</div>
-                <div class="profile-email">{{ auth()->user()->email }}</div>
-                <div class="profile-id">
-                    <span class="profile-id-label">ID</span>
-                    <span>{{ auth()->user()->refferal_code ?? '-' }}</span>
-                    <button class="btn-copy" onclick="copyToClipboard('{{ auth()->user()->refferal_code ?? '' }}')">
-                        <i class="bi bi-clipboard"></i>
-                    </button>
-                </div>
-            </div>
+
+        <!-- Header bar -->
+        <div class="pc-topbar">
+            <button class="pc-back" onclick="document.getElementById('profileDropdownMenu').classList.remove('show'); document.body.style.overflow='auto';">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <span class="pc-topbar-title">{{ app()->getLocale() == 'id' ? 'Pusat Akun' : 'Personal Center' }}</span>
+            <span class="pc-topbar-spacer"></span>
         </div>
 
-        <!-- Logout Button -->
-        <div class="logout-section">
-            <a href="{{ route('logout') }}" class="logout-btn" 
-               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                <i class="bi bi-box-arrow-right"></i>
-                <span>{{ app()->getLocale() == 'id' ? 'Keluar' : 'Logout' }}</span>
-            </a>
-            
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                @csrf
-            </form>
+        <div class="pc-scroll">
+
+            <!-- User Info -->
+            <div class="pc-header">
+                <div class="pc-email">{{ \Illuminate\Support\Str::mask(auth()->user()->email, '*', 3, -8) }}</div>
+                <div class="pc-uid">ID:{{ auth()->user()->id }}</div>
+            </div>
+
+            <!-- Banner -->
+            <div class="pc-banner">
+                <span>{{ app()->getLocale() == 'id' ? 'AJAK TEMAN' : 'INVITE FRIENDS' }}<br>{{ app()->getLocale() == 'id' ? 'TRADING BARENG.' : 'TO TRADE TOGETHER.' }}</span>
+            </div>
+
+            <!-- Menu List -->
+            <div class="pc-list">
+
+                <a href="{{ route('member.wallet.index') }}" class="pc-item">
+                    <span>{{ app()->getLocale() == 'id' ? 'Dompet Saya' : 'My Wallet' }}</span>
+                    <i class="bi bi-chevron-right pc-chev"></i>
+                </a>
+
+                <a href="{{ route('member.deposit.history') }}" class="pc-item">
+                    <span>{{ app()->getLocale() == 'id' ? 'Riwayat Deposit' : 'Deposit History' }}</span>
+                    <i class="bi bi-chevron-right pc-chev"></i>
+                </a>
+
+                <a href="{{ route('member.withdraw.history') }}" class="pc-item">
+                    <span>{{ app()->getLocale() == 'id' ? 'Riwayat Penarikan' : 'Withdrawal History' }}</span>
+                    <i class="bi bi-chevron-right pc-chev"></i>
+                </a>
+
+                <a href="{{ route('member.balance.transfer') }}" class="pc-item">
+                    <span>{{ app()->getLocale() == 'id' ? ' Transfer' : 'Transfer ' }}</span>
+                    <i class="bi bi-chevron-right pc-chev"></i>
+                </a>
+
+
+
+                <a href="{{ route('member.team.index') }}" class="pc-item">
+                    <span>{{ app()->getLocale() == 'id' ? 'Referral' : 'Referral' }}</span>
+                    <i class="bi bi-chevron-right pc-chev"></i>
+                </a>
+
+                <a href="{{ route('member.verification.index') }}" class="pc-item">
+                    <span>{{ app()->getLocale() == 'id' ? 'Verifikasi Identitas' : 'Real name authentication' }}</span>
+                    <span class="pc-status">
+                        @if(auth()->user()->is_verified)
+                            <i class="bi bi-check-circle-fill pc-status-icon pc-status-ok"></i>
+                            {{ app()->getLocale() == 'id' ? 'Terverifikasi' : 'Verified' }}
+                        @else
+                            <i class="bi bi-check-circle-fill pc-status-icon pc-status-pending"></i>
+                            {{ app()->getLocale() == 'id' ? 'Belum' : 'Unrealized' }}
+                        @endif
+                    </span>
+                </a>
+
+            </div>
+
+            <!-- Logout Button -->
+            <div class="pc-logout-wrap">
+                <a href="{{ route('logout') }}" class="pc-logout-btn"
+                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    {{ app()->getLocale() == 'id' ? 'Keluar' : 'Log Out' }}
+                </a>
+
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+            </div>
+
         </div>
     </div>
 </div>
 
 <style>
-/* Profile Dropdown Styles */
-.profile-dropdown {
-    position: relative;
-    display: inline-block;
-}
+/* ── Trigger ───────────────────────────────────────────── */
+.profile-dropdown { position: relative; display: inline-block; }
 
 .profile-trigger {
     cursor: pointer;
@@ -65,282 +108,161 @@
     width: 44px;
     height: 44px;
 }
+.profile-trigger:hover { background: #1a1a1a; transform: scale(1.05); }
+.profile-trigger i { color: #ffffff !important; }
 
-.profile-trigger:hover {
-    background: #1a1a1a;
-    transform: scale(1.05);
-}
-
-.profile-trigger i {
-    color: #ffffff !important;
-}
-
+/* ── Fullscreen-style panel (mimics "Personal Center" page) ── */
 .profile-dropdown-menu {
     display: none;
-    position: absolute;
-    right: 0;
-    top: 100%;
-    margin-top: 10px;
-    width: 320px;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    position: fixed;
+    background: #0d1320;
     z-index: 9999;
     overflow: hidden;
-    border: 1px solid #e5e7eb;
+    flex-direction: column;
+}
+.profile-dropdown-menu.show { display: flex; animation: fadeIn 0.2s ease; }
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
-.profile-dropdown-menu.show {
-    display: block;
-    animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Profile Header */
-.profile-header {
-    padding: 24px 20px;
-    background: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.profile-avatar {
+/* ── Top bar ── */
+.pc-topbar {
+    display: flex; align-items: center; justify-content: center;
     position: relative;
-    display: inline-block;
-    margin-bottom: 16px;
+    padding: 16px;
+    background: #0d1320;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    flex-shrink: 0;
+}
+.pc-back {
+    position: absolute; left: 16px;
+    background: none; border: none; color: #fff;
+    font-size: 20px; cursor: pointer; padding: 4px;
+}
+.pc-topbar-title { color: #fff; font-size: 16px; font-weight: 600; }
+.pc-topbar-spacer { width: 20px; }
+
+/* ── Scroll body ── */
+.pc-scroll {
+    overflow-y: auto;
+    flex: 1;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;       /* Firefox */
+    -ms-overflow-style: none;    /* IE/Edge */
+}
+.pc-scroll::-webkit-scrollbar {
+    width: 0px;                  /* Chrome/Safari */
+    background: transparent;
 }
 
-.avatar-circle {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 3px solid #f3f4f6;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+/* ── Header ── */
+.pc-header { padding: 18px 18px 14px; }
+.pc-email { color: #fff; font-size: 14px; font-weight: 500; word-break: break-all; }
+.pc-uid { color: rgba(255,255,255,0.45); font-size: 12px; margin-top: 6px; }
+
+/* ── Banner ── */
+.pc-banner {
+    margin: 4px 18px 18px;
+    border-radius: 10px;
+    height: 110px;
+    background:
+        linear-gradient(135deg, rgba(13,30,60,0.55), rgba(20,50,90,0.4)),
+        radial-gradient(circle at 30% 30%, rgba(56,189,248,0.35), transparent 60%),
+        linear-gradient(135deg, #0a1e3d, #142d52);
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    color: #fff; font-size: 18px; font-weight: 800; line-height: 1.35;
+    letter-spacing: 0.3px;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.25);
 }
 
-.avatar-circle i {
-    font-size: 40px;
-    color: #6b7280;
-}
-
-.vip-badge {
-    position: absolute;
-    bottom: 5px;
-    right: -5px;
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
-    color: #ffffff;
-    font-size: 10px;
-    font-weight: bold;
-    padding: 4px 10px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
-    border: 2px solid #ffffff;
-}
-
-.profile-info {
-    margin-top: 8px;
-}
-
-.profile-name {
-    color: #111827;
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 4px;
-}
-
-.profile-email {
-    color: #6b7280;
-    font-size: 13px;
-    margin-bottom: 8px;
-    word-break: break-all;
-}
-
-.profile-id {
-    color: #6b7280;
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.profile-id-label {
-    background: #f3f4f6;
-    color: #374151;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 2px 6px;
-    border-radius: 4px;
-    letter-spacing: 0.5px;
-}
-
-.btn-copy {
-    background: none;
-    border: none;
-    color: #6b7280;
-    cursor: pointer;
-    padding: 2px 4px;
-    transition: color 0.2s;
-    font-size: 13px;
-    margin-left: 2px;
-}
-
-.btn-copy:hover {
-    color: #111827;
-}
-
-/* Logout Section */
-.logout-section {
-    padding: 12px 16px;
-    background: #ffffff;
-    border-top: 1px solid #e5e7eb;
-}
-
-.logout-btn {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    color: #dc2626;
+/* ── List ── */
+.pc-list { border-top: 1px solid rgba(255,255,255,0.06); }
+.pc-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 18px;
+    color: rgba(255,255,255,0.9);
+    font-size: 14px; font-weight: 500;
     text-decoration: none;
-    border-radius: 8px;
-    transition: all 0.3s;
-    font-size: 15px;
-    font-weight: 500;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: background 0.15s;
+}
+.pc-item:hover, .pc-item:active { background: rgba(255,255,255,0.04); color: #fff; }
+.pc-item-disabled { opacity: 0.45; cursor: not-allowed; }
+.pc-item-disabled:hover { background: none; color: rgba(255,255,255,0.9); }
+.pc-chev { color: rgba(255,255,255,0.2); font-size: 13px; }
+
+.pc-status {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: rgba(255,255,255,0.45); font-size: 13px;
+}
+.pc-status-icon { font-size: 15px; }
+.pc-status-ok { color: #34d399; }
+.pc-status-pending { color: rgba(255,255,255,0.3); }
+
+/* ── Toggle row ── */
+.pc-item-toggle { cursor: default; }
+.pc-switch { position: relative; display: inline-block; width: 42px; height: 24px; }
+.pc-switch input { opacity: 0; width: 0; height: 0; }
+.pc-switch-slider {
+    position: absolute; cursor: not-allowed; inset: 0;
+    background: rgba(255,255,255,0.15);
+    border-radius: 24px; transition: 0.2s;
+}
+.pc-switch-slider::before {
+    content: ""; position: absolute;
+    height: 18px; width: 18px; left: 3px; top: 3px;
+    background: #fff; border-radius: 50%; transition: 0.2s;
 }
 
-.logout-btn:hover {
-    background: rgba(220, 38, 38, 0.1);
-    transform: translateX(4px);
+/* ── Logout ── */
+.pc-logout-wrap { padding: 22px 18px 32px; }
+.pc-logout-btn {
+    display: block;
+    text-align: center;
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-radius: 10px;
+    color: #fff; font-size: 15px; font-weight: 700;
+    text-decoration: none;
+    transition: opacity 0.2s;
 }
-
-.logout-btn i {
-    font-size: 20px;
-}
-
-/* Responsive */
-@media (max-width: 480px) {
-    .profile-dropdown-menu {
-        width: 280px;
-    }
-}
+.pc-logout-btn:hover { opacity: 0.9; color: #fff; }
 </style>
 
 <script>
-// Toggle Dropdown
 document.addEventListener('DOMContentLoaded', function() {
     const dropdownBtn = document.getElementById('profileDropdownBtn');
     const dropdownMenu = document.getElementById('profileDropdownMenu');
-    
+    const container    = document.querySelector('.mobile-container');
+    const header        = document.querySelector('.fixed-header');
+    const bottomNav      = document.querySelector('.bottom-nav');
+
+    function positionDropdown() {
+        if (!container) return;
+        const rect = container.getBoundingClientRect();
+        const headerH = header ? header.getBoundingClientRect().height : 0;
+        const bottomH = bottomNav ? bottomNav.getBoundingClientRect().height : 0;
+
+        dropdownMenu.style.left   = rect.left + 'px';
+        dropdownMenu.style.width  = rect.width + 'px';
+        dropdownMenu.style.top    = (rect.top + headerH) + 'px';
+        dropdownMenu.style.bottom = (window.innerHeight - rect.bottom + bottomH) + 'px';
+    }
+
     if (dropdownBtn && dropdownMenu) {
         dropdownBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            dropdownMenu.classList.toggle('show');
+            positionDropdown();
+            dropdownMenu.classList.add('show');
+            document.body.style.overflow = 'hidden';
         });
-        
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!dropdownMenu.contains(e.target) && e.target !== dropdownBtn) {
-                dropdownMenu.classList.remove('show');
-            }
+
+        window.addEventListener('resize', function() {
+            if (dropdownMenu.classList.contains('show')) positionDropdown();
         });
     }
 });
-
-// Copy to Clipboard
-function copyToClipboard(text) {
-    const locale = '{{ app()->getLocale() }}';
-    const message = locale === 'id' ? 'Kode undangan tersalin!' : 'Invitation code copied!';
-    
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function() {
-            showToast(message);
-        }, function(err) {
-            console.error('Could not copy text: ', err);
-        });
-    } else {
-        // Fallback for older browsers
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        try {
-            document.execCommand('copy');
-            showToast(message);
-        } catch (err) {
-            console.error('Could not copy text: ', err);
-        }
-        document.body.removeChild(textarea);
-    }
-}
-
-// Simple Toast Notification (optional)
-function showToast(message) {
-    // Create toast element
-    const toast = document.createElement('div');
-    toast.textContent = message;
-    toast.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: #10b981;
-        color: white;
-        padding: 12px 20px;
-        border-radius: 8px;
-        font-size: 14px;
-        z-index: 10000;
-        animation: slideInUp 0.3s ease;
-    `;
-    
-    document.body.appendChild(toast);
-    
-    // Remove after 2 seconds
-    setTimeout(() => {
-        toast.style.animation = 'slideOutDown 0.3s ease';
-        setTimeout(() => {
-            document.body.removeChild(toast);
-        }, 300);
-    }, 2000);
-}
-
-// Add animations for toast
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideInUp {
-        from {
-            transform: translateY(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-    
-    @keyframes slideOutDown {
-        from {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateY(100%);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
 </script>
