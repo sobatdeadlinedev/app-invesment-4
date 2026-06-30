@@ -42,6 +42,17 @@ class DepositController extends Controller
         $trc20Addresses = array_values(array_filter($walletTrc20Raw['addresses'] ?? []));
         $bep20Addresses = array_values(array_filter($walletBep20Raw['addresses'] ?? []));
 
+        // ── GUARD: kalau admin belum konfigurasi wallet address sama sekali ──
+        if (empty($trc20Addresses) && empty($bep20Addresses)) {
+            Log::warning('Deposit wallet belum dikonfigurasi: addresses kosong', [
+                'trc20_raw' => $walletTrc20Raw,
+                'bep20_raw' => $walletBep20Raw,
+            ]);
+
+            return redirect()->route('member.profile.index')
+                ->with('error', 'Wallet deposit belum dikonfigurasi admin. Hubungi admin.');
+        }
+
         $sessionKey = 'deposit_wallet_' . auth()->id();
 
         if ($pendingDeposit) {
@@ -80,7 +91,12 @@ class DepositController extends Controller
             // Tidak ada pending → cek session dulu, kalau belum ada baru random
             $cached = session($sessionKey);
 
-            if ($cached) {
+            // ── GUARD: session lama mungkin nyimpen address kosong (sebelum config diisi) ──
+            $cachedIsValid = $cached
+                && !empty($cached['trc20']['address'] ?? null)
+                && !empty($cached['bep20']['address'] ?? null);
+
+            if ($cachedIsValid) {
                 $walletTrc20 = $cached['trc20'];
                 $walletBep20 = $cached['bep20'];
             } else {
@@ -144,6 +160,7 @@ class DepositController extends Controller
             'amount.min'           => __('app.minimum_deposit_alert'),
             'wallet_type.required' => __('app.wallet_type_required'),
             'wallet_type.in'       => __('app.wallet_type_invalid'),
+            'wallet_address.required' => 'Alamat wallet kosong/tidak valid. Silakan refresh halaman deposit dan coba lagi.',
         ]);
 
         try {
