@@ -481,6 +481,10 @@ return [
     'no_wallet_suffix' => '',
     'minimum_withdrawal_50' => 'Minimum penarikan adalah 50 USDT',
 
+
+    'active_signal' => 'sinyal aktif',
+'no_active_signal' => 'Belum ada sinyal aktif',
+
     // ===== WITHDRAW PAGE REDESIGN =====
     'withdrawal_usdt' => 'Penarikan USDT',
     'withdrawal_subtitle' => 'Tarik USDT ke alamat mata uang digital',

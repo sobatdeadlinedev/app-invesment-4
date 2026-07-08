@@ -23,10 +23,10 @@
                 <div class="pc-uid">ID:{{ auth()->user()->id }}</div>
             </div>
 
-            <!-- Banner -->
-            <div class="pc-banner">
-                <span>{{ app()->getLocale() == 'id' ? 'AJAK TEMAN' : 'INVITE FRIENDS' }}<br>{{ app()->getLocale() == 'id' ? 'TRADING BARENG.' : 'TO TRADE TOGETHER.' }}</span>
-            </div>
+           <!-- Banner -->
+<div class="pc-banner">
+    <span>{{ app()->getLocale() == 'id' ? 'UNDANG TRADER' : 'INVITE TRADERS' }}<br>{{ app()->getLocale() == 'id' ? 'DAPAT KOMISI.' : 'EARN COMMISSION.' }}</span>
+</div>
 
             <!-- Menu List -->
             <div class="pc-list">
@@ -50,8 +50,6 @@
                     <span>{{ app()->getLocale() == 'id' ? ' Transfer' : 'Transfer ' }}</span>
                     <i class="bi bi-chevron-right pc-chev"></i>
                 </a>
-
-
 
                 <a href="{{ route('member.team.index') }}" class="pc-item">
                     <span>{{ app()->getLocale() == 'id' ? 'Referral' : 'Referral' }}</span>

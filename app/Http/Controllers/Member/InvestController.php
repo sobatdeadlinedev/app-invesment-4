@@ -15,12 +15,31 @@ class InvestController extends Controller
     public function coinSignals(Request $request)
     {
         $user = auth()->user();
-        $coin = strtoupper($request->query('coin', 'BTCUSDT'));
 
         // ========================================
         // Data untuk POPUP - All Coins
         // ========================================
         $allCoins = TradingSignal::getAvailableCoins();
+
+        // FIX: default coin sekarang diambil langsung dari key pertama
+        // di $allCoins, bukan hardcode string manual. Ini memastikan
+        // format default (case, penulisan, dll) selalu identik dengan
+        // key yang dipakai saat user klik coin di popup.
+        $defaultCoin = array_key_first($allCoins);
+        $rawCoin = strtoupper($request->query('coin', $defaultCoin));
+
+        // FIX: normalisasi input coin. Kalau user/link mengirim shorthand
+        // seperti "BTC" (bukan key asli "BTCUSDT"), cari key di $allCoins
+        // yang match berdasarkan prefix, supaya tetap ketemu signal yang benar.
+        if (array_key_exists($rawCoin, $allCoins)) {
+            $coin = $rawCoin;
+        } else {
+            $matchedKey = collect(array_keys($allCoins))
+                ->first(function ($key) use ($rawCoin) {
+                    return str_starts_with($key, $rawCoin);
+                });
+            $coin = $matchedKey ?? $defaultCoin;
+        }
 
         // Count open signals per coin yang user bisa akses
         $signalCounts = [];
@@ -34,7 +53,7 @@ class InvestController extends Controller
         // ========================================
         // Data untuk CURRENT COIN
         // ========================================
-        $coinInfo = $allCoins[$coin] ?? $allCoins['BTCUSDT'];
+        $coinInfo = $allCoins[$coin] ?? $allCoins[$defaultCoin];
 
         // ========================================
         // TAB 1: Trading Signals untuk coin ini
@@ -69,14 +88,13 @@ class InvestController extends Controller
         // ========================================
         // TAB 2: Historical Orders untuk coin ini
         // ========================================
-        // Sesudah
-$historyForThisCoin = SignalParticipant::where('user_id', $user->id)
-    ->whereHas('signal', function ($q) use ($coin) {
-        $q->where('coin', $coin);
-    })
-    ->with('signal')
-    ->orderBy('joined_at', 'desc')  // ← ganti latest() dengan ini
-    ->paginate(10);
+        $historyForThisCoin = SignalParticipant::where('user_id', $user->id)
+            ->whereHas('signal', function ($q) use ($coin) {
+                $q->where('coin', $coin);
+            })
+            ->with('signal')
+            ->orderBy('joined_at', 'desc')
+            ->paginate(10);
 
         // Calculate statistics untuk history tab
         $totalJoinedThisCoin = SignalParticipant::where('user_id', $user->id)

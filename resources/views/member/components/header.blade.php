@@ -21,13 +21,39 @@
                             <i class="bi bi-flag-fill me-2"></i> English
                         </a>
                     </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <span class="dropdown-item disabled">
+                            <i class="bi bi-flag-fill me-2"></i> 中文
+                        </span>
+                    </li>
+                    <li>
+                        <span class="dropdown-item disabled">
+                            <i class="bi bi-flag-fill me-2"></i> 日本語
+                        </span>
+                    </li>
+                    <li>
+                        <span class="dropdown-item disabled">
+                            <i class="bi bi-flag-fill me-2"></i> 한국어
+                        </span>
+                    </li>
+                    <li>
+                        <span class="dropdown-item disabled">
+                            <i class="bi bi-flag-fill me-2"></i> Español
+                        </span>
+                    </li>
+                    <li>
+                        <span class="dropdown-item disabled">
+                            <i class="bi bi-flag-fill me-2"></i> العربية
+                        </span>
+                    </li>
                 </ul>
             </div>
         </div>
 
         <!-- Right: Profile/Notification Icon -->
-       <div class="header-right">
-    @include('member.components.profile-dropdown')
-</div>
+        <div class="header-right">
+            @include('member.components.profile-dropdown')
+        </div>
     </div>
 </div>

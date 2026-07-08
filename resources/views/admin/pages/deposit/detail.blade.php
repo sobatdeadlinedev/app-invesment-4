@@ -166,6 +166,21 @@
                                         <td class="text-gray-500">Payment Method:</td>
                                         <td class="text-gray-800">{{ ucfirst($deposit->payment_method ?? '-') }}</td>
                                     </tr>
+                                    @if ($deposit->wallet_address)
+                                        <tr>
+                                            <td class="text-gray-500 align-top">Wallet Address:</td>
+                                            <td class="text-gray-800">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span class="font-monospace" style="word-break: break-all;">
+                                                        {{ $deposit->wallet_address }}
+                                                    </span>
+                                                    <i class="ki-outline ki-copy fs-5 text-muted cursor-pointer copy-wallet-btn"
+                                                        data-clipboard-text="{{ $deposit->wallet_address }}"
+                                                        title="Copy address"></i>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endif
                                     <tr>
                                         <td class="text-gray-500">Status:</td>
                                         <td>
@@ -246,6 +261,18 @@
                 setTimeout(function() {
                     $('.alert').fadeOut('slow');
                 }, 5000);
+            });
+
+            document.addEventListener('click', function (e) {
+                const btn = e.target.closest('.copy-wallet-btn');
+                if (!btn) return;
+                const text = btn.getAttribute('data-clipboard-text');
+                navigator.clipboard.writeText(text).then(() => {
+                    const original = btn.className;
+                    btn.classList.remove('ki-copy');
+                    btn.classList.add('ki-check');
+                    setTimeout(() => { btn.className = original; }, 1200);
+                });
             });
         </script>
     @endpush

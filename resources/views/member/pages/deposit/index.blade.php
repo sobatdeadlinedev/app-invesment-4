@@ -75,25 +75,7 @@
             Confirm
         </button>
 
-        <!-- Warm Reminder -->
-        <div class="dp-reminder">
-            <div class="dp-reminder-title">Warm reminder</div>
-            <div class="dp-reminder-body">
-                <p>Dear User,</p>
-                <p>
-                    To ensure fund security and the stability of recharge channels,
-                    recharge addresses will be automatically updated periodically.
-                    Each generated recharge channel is valid for only <strong>1 hour</strong>.
-                    Please be sure to complete the recharge operation within the validity period.
-                </p>
-                <p>
-                    Please note: Do not recharge to previous recharge addresses or
-                    repeatedly to the same address to avoid funds not being credited
-                    or being lost. If you have any questions, please contact online
-                    customer service or the platform administrator promptly.
-                </p>
-            </div>
-        </div>
+        
 
     </div>
 

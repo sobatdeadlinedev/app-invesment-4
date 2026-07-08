@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Member;
 
 use App\Models\FuturesTrade;
+use App\Models\TradingSignal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -56,9 +57,24 @@ class FuturesController extends Controller
 
         $currentPrice = $this->cachedPrice($coin);
 
+        // ========================================
+        // Notifikasi Sinyal Expert untuk coin ini
+        // ========================================
+        $openSignalCount = TradingSignal::forCoin($coin)
+            ->open()
+            ->accessibleBy($user->id)
+            ->count();
+
+        $latestSignal = TradingSignal::forCoin($coin)
+            ->open()
+            ->accessibleBy($user->id)
+            ->latest()
+            ->first();
+
         return view('member.pages.futures.index', compact(
             'coin', 'coinInfo', 'coins', 'currentPrice',
-            'openTrade', 'recentTrades', 'user'
+            'openTrade', 'recentTrades', 'user',
+            'openSignalCount', 'latestSignal'
         ));
     }
 

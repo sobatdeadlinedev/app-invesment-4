@@ -245,22 +245,21 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; wid
     @php $coinSlug = strtolower(str_replace(['USDT','USD'], '', $coin)); @endphp
     <div class="ex-signals-wrap">
         <a href="{{ route('member.invest.coin', ['coin' => $coinSlug]) }}" class="ex-signals-card">
-            <div class="ex-signals-glow"></div>
-            <div class="ex-signals-body">
-                <div class="ex-signals-ico">
-                    <i class="bi bi-broadcast-pin"></i>
-                    <span class="ex-signals-pulse"></span>
-                </div>
-                <div class="ex-signals-text">
-                    <div class="ex-signals-badge">PRO</div>
-                    <div class="ex-signals-title">{{ __('app.expert_signals') }}</div>
-                    <div class="ex-signals-sub">AI-powered · Real-time analysis</div>
-                </div>
+            <div class="ex-signals-ico">
+                <i class="bi bi-broadcast-pin"></i>
             </div>
-            <div class="ex-signals-cta">
-                <span>Open</span>
-                <i class="bi bi-arrow-right"></i>
+            <div class="ex-signals-text">
+                <div class="ex-signals-title">{{ __('app.expert_signals') }}</div>
+                @if($openSignalCount > 0 && $latestSignal)
+                <div class="ex-signals-notif">
+                    <span class="ex-signals-notif-dot"></span>
+                    <span class="ex-signals-notif-txt">{{ $openSignalCount }} {{ __('app.active_signal') ?? 'sinyal aktif' }}</span>
+                </div>
+                @else
+                <div class="ex-signals-sub">{{ __('app.no_active_signal') ?? 'Belum ada sinyal aktif' }}</div>
+                @endif
             </div>
+            <i class="bi bi-chevron-right ex-signals-arrow"></i>
         </a>
     </div>
 
@@ -665,67 +664,38 @@ body::-webkit-scrollbar { display: none !important; width: 0 !important; }
 /* ── Signals ── */
 .ex-signals-wrap { padding: 10px 12px 6px; }
 .ex-signals-card {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 14px;
-    background: linear-gradient(135deg, #1a1535 0%, #131820 60%, #0f1a2e 100%);
-    border: 1px solid rgba(139,92,246,.25);
-    border-radius: 10px;
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px;
+    background: var(--panel);
+    border: 1px solid var(--bd);
+    border-radius: var(--r);
     text-decoration: none;
-    position: relative; overflow: hidden;
-    transition: border-color .2s, transform .15s;
+    transition: border-color .15s;
 }
-.ex-signals-card:hover {
-    border-color: rgba(139,92,246,.5);
-    transform: translateY(-1px);
-}
-.ex-signals-glow {
-    position: absolute; top: -20px; left: -20px;
-    width: 120px; height: 80px;
-    background: radial-gradient(ellipse, rgba(139,92,246,.18) 0%, transparent 70%);
-    pointer-events: none;
-}
-.ex-signals-body { display: flex; align-items: center; gap: 12px; position: relative; z-index: 1; }
+.ex-signals-card:hover { border-color: var(--blue); }
+
 .ex-signals-ico {
-    width: 42px; height: 42px; flex-shrink: 0;
-    background: rgba(139,92,246,.15);
-    border: 1px solid rgba(139,92,246,.3);
-    border-radius: 10px;
+    width: 36px; height: 36px; flex-shrink: 0;
+    background: rgba(24,144,255,.08);
+    border: 1px solid rgba(24,144,255,.2);
+    border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
-    position: relative;
 }
-.ex-signals-ico i { color: #a78bfa; font-size: 18px; }
-.ex-signals-pulse {
-    position: absolute; top: -3px; right: -3px;
-    width: 10px; height: 10px;
-    background: var(--buy); border-radius: 50%;
-    border: 2px solid #131820;
-    animation: signalPulse 2s ease-in-out infinite;
+.ex-signals-ico i { color: var(--blue); font-size: 16px; }
+
+.ex-signals-text { flex: 1; min-width: 0; }
+.ex-signals-title { color: var(--t1); font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.ex-signals-sub   { color: var(--t2); font-size: 11px; }
+
+.ex-signals-notif { display: flex; align-items: center; gap: 5px; }
+.ex-signals-notif-dot {
+    width: 5px; height: 5px; background: var(--buy);
+    border-radius: 50%; flex-shrink: 0;
+    animation: blink 1.4s ease-in-out infinite;
 }
-@keyframes signalPulse {
-    0%,100% { box-shadow: 0 0 0 0 rgba(14,203,129,.5); }
-    50%      { box-shadow: 0 0 0 5px rgba(14,203,129,0); }
-}
-.ex-signals-text { flex: 1; }
-.ex-signals-badge {
-    display: inline-block;
-    background: linear-gradient(90deg, #7c3aed, #a78bfa);
-    color: #fff; font-size: 9px; font-weight: 800;
-    padding: 1px 6px; border-radius: 3px;
-    letter-spacing: 1px; margin-bottom: 3px;
-}
-.ex-signals-title { color: var(--t1); font-size: 13px; font-weight: 700; margin-bottom: 1px; }
-.ex-signals-sub   { color: var(--t2); font-size: 10px; }
-.ex-signals-cta {
-    display: flex; align-items: center; gap: 5px;
-    color: #a78bfa; font-size: 11px; font-weight: 600;
-    position: relative; z-index: 1;
-    background: rgba(139,92,246,.1);
-    border: 1px solid rgba(139,92,246,.2);
-    border-radius: 6px; padding: 6px 10px;
-    transition: background .15s;
-}
-.ex-signals-cta i { font-size: 13px; }
-.ex-signals-card:hover .ex-signals-cta { background: rgba(139,92,246,.2); }
+.ex-signals-notif-txt { color: var(--buy); font-size: 11px; font-weight: 500; }
+
+.ex-signals-arrow { color: var(--t3); font-size: 14px; flex-shrink: 0; }
 
 /* ── History ── */
 .ex-hist-hd {

@@ -476,7 +476,10 @@ return [
     'nav_futures' => 'Futures',
     'nav_access' => 'Validation',
     'nav_wallet' => 'Wallet',
+    
 
+    'active_signal' => 'active signal',
+'no_active_signal' => 'No active signal',
     // ===== WALLET / WITHDRAW =====
     'no_wallet_prefix' => 'No ',
     'no_wallet_suffix' => ' wallet',

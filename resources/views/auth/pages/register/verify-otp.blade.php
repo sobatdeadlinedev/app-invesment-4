@@ -8,7 +8,7 @@
     <link rel="shortcut icon" href="{{ $appConfig['app_logo']['value'] }}" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
     <style>
@@ -16,148 +16,141 @@
 
         :root {
             --gold: #F5C842;
-            --gold-dim: #C9A227;
-            --gold-muted: rgba(245,200,66,0.1);
-            --gold-border: rgba(245,200,66,0.25);
-            --bg: #080B10;
-            --bg-input: #111620;
-            --border: rgba(255,255,255,0.07);
+            --gold-dim: rgba(245,200,66,0.12);
+            --bg: #0B0E12;
+            --bg-card: #12161C;
+            --bg-input: #171C24;
+            --border: rgba(255,255,255,0.08);
+            --border-hover: rgba(255,255,255,0.16);
             --text-primary: #F0F4F8;
-            --text-secondary: #6B7A8D;
-            --text-muted: #3D4A58;
+            --text-secondary: #7A8699;
+            --text-muted: #4A5568;
             --red: #F04F59;
             --red-dim: rgba(240,79,89,0.1);
             --green: #16A879;
             --green-dim: rgba(22,168,121,0.1);
             --mono: 'JetBrains Mono', monospace;
-            --sans: 'Space Grotesk', sans-serif;
+            --sans: 'Inter', sans-serif;
         }
 
-        html { background: var(--bg); }
+        html, body { height: 100%; }
+
         body {
             font-family: var(--sans);
             background: var(--bg);
             color: var(--text-primary);
-            min-height: 100vh;
-            overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Background */
-        .bg-canvas { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
+        /* ── Background accents ── */
+        .bg-canvas { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+
         .bg-grid {
             position: absolute; inset: 0;
             background-image:
-                linear-gradient(rgba(245,200,66,0.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(245,200,66,0.025) 1px, transparent 1px);
-            background-size: 48px 48px;
-        }
-        .bg-glow {
-            position: absolute; top: -20%; left: 50%; transform: translateX(-50%);
-            width: 70vw; height: 50vw; border-radius: 50%;
-            background: radial-gradient(circle, rgba(245,200,66,0.06) 0%, transparent 65%);
-            animation: glow 14s ease-in-out infinite;
-        }
-        @keyframes glow {
-            0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(1); }
-            50% { opacity: 1; transform: translateX(-50%) scale(1.12); }
+                linear-gradient(rgba(245,200,66,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(245,200,66,0.02) 1px, transparent 1px);
+            background-size: 44px 44px;
         }
 
-        /* Ticker */
-        .ticker-bar {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-            height: 36px; background: rgba(8,11,16,0.95);
-            border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; overflow: hidden;
-            backdrop-filter: blur(10px);
+        .bg-glow-1 {
+            position: absolute; top: -25%; left: -10%;
+            width: 55vw; height: 55vw; border-radius: 50%;
+            background: radial-gradient(circle, rgba(245,200,66,0.08) 0%, transparent 65%);
+            animation: drift1 20s ease-in-out infinite;
         }
-        .ticker-label {
-            flex-shrink: 0; padding: 0 16px;
-            font-family: var(--mono); font-size: 9px; font-weight: 700;
-            letter-spacing: 2px; color: var(--gold);
-            border-right: 1px solid var(--border);
-            height: 100%; display: flex; align-items: center;
-            background: rgba(245,200,66,0.05);
-        }
-        .ticker-scroll { display: flex; overflow: hidden; flex: 1; }
-        .ticker-track { display: flex; animation: ticker 28s linear infinite; white-space: nowrap; }
-        .ticker-item {
-            display: flex; align-items: center; gap: 8px;
-            padding: 0 24px; font-family: var(--mono); font-size: 10px;
-            border-right: 1px solid var(--border); height: 36px;
-        }
-        .ticker-sym { color: var(--text-secondary); font-weight: 500; }
-        .ticker-price { color: var(--text-primary); font-weight: 700; }
-        .ticker-chg.up { color: var(--green); }
-        .ticker-chg.dn { color: var(--red); }
-        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        /* Layout */
+        .bg-glow-2 {
+            position: absolute; bottom: -25%; right: -10%;
+            width: 50vw; height: 50vw; border-radius: 50%;
+            background: radial-gradient(circle, rgba(22,168,121,0.06) 0%, transparent 65%);
+            animation: drift2 24s ease-in-out infinite;
+        }
+
+        @keyframes drift1 {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(4%,5%) scale(1.06); }
+        }
+        @keyframes drift2 {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(-4%,-4%) scale(1.05); }
+        }
+
         .page-wrap {
-            min-height: 100vh; padding-top: 36px;
-            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 20px;
             position: relative; z-index: 1;
-            padding: 36px 20px 40px;
         }
 
         .verify-box {
-            width: 100%; max-width: 480px;
+            width: 100%;
+            max-width: 440px;
+            background: linear-gradient(180deg, #14181f 0%, var(--bg-card) 100%);
+            border: 1px solid var(--border);
+            border-top: 2px solid var(--gold);
+            border-radius: 16px;
+            padding: 36px 32px;
+            box-shadow: 0 24px 60px -20px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02);
             animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
         }
 
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(24px); }
+            from { opacity: 0; transform: translateY(18px); }
             to   { opacity: 1; transform: translateY(0); }
         }
 
         /* Brand */
         .top-brand {
             display: flex; flex-direction: column; align-items: center;
-            gap: 10px; margin-bottom: 32px;
+            gap: 12px; margin-bottom: 24px;
         }
         .top-brand img {
-            width: 52px; height: 52px; object-fit: contain;
-            filter: drop-shadow(0 0 14px rgba(245,200,66,0.4));
+            width: 44px; height: 44px; object-fit: contain;
+            filter: drop-shadow(0 0 14px rgba(245,200,66,0.35));
         }
         .top-brand-name {
-            font-family: var(--mono); font-size: 9px; font-weight: 700;
-            letter-spacing: 3px; text-transform: uppercase; color: var(--gold);
+            font-family: var(--mono); font-size: 11px; font-weight: 700;
+            letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold);
         }
 
         /* Steps */
         .steps {
-            display: flex; align-items: center; justify-content: center; margin-bottom: 36px;
+            display: flex; align-items: center; justify-content: center; margin-bottom: 28px;
         }
-        .step { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .step { display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .step-circle {
-            width: 30px; height: 30px; border-radius: 50%;
+            width: 26px; height: 26px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-family: var(--mono); font-size: 11px; font-weight: 700;
+            font-family: var(--mono); font-size: 10px; font-weight: 700;
         }
         .step.done .step-circle {
             background: rgba(22,168,121,0.15); border: 2px solid var(--green); color: var(--green);
         }
         .step.active .step-circle {
-            background: var(--gold); border: 2px solid var(--gold); color: #080B10;
+            background: var(--gold); border: 2px solid var(--gold); color: #0B0E12;
+            box-shadow: 0 0 0 4px var(--gold-dim);
         }
         .step.pending .step-circle {
-            background: transparent; border: 2px solid rgba(255,255,255,0.1); color: var(--text-muted);
+            background: transparent; border: 2px solid rgba(255,255,255,0.08); color: var(--text-muted);
         }
         .step-lbl { font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
         .step.done .step-lbl { color: var(--green); }
         .step.active .step-lbl { color: var(--gold); }
         .step.pending .step-lbl { color: var(--text-muted); }
         .step-line {
-            flex: 1; height: 1px; max-width: 56px; margin: 0 8px; margin-bottom: 18px;
+            flex: 0 0 44px; height: 1px; margin: 0 8px 17px;
             background: rgba(255,255,255,0.08);
         }
         .step-line.done { background: var(--green); }
 
         /* Header */
-        .form-head { text-align: center; margin-bottom: 32px; }
+        .form-head { text-align: center; margin-bottom: 24px; }
         .form-head h1 {
-            font-size: 22px; font-weight: 700; color: var(--text-primary);
-            letter-spacing: -0.3px; margin-bottom: 8px;
+            font-size: 20px; font-weight: 700; color: var(--text-primary);
+            letter-spacing: -0.2px; margin-bottom: 8px;
         }
         .form-head p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
         .form-head strong { color: var(--gold); font-weight: 600; }
@@ -165,37 +158,32 @@
         /* Alerts */
         .alert {
             display: flex; gap: 10px; align-items: flex-start;
-            border-radius: 10px; padding: 13px 16px; margin-bottom: 20px;
+            border-radius: 8px; padding: 12px 14px; margin-bottom: 18px;
             font-size: 13px;
-            animation: slideDown 0.3s ease-out;
-        }
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-8px); }
-            to   { opacity: 1; transform: translateY(0); }
         }
         .alert-success {
             background: var(--green-dim); border: 1px solid rgba(22,168,121,0.2);
-            border-left: 3px solid var(--green); color: #6ee7b7;
+            color: #6ee7b7;
         }
-        .alert-success i { color: var(--green); font-size: 17px; flex-shrink: 0; }
+        .alert-success i { color: var(--green); font-size: 16px; flex-shrink: 0; }
         .alert-danger {
-            background: var(--red-dim); border: 1px solid rgba(240,79,89,0.2);
-            border-left: 3px solid var(--red); color: #fca5a5;
+            background: var(--red-dim); border: 1px solid rgba(240,79,89,0.25);
+            color: #fca5a5;
         }
-        .alert-danger i { color: var(--red); font-size: 17px; flex-shrink: 0; }
+        .alert-danger i { color: var(--red); font-size: 16px; flex-shrink: 0; }
 
         /* OTP Digits */
         .otp-row {
-            display: flex; gap: 10px; justify-content: center;
-            margin-bottom: 28px;
+            display: flex; gap: 8px; justify-content: center;
+            margin-bottom: 24px;
         }
 
         .otp-box {
-            width: 58px; height: 68px;
+            width: 50px; height: 60px;
             background: var(--bg-input);
             border: 2px solid var(--border);
-            border-radius: 12px;
-            font-size: 28px; font-weight: 700;
+            border-radius: 10px;
+            font-size: 24px; font-weight: 700;
             font-family: var(--mono);
             color: var(--gold);
             text-align: center;
@@ -205,9 +193,9 @@
 
         .otp-box:focus {
             border-color: var(--gold);
-            background: rgba(245,200,66,0.05);
-            box-shadow: 0 0 0 3px rgba(245,200,66,0.1);
-            transform: translateY(-3px);
+            background: #1a1f28;
+            box-shadow: 0 0 0 3px var(--gold-dim);
+            transform: translateY(-2px);
         }
 
         .otp-box.filled {
@@ -217,9 +205,7 @@
 
         .otp-box.is-invalid { border-color: var(--red) !important; }
 
-        .otp-row.shake .otp-box {
-            animation: shake 0.45s ease;
-        }
+        .otp-row.shake .otp-box { animation: shake 0.45s ease; }
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
@@ -229,32 +215,26 @@
 
         .otp-error {
             text-align: center; font-size: 12px;
-            color: #fca5a5; margin-top: -18px; margin-bottom: 16px;
+            color: #fca5a5; margin-top: -14px; margin-bottom: 16px;
         }
 
         /* Submit */
         .btn-verify {
-            width: 100%; height: 52px;
-            background: var(--gold); border: none; border-radius: 10px;
+            width: 100%; height: 46px;
+            background: var(--gold); border: none; border-radius: 8px;
             font-size: 14px; font-weight: 700; font-family: var(--sans);
-            color: #080B10; cursor: pointer;
+            color: #0B0E12; cursor: pointer;
             display: flex; align-items: center; justify-content: center; gap: 8px;
-            position: relative; overflow: hidden;
+            box-shadow: 0 4px 20px rgba(245,200,66,0.25);
             transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
-            box-shadow: 0 4px 24px rgba(245,200,66,0.22);
         }
-        .btn-verify::after {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 55%);
-            pointer-events: none;
-        }
-        .btn-verify:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(245,200,66,0.3); }
+        .btn-verify:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(245,200,66,0.35); }
         .btn-verify:active { transform: translateY(0); }
-        .btn-verify:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+        .btn-verify:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
         .btn-verify.loading { pointer-events: none; opacity: 0.7; }
         .spinner {
-            display: none; width: 16px; height: 16px;
-            border: 2px solid rgba(0,0,0,0.25); border-top-color: #080B10;
+            display: none; width: 15px; height: 15px;
+            border: 2px solid rgba(0,0,0,0.25); border-top-color: #0B0E12;
             border-radius: 50%; animation: spin 0.7s linear infinite;
         }
         .btn-verify.loading .spinner { display: block; }
@@ -262,40 +242,38 @@
 
         /* Resend */
         .resend-row {
-            text-align: center; margin-top: 24px; padding-top: 20px;
+            text-align: center; margin-top: 22px; padding-top: 20px;
             border-top: 1px solid var(--border);
             font-size: 13px; color: var(--text-secondary);
         }
         .resend-link {
             color: var(--gold); text-decoration: none; font-weight: 600; margin-left: 4px;
-            transition: color 0.2s;
         }
-        .resend-link:hover { color: #fde68a; }
+        .resend-link:hover { text-decoration: underline; }
         .resend-link.disabled { color: var(--text-muted); pointer-events: none; }
         #countdown { color: var(--gold); font-family: var(--mono); font-weight: 700; }
 
         /* Timer info */
         .timer-info {
-            display: flex; gap: 12px; align-items: flex-start;
-            margin-top: 20px; padding: 14px 16px;
-            background: rgba(245,200,66,0.04);
-            border: 1px solid var(--gold-border);
-            border-radius: 10px;
+            display: flex; gap: 10px; align-items: flex-start;
+            margin-top: 18px; padding: 12px 14px;
+            background: var(--gold-dim);
+            border: 1px solid rgba(245,200,66,0.25);
+            border-radius: 8px;
         }
         .timer-info-icon {
-            flex-shrink: 0; width: 32px; height: 32px;
+            flex-shrink: 0; width: 30px; height: 30px;
             display: flex; align-items: center; justify-content: center;
-            background: rgba(245,200,66,0.08); border-radius: 8px;
-            color: var(--gold); font-size: 15px;
+            background: rgba(245,200,66,0.12); border-radius: 7px;
+            color: var(--gold); font-size: 14px;
         }
-        .timer-info-title { font-size: 12px; font-weight: 700; color: var(--gold); margin-bottom: 3px; }
+        .timer-info-title { font-size: 12px; font-weight: 700; color: var(--gold); margin-bottom: 2px; }
         .timer-info-msg { font-size: 11px; color: var(--text-secondary); line-height: 1.4; }
 
-        @media (max-width: 480px) {
-            .otp-box { width: 46px; height: 56px; font-size: 22px; border-radius: 10px; }
-            .otp-row { gap: 8px; }
-            .verify-box { padding-top: 8px; }
-            .btn-verify { height: 50px; }
+        @media (max-width: 420px) {
+            .verify-box { padding: 28px 20px; }
+            .otp-box { width: 42px; height: 54px; font-size: 20px; border-radius: 9px; }
+            .otp-row { gap: 6px; }
         }
 
         ::-webkit-scrollbar { width: 6px; }
@@ -312,28 +290,8 @@
 <body id="kt_body" class="app-blank">
     <div class="bg-canvas">
         <div class="bg-grid"></div>
-        <div class="bg-glow"></div>
-    </div>
-
-    <!-- Ticker -->
-    <div class="ticker-bar">
-        <div class="ticker-label">LIVE</div>
-        <div class="ticker-scroll">
-            <div class="ticker-track">
-                <div class="ticker-item"><span class="ticker-sym">BTC/USDT</span><span class="ticker-price">67,842.30</span><span class="ticker-chg up">+2.34%</span></div>
-                <div class="ticker-item"><span class="ticker-sym">ETH/USDT</span><span class="ticker-price">3,521.10</span><span class="ticker-chg up">+1.87%</span></div>
-                <div class="ticker-item"><span class="ticker-sym">BNB/USDT</span><span class="ticker-price">612.45</span><span class="ticker-chg dn">-0.52%</span></div>
-                <div class="ticker-item"><span class="ticker-sym">SOL/USDT</span><span class="ticker-price">178.90</span><span class="ticker-chg up">+4.21%</span></div>
-                <div class="ticker-item"><span class="ticker-sym">XRP/USDT</span><span class="ticker-price">0.6124</span><span class="ticker-chg dn">-1.03%</span></div>
-                <div class="ticker-item"><span class="ticker-sym">ADA/USDT</span><span class="ticker-price">0.4832</span><span class="ticker-chg up">+0.78%</span></div>
-                <div class="ticker-item"><span class="ticker-sym">BTC/USDT</span><span class="ticker-price">67,842.30</span><span class="ticker-chg up">+2.34%</span></div>
-                <div class="ticker-item"><span class="ticker-sym">ETH/USDT</span><span class="ticker-price">3,521.10</span><span class="ticker-chg up">+1.87%</span></div>
-                <div class="ticker-item"><span class="ticker-sym">BNB/USDT</span><span class="ticker-price">612.45</span><span class="ticker-chg dn">-0.52%</span></div>
-                <div class="ticker-item"><span class="ticker-sym">SOL/USDT</span><span class="ticker-price">178.90</span><span class="ticker-chg up">+4.21%</span></div>
-                <div class="ticker-item"><span class="ticker-sym">XRP/USDT</span><span class="ticker-price">0.6124</span><span class="ticker-chg dn">-1.03%</span></div>
-                <div class="ticker-item"><span class="ticker-sym">ADA/USDT</span><span class="ticker-price">0.4832</span><span class="ticker-chg up">+0.78%</span></div>
-            </div>
-        </div>
+        <div class="bg-glow-1"></div>
+        <div class="bg-glow-2"></div>
     </div>
 
     <div class="page-wrap">
@@ -348,7 +306,7 @@
             <div class="steps">
                 <div class="step done">
                     <div class="step-circle">
-                        <i class="ki-duotone ki-check" style="font-size:13px;">
+                        <i class="ki-duotone ki-check" style="font-size:12px;">
                             <span class="path1"></span><span class="path2"></span>
                         </i>
                     </div>
@@ -422,9 +380,6 @@
                 <button type="submit" class="btn-verify" id="verifyBtn" disabled>
                     <div class="spinner"></div>
                     <span class="btn-text">Verify &amp; Complete Registration</span>
-                    <i class="ki-duotone ki-arrow-right" style="font-size:16px;">
-                        <span class="path1"></span><span class="path2"></span>
-                    </i>
                 </button>
 
                 <div class="resend-row">

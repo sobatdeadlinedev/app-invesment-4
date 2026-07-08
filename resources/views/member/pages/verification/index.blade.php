@@ -9,7 +9,6 @@
         </a>
         <div class="kv-header-center">
             <h5 class="kv-title">{{ __('app.account_verification') }}</h5>
-            <p class="kv-subtitle">{{ __('app.complete_verification_data') }}</p>
         </div>
         <div style="width:36px;"></div>
     </div>
@@ -32,63 +31,59 @@
         <form action="{{ route('member.verification.store') }}" method="POST" enctype="multipart/form-data" id="verificationForm">
             @csrf
 
-            <div class="kv-pad">
+            <div class="kv-section">
                 <div class="kv-field-label">{{ __('app.full_name') }}</div>
-                <div class="kv-input-wrap">
-                    <i class="bi bi-person-fill kv-field-icon"></i>
-                    <input type="text" name="full_name"
-                        class="kv-input @error('full_name') is-invalid @enderror"
-                        placeholder="{{ __('app.enter_full_name') }}"
-                        value="{{ old('full_name') }}" required>
-                </div>
+                <input type="text" name="full_name"
+                    class="kv-plain-input @error('full_name') is-invalid @enderror"
+                    placeholder="{{ __('app.enter_full_name') }}"
+                    value="{{ old('full_name') }}" required>
                 @error('full_name')
                     <small class="kv-error">{{ $message }}</small>
                 @enderror
             </div>
+            <div class="kv-divider"></div>
 
-            <div class="kv-pad">
+            <div class="kv-section">
                 <div class="kv-field-label">{{ __('app.identity_number') }}</div>
-                <div class="kv-input-wrap">
-                    <i class="bi bi-card-text kv-field-icon"></i>
-                    <input type="text" name="identity_number"
-                        class="kv-input @error('identity_number') is-invalid @enderror"
-                        placeholder="{{ __('app.enter_identity_number') }}"
-                        value="{{ old('identity_number') }}" required>
-                </div>
+                <input type="text" name="identity_number"
+                    class="kv-plain-input @error('identity_number') is-invalid @enderror"
+                    placeholder="{{ __('app.enter_identity_number') }}"
+                    value="{{ old('identity_number') }}" required>
                 @error('identity_number')
                     <small class="kv-error">{{ $message }}</small>
                 @enderror
             </div>
+            <div class="kv-divider"></div>
 
-            <div class="kv-pad">
+            <div class="kv-section">
                 <div class="kv-field-label">{{ __('app.upload_identity_photo') }}</div>
-                <div class="kv-upload-area" onclick="document.getElementById('identity_photo').click()">
+                <div class="kv-upload-box" onclick="document.getElementById('identity_photo').click()">
                     <input type="file" id="identity_photo" name="identity_photo" accept="image/*" class="d-none"
                         onchange="previewImage(this, 'identityPreview')" required>
-                    <div id="identityPreview" class="kv-preview-inner">
-                        <i class="bi bi-card-image kv-upload-icon"></i>
-                        <span>{{ __('app.upload_identity_photo') }}</span>
+                    <div id="identityPreview" class="kv-upload-inner">
+                        <i class="bi bi-plus-lg"></i>
                     </div>
                 </div>
                 @error('identity_photo')
                     <small class="kv-error">{{ $message }}</small>
                 @enderror
             </div>
+            <div class="kv-divider"></div>
 
-            <div class="kv-pad">
+            <div class="kv-section">
                 <div class="kv-field-label">{{ __('app.upload_selfie_photo') }}</div>
-                <div class="kv-upload-area" onclick="document.getElementById('selfie_photo').click()">
+                <div class="kv-upload-box" onclick="document.getElementById('selfie_photo').click()">
                     <input type="file" id="selfie_photo" name="selfie_photo" accept="image/*" class="d-none"
                         onchange="previewImage(this, 'selfiePreview')" required>
-                    <div id="selfiePreview" class="kv-preview-inner">
-                        <i class="bi bi-camera-fill kv-upload-icon"></i>
-                        <span>{{ __('app.upload_selfie_photo') }}</span>
+                    <div id="selfiePreview" class="kv-upload-inner">
+                        <i class="bi bi-plus-lg"></i>
                     </div>
                 </div>
                 @error('selfie_photo')
                     <small class="kv-error">{{ $message }}</small>
                 @enderror
             </div>
+            <div class="kv-divider"></div>
 
             <div class="kv-footer">
                 <button type="submit" class="kv-submit-btn">{{ __('app.submit_verification') }}</button>
@@ -109,40 +104,32 @@
             </div>
         </div>
 
-        <div class="kv-pad">
+        <div class="kv-section">
             <div class="kv-field-label">{{ __('app.full_name') }}</div>
-            <div class="kv-info-box">
-                <i class="bi bi-person-fill kv-field-icon"></i>
-                <span>{{ $verification->full_name }}</span>
-            </div>
+            <div class="kv-plain-value">{{ $verification->full_name }}</div>
         </div>
+        <div class="kv-divider"></div>
 
-        <div class="kv-pad" style="padding-bottom: 24px;">
+        <div class="kv-section">
             <div class="kv-field-label">{{ __('app.identity_number') }}</div>
-            <div class="kv-info-box">
-                <i class="bi bi-card-text kv-field-icon"></i>
-                <span>{{ $verification->identity_number }}</span>
-            </div>
+            <div class="kv-plain-value">{{ $verification->identity_number }}</div>
         </div>
+        <div class="kv-divider"></div>
 
     {{-- ═══ STATE 3: VERIFIED ═══ --}}
     @elseif($user->is_verified)
 
-        <div class="kv-pad">
+        <div class="kv-section">
             <div class="kv-field-label">{{ __('app.full_name') }}</div>
-            <div class="kv-info-box">
-                <i class="bi bi-person-fill kv-field-icon"></i>
-                <span>{{ $verification->full_name }}</span>
-            </div>
+            <div class="kv-plain-value">{{ $verification->full_name }}</div>
         </div>
+        <div class="kv-divider"></div>
 
-        <div class="kv-pad">
+        <div class="kv-section">
             <div class="kv-field-label">{{ __('app.identity_number') }}</div>
-            <div class="kv-info-box">
-                <i class="bi bi-card-text kv-field-icon"></i>
-                <span>{{ $verification->identity_number }}</span>
-            </div>
+            <div class="kv-plain-value">{{ $verification->identity_number }}</div>
         </div>
+        <div class="kv-divider"></div>
 
         <div class="kv-verified-row">
             <i class="bi bi-patch-check-fill me-2"></i>{{ __('app.account_verified') }}
@@ -174,53 +161,46 @@
 }
 .kv-back-btn:hover { background: rgba(255,255,255,0.1); }
 .kv-header-center { flex: 1; text-align: center; padding: 0 10px; }
-.kv-title   { color: #fff; font-size: 16px; font-weight: 700; margin: 0; }
-.kv-subtitle { color: var(--text-muted); font-size: 11px; margin: 3px 0 0; }
+.kv-title { color: #fff; font-size: 17px; font-weight: 700; margin: 0; }
 
-/* Sections */
-.kv-pad { padding: 18px 20px 0; }
-
-/* Field label */
+/* Section like the reference: label on top, plain box below, divider under */
+.kv-section { padding: 18px 20px 14px; }
 .kv-field-label {
-    color: var(--text-muted); font-size: 13px; font-weight: 500; margin-bottom: 8px;
+    color: #fff; font-size: 14px; font-weight: 500; margin-bottom: 10px;
+}
+.kv-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 0 20px; }
+
+/* Plain bordered input, no icon - matches reference style */
+.kv-plain-input {
+    width: 100%; background: transparent;
+    border: 1px solid rgba(255,255,255,0.25); border-radius: 6px;
+    padding: 13px 14px; color: #fff; font-size: 14px; outline: none;
+}
+.kv-plain-input::placeholder { color: rgba(255,255,255,0.35); }
+.kv-plain-input.is-invalid { border-color: #ef4444; }
+
+/* Read-only value display (pending/verified states) */
+.kv-plain-value {
+    border: 1px solid rgba(255,255,255,0.25); border-radius: 6px;
+    padding: 13px 14px; color: #fff; font-size: 14px; font-weight: 600;
 }
 
-/* Input box */
-.kv-input-wrap {
-    display: flex; align-items: center; gap: 10px;
-    background: rgba(255,255,255,0.04); border: 1px solid var(--border-color);
-    border-radius: 10px; padding: 13px 14px;
+/* Square upload box with + icon, like reference */
+.kv-upload-box {
+    width: 120px; height: 120px;
+    border: 1px solid rgba(255,255,255,0.35); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; overflow: hidden; transition: border-color 0.2s;
 }
-.kv-field-icon { color: var(--text-muted); font-size: 16px; flex-shrink: 0; }
-.kv-input {
-    flex: 1; background: transparent; border: none; outline: none;
-    color: #fff; font-size: 14px; font-weight: 500;
+.kv-upload-box:hover { border-color: var(--gold-color, #22c55e); }
+.kv-upload-inner {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 100%; color: rgba(255,255,255,0.5); font-size: 26px;
 }
-.kv-input::placeholder { color: var(--text-muted); }
-
-/* Info box (read-only display) */
-.kv-info-box {
-    display: flex; align-items: center; gap: 10px;
-    background: rgba(255,255,255,0.04); border: 1px solid var(--border-color);
-    border-radius: 10px; padding: 13px 14px;
-}
-.kv-info-box span { color: #fff; font-size: 14px; font-weight: 600; letter-spacing: 0.3px; }
-
-/* Upload area */
-.kv-upload-area {
-    background: rgba(0,229,255,0.04); border: 1.5px dashed rgba(0,229,255,0.2);
-    border-radius: 10px; padding: 16px; cursor: pointer; transition: all 0.2s;
-}
-.kv-upload-area:hover { background: rgba(0,229,255,0.08); border-color: var(--gold-color); }
-.kv-preview-inner {
-    display: flex; align-items: center; gap: 10px;
-    color: var(--text-muted); font-size: 13px;
-}
-.kv-preview-inner img { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; }
-.kv-upload-icon { font-size: 22px; flex-shrink: 0; }
+.kv-upload-inner img { width: 100%; height: 100%; object-fit: cover; }
 
 /* Error */
-.kv-error { color: #ef4444; font-size: 12px; display: block; margin-top: 5px; }
+.kv-error { color: #ef4444; font-size: 12px; display: block; margin-top: 6px; }
 
 /* Submit footer */
 .kv-footer { padding: 20px 20px 24px; }
