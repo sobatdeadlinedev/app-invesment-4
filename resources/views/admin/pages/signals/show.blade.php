@@ -208,6 +208,21 @@
                                         </td>
                                     </tr>
                                     <tr>
+                                        <td class="text-gray-500">Jadwal Tayang:</td>
+                                        <td>
+                                            @if ($signal->scheduled_at && $signal->isScheduledForFuture())
+                                                <span class="badge badge-light-warning">
+                                                    <i class="ki-outline ki-time fs-5"></i>
+                                                    {{ $signal->scheduled_at->format('d M Y, H:i') }}
+                                                </span>
+                                            @else
+                                                <span class="badge badge-light-success">
+                                                    <i class="ki-outline ki-check-circle fs-5"></i> Sudah Tayang
+                                                </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <td class="text-gray-500">Bet Type:</td>
                                         <td>
                                             @if ($signal->bet_type == 'percentage')

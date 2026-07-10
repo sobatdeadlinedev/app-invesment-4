@@ -21,16 +21,9 @@ class InvestController extends Controller
         // ========================================
         $allCoins = TradingSignal::getAvailableCoins();
 
-        // FIX: default coin sekarang diambil langsung dari key pertama
-        // di $allCoins, bukan hardcode string manual. Ini memastikan
-        // format default (case, penulisan, dll) selalu identik dengan
-        // key yang dipakai saat user klik coin di popup.
         $defaultCoin = array_key_first($allCoins);
         $rawCoin = strtoupper($request->query('coin', $defaultCoin));
 
-        // FIX: normalisasi input coin. Kalau user/link mengirim shorthand
-        // seperti "BTC" (bukan key asli "BTCUSDT"), cari key di $allCoins
-        // yang match berdasarkan prefix, supaya tetap ketemu signal yang benar.
         if (array_key_exists($rawCoin, $allCoins)) {
             $coin = $rawCoin;
         } else {
@@ -41,11 +34,12 @@ class InvestController extends Controller
             $coin = $matchedKey ?? $defaultCoin;
         }
 
-        // Count open signals per coin yang user bisa akses
+        // Count open signals per coin yang user bisa akses (dan sudah waktunya tayang)
         $signalCounts = [];
         foreach (array_keys($allCoins) as $coinSymbol) {
             $signalCounts[$coinSymbol] = TradingSignal::forCoin($coinSymbol)
                 ->open()
+                ->visible()
                 ->accessibleBy($user->id)
                 ->count();
         }
@@ -60,6 +54,7 @@ class InvestController extends Controller
         // ========================================
         $openSignals = TradingSignal::forCoin($coin)
             ->open()
+            ->visible()
             ->accessibleBy($user->id)
             ->with('creator')
             ->withCount('participants')
@@ -96,7 +91,6 @@ class InvestController extends Controller
             ->orderBy('joined_at', 'desc')
             ->paginate(10);
 
-        // Calculate statistics untuk history tab
         $totalJoinedThisCoin = SignalParticipant::where('user_id', $user->id)
             ->whereHas('signal', function ($q) use ($coin) {
                 $q->where('coin', $coin);

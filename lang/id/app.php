@@ -451,7 +451,7 @@ return [
     'total_return' => 'Total Kembali',
     'up' => 'Naik',
     'down' => 'Turun',
-    'expert_signals' => 'Sinyal Expert',
+    'expert_signals' => 'Undangan',
     'legacy_mode' => 'Lama',
     'trade_history' => 'Riwayat Trade',
     'no_trades_yet' => 'Belum ada trade',

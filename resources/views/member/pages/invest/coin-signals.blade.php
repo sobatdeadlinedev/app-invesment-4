@@ -22,25 +22,62 @@
     </div>
 
     {{-- COIN POPUP --}}
-    <div id="coinPopupOverlay" class="cp-overlay" onclick="closeCoinPopup()" style="display:none;">
-        <div class="cp-drawer" onclick="event.stopPropagation()">
-            <div class="cp-drawer-handle"></div>
-            <div class="cp-drawer-title">PILIH MARKET</div>
-            <div class="cp-drawer-list">
-                @foreach($allCoins as $symbol => $info)
+<div id="coinPopupOverlay" class="cp-overlay" onclick="closeCoinPopup()" style="display:none;">
+    <div class="cp-drawer" onclick="event.stopPropagation()">
+        <div class="cp-drawer-handle"></div>
+        <div class="cp-drawer-hd">
+            <div class="cp-drawer-title">Select Market</div>
+            <button class="cp-drawer-x" onclick="closeCoinPopup()"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="cp-drawer-search">
+            <i class="bi bi-search"></i>
+            <input type="text" id="cpMarketSearch" placeholder="Search..." oninput="cpFilterMarkets(this.value)">
+        </div>
+        <div class="cp-drawer-list" id="cpMarketList">
+            @php
+                $categories = [
+                    'crypto' => ['label' => 'Cryptocurrency', 'icon' => 'bi-currency-bitcoin'],
+                    'fiat'   => ['label' => 'Fiat Currency',  'icon' => 'bi-currency-exchange'],
+                    'metals' => ['label' => 'Commodities',    'icon' => 'bi-gem'],
+                ];
+                $cryptoKeys = ['BTCUSDT','ETHUSDT','XRPUSDT','LINKUSDT','DOTUSDT','DOGEUSDT','BCHUSDT','FILUSDT','LTCUSDT','ZECUSDT','DASHUSDT'];
+                $metalKeys  = ['XAGUSD','XAUUSD','XPTUSD'];
+            @endphp
+
+            @foreach($categories as $catKey => $catInfo)
+                @php
+                    $catCoins = collect($allCoins)->filter(function($info, $sym) use ($catKey, $cryptoKeys, $metalKeys) {
+                        if ($catKey === 'crypto') return in_array($sym, $cryptoKeys);
+                        if ($catKey === 'metals') return in_array($sym, $metalKeys);
+                        return !in_array($sym, $cryptoKeys) && !in_array($sym, $metalKeys);
+                    });
+                @endphp
+                @if($catCoins->count())
+                <div class="cp-mkt-cat"><i class="bi {{ $catInfo['icon'] }}"></i> {{ strtoupper($catInfo['label']) }}</div>
+                @foreach($catCoins as $symbol => $info)
                 <a href="{{ route('member.invest.coin', ['coin' => strtolower($symbol)]) }}"
-                   class="cp-mkt {{ $symbol === $coin ? 'cp-mkt-on' : '' }}">
-                    <span class="cp-mkt-dot" style="background:{{ $info['color'] }};box-shadow:0 0 6px {{ $info['color'] }};"></span>
-                    <span class="cp-mkt-s">{{ $info['symbol'] }}</span>
-                    <span class="cp-mkt-n">{{ $info['name'] }}</span>
+                   class="cp-mkt {{ $symbol === $coin ? 'cp-mkt-on' : '' }}"
+                   data-name="{{ strtolower($info['name']) }} {{ strtolower($info['symbol']) }}">
+                    <div class="cp-mkt-icon" style="background:{{ $info['color'] }}22;border:1px solid {{ $info['color'] }}55;">
+                        <i class="{{ $info['icon'] ?? 'bi bi-currency-bitcoin' }}" style="color:{{ $info['color'] }};"></i>
+                    </div>
+                    <div class="cp-mkt-txt">
+                        <span class="cp-mkt-s">{{ $info['symbol'] }}</span>
+                        <span class="cp-mkt-n">{{ $info['name'] }}</span>
+                    </div>
                     @if($signalCounts[$symbol] > 0)
                         <span class="cp-mkt-sig">{{ $signalCounts[$symbol] }}</span>
                     @endif
+                    @if($symbol === $coin)
+                        <i class="bi bi-check2-circle cp-mkt-check"></i>
+                    @endif
                 </a>
                 @endforeach
-            </div>
+                @endif
+            @endforeach
         </div>
     </div>
+</div>
 
     {{-- ALERTS --}}
     @if(!auth()->user()->canJoinSignal())
@@ -189,64 +226,94 @@
 
         @forelse($historyForThisCoin as $participant)
         @php
-            $signal     = $participant->signal;
-            $isPending  = $signal->status !== 'settled' || $signal->result === null;
-            $isWin      = $signal->result === 'win';
-            $isSettled  = $participant->status === 'settled';
-            $netResult  = ($participant->profit_loss ?? 0) - ($participant->fee_amount ?? 0);
+            $signal      = $participant->signal;
+            $isPending   = $signal->status !== 'settled' || $signal->result === null;
+            $isWin       = $signal->result === 'win';
+            $isSettled   = $participant->status === 'settled';
+            $netResult   = ($participant->profit_loss ?? 0) - ($participant->fee_amount ?? 0);
             $adminChoice = strtolower($signal->admin_choice ?? '');
-            $stateKey   = $isPending ? 'p' : ($isWin ? 'w' : 'l');
+            $stateKey    = $isPending ? 'p' : ($isWin ? 'w' : 'l');
+
+            $openPrice   = $signal->entry_price ?? null;
+            $closePrice  = $signal->target_price ?? null;
+            $priceMoved  = ($openPrice !== null && $closePrice !== null) ? ($closePrice - $openPrice) : null;
+            $priceUpPct  = ($priceMoved !== null && $openPrice > 0) ? ($priceMoved / $openPrice) * 100 : null;
         @endphp
 
-        <div class="cp-hcard cp-hcard-{{ $stateKey }}">
-            {{-- Card header --}}
-            <div class="cp-hcard-head">
-                <div class="cp-hcard-title">{{ $signal->title }}</div>
-                <div class="cp-hcard-badge cp-hbadge-{{ $stateKey }}">
-                    @if($isPending) PENDING
-                    @elseif($isWin) WIN ✓
-                    @else LOSS ✗
+        <div class="cp-tk cp-tk-{{ $stateKey }}">
+            {{-- Head: asset + status --}}
+            <div class="cp-tk-head">
+                <div class="cp-tk-asset">
+                    <span class="cp-tk-asset-dot" style="background:{{ $coinInfo['color'] }};box-shadow:0 0 6px {{ $coinInfo['color'] }};"></span>
+                    <span class="cp-tk-asset-sym">{{ $coinInfo['symbol'] }}</span>
+                    <span class="cp-tk-asset-n">{{ $coinInfo['name'] }}</span>
+                </div>
+                <div class="cp-tk-badge cp-tk-badge-{{ $stateKey }}">
+                    @if($isPending) <i class="bi bi-hourglass-split"></i> PENDING
+                    @elseif($isWin) <i class="bi bi-check-circle-fill"></i> WIN
+                    @else <i class="bi bi-x-circle-fill"></i> LOSS
                     @endif
                 </div>
             </div>
-            {{-- Rows --}}
-            <div class="cp-hcard-row">
-                <span class="cp-hcard-lbl">Jumlah Order</span>
-                <span class="cp-hcard-val">{{ number_format($participant->bet_amount, 2) }} USDT</span>
+
+            <div class="cp-tk-title">{{ $signal->title }}</div>
+
+            {{-- Price gauge: Entry -> Target --}}
+            <div class="cp-tk-gauge">
+                <div class="cp-tk-gauge-pt">
+                    <div class="cp-tk-gauge-lbl">ENTRY</div>
+                    <div class="cp-tk-gauge-val">{{ $openPrice !== null ? number_format($openPrice, 2) : '--' }}</div>
+                </div>
+                <div class="cp-tk-gauge-track">
+                    <div class="cp-tk-gauge-line {{ $priceMoved !== null ? ($priceMoved >= 0 ? 'up' : 'down') : '' }}"></div>
+                    <i class="bi bi-caret-right-fill cp-tk-gauge-chev {{ $priceMoved !== null ? ($priceMoved >= 0 ? 'up' : 'down') : '' }}"></i>
+                </div>
+                <div class="cp-tk-gauge-pt right">
+                    <div class="cp-tk-gauge-lbl">TARGET</div>
+                    <div class="cp-tk-gauge-val {{ $priceMoved !== null ? ($priceMoved >= 0 ? 'cp-val-g' : 'cp-val-r') : '' }}">{{ $closePrice !== null ? number_format($closePrice, 2) : '--' }}</div>
+                </div>
             </div>
-            <div class="cp-hcard-row">
-                <span class="cp-hcard-lbl">Laba/Rugi Bersih</span>
-                <span class="cp-hcard-val {{ $isPending ? '' : ($netResult >= 0 ? 'cp-val-g' : 'cp-val-r') }}">
-                    @if($isPending) ~
-                    @elseif($isSettled) {{ ($netResult >= 0 ? '+' : '') . number_format($netResult, 2) }} USDT
-                    @else —
-                    @endif
-                </span>
+            <div class="cp-tk-perf"></div>
+
+            {{-- Stat grid --}}
+            <div class="cp-tk-stats">
+                <div class="cp-tk-stat">
+                    <div class="cp-tk-stat-k">BET</div>
+                    <div class="cp-tk-stat-v">{{ number_format($participant->bet_amount, 2) }}</div>
+                </div>
+                <div class="cp-tk-stat-vr"></div>
+                <div class="cp-tk-stat">
+                    <div class="cp-tk-stat-k">PROFIT/LOSS</div>
+                    <div class="cp-tk-stat-v {{ $isPending ? '' : ($netResult >= 0 ? 'cp-val-g' : 'cp-val-r') }}">
+                        @if($isPending) ~
+                        @elseif($isSettled) {{ ($netResult >= 0 ? '+' : '') . number_format($netResult, 2) }}
+                        @else —
+                        @endif
+                    </div>
+                </div>
+                <div class="cp-tk-stat-vr"></div>
+                <div class="cp-tk-stat">
+                    <div class="cp-tk-stat-k">RATE</div>
+                    <div class="cp-tk-stat-v">{{ ($signal->rate_of_return ?? 0) > 0 ? number_format($signal->rate_of_return, 1) . '%' : '--' }}</div>
+                </div>
             </div>
-            <div class="cp-hcard-row">
-                <span class="cp-hcard-lbl">Periode Waktu</span>
-                <span class="cp-hcard-val">
-                    {{ $signal->opened_at ? $signal->opened_at->format('H:i') : '--' }}
+
+            {{-- Meta footer --}}
+            <div class="cp-tk-meta">
+                <span class="cp-tk-meta-time">
+                    <i class="bi bi-clock-history"></i>
+                    {{ $signal->opened_at ? $signal->opened_at->format('d M · H:i') : '--' }}
                     –
                     {{ $signal->closed_at ? $signal->closed_at->format('H:i') : '~' }}
                 </span>
-            </div>
-            <div class="cp-hcard-row">
-                <span class="cp-hcard-lbl">Arah</span>
-                <span class="cp-hcard-val {{ $adminChoice === 'call' ? 'cp-val-g' : ($adminChoice === 'put' ? 'cp-val-r' : '') }}">
+                <span class="cp-tk-meta-dir {{ $adminChoice === 'call' ? 'cp-val-g' : ($adminChoice === 'put' ? 'cp-val-r' : '') }}">
                     @if($isPending) —
-                    @elseif($adminChoice === 'call') CALL ↑
-                    @elseif($adminChoice === 'put') PUT ↓
+                    @elseif($adminChoice === 'call') <i class="bi bi-graph-up-arrow"></i> CALL
+                    @elseif($adminChoice === 'put') <i class="bi bi-graph-down-arrow"></i> PUT
                     @else N/A
                     @endif
                 </span>
             </div>
-            @if($isSettled && ($signal->rate_of_return ?? 0) > 0)
-            <div class="cp-hcard-row">
-                <span class="cp-hcard-lbl">Tingkat Pengembalian</span>
-                <span class="cp-hcard-val">{{ number_format($signal->rate_of_return, 2) }}%</span>
-            </div>
-            @endif
         </div>
 
         @empty
@@ -346,33 +413,99 @@
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
     z-index: 9999;
-    display: flex; align-items: flex-end;
+    display: flex; align-items: flex-end; justify-content: center;
 }
 .cp-drawer {
-    background: #060a12;
-    border-top: 1px solid rgba(255,255,255,0.07);
+    background: #0d1420;
+    border-top: 1px solid rgba(255,255,255,0.08);
     border-radius: 20px 20px 0 0;
-    width: 100%; max-height: 75vh; overflow: hidden;
-    padding-bottom: 24px;
+    width: 100%; max-width: 480px;
+    max-height: 78vh; overflow: hidden;
+    display: flex; flex-direction: column;
+    padding-bottom: env(safe-area-inset-bottom, 10px);
     animation: cpDrawerUp 0.25s ease;
 }
 @keyframes cpDrawerUp { from{transform:translateY(40px);opacity:0} to{transform:translateY(0);opacity:1} }
-.cp-drawer-handle { width: 32px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; margin: 12px auto 16px; }
-.cp-drawer-title { font-size: 10px; font-weight: 800; letter-spacing: 3px; color: rgba(255,255,255,0.2); text-align: center; margin-bottom: 14px; }
-.cp-drawer-list { overflow-y: auto; max-height: calc(75vh - 80px); }
+
+.cp-drawer-handle {
+    width: 34px; height: 4px; background: rgba(255,255,255,0.15);
+    border-radius: 3px; margin: 10px auto 2px; flex-shrink: 0;
+}
+
+.cp-drawer-hd {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px 12px;
+    flex-shrink: 0;
+}
+.cp-drawer-title { color: #fff; font-size: 17px; font-weight: 800; }
+.cp-drawer-x {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(255,255,255,0.06); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.5); font-size: 13px;
+    transition: background .15s;
+}
+.cp-drawer-x:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+.cp-drawer-search {
+    display: flex; align-items: center; gap: 9px;
+    margin: 0 16px 10px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+.cp-drawer-search i { color: rgba(255,255,255,0.3); font-size: 13px; }
+.cp-drawer-search input {
+    flex: 1; background: none; border: none; outline: none;
+    color: #fff; font-size: 13px;
+}
+.cp-drawer-search input::placeholder { color: rgba(255,255,255,0.25); }
+
+.cp-drawer-list { overflow-y: auto; flex: 1; padding-bottom: 8px; }
+.cp-drawer-list::-webkit-scrollbar { width: 3px; }
+.cp-drawer-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+.cp-mkt-cat {
+    display: flex; align-items: center; gap: 6px;
+    padding: 12px 18px 6px;
+    color: rgba(255,255,255,0.25); font-size: 10px; font-weight: 800;
+    letter-spacing: 1.5px; text-transform: uppercase;
+}
+.cp-mkt-cat i { font-size: 11px; }
+
 .cp-mkt {
     display: flex; align-items: center; gap: 12px;
-    padding: 13px 20px; text-decoration: none;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+    padding: 11px 18px;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    border-left: 3px solid transparent;
     transition: background 0.15s;
 }
 .cp-mkt:hover { background: rgba(255,255,255,0.03); }
-.cp-mkt-on { background: rgba(255,255,255,0.04); }
-.cp-mkt-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.cp-mkt-s { color: #fff; font-size: 14px; font-weight: 700; }
-.cp-mkt-n { color: rgba(255,255,255,0.3); font-size: 12px; flex: 1; }
-.cp-mkt-sig { background: rgba(34,197,94,0.1); color: #22c55e; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.cp-mkt-on {
+    background: rgba(24,144,255,0.08);
+    border-left-color: #1890ff;
+}
 
+.cp-mkt-icon {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.cp-mkt-icon i { font-size: 15px; }
+
+.cp-mkt-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.cp-mkt-s { color: #fff; font-size: 14px; font-weight: 700; }
+.cp-mkt-n { color: rgba(255,255,255,0.35); font-size: 11.5px; }
+
+.cp-mkt-sig {
+    background: rgba(34,197,94,0.12); color: #22c55e;
+    font-size: 10px; font-weight: 700;
+    padding: 3px 9px; border-radius: 20px; flex-shrink: 0;
+}
+.cp-mkt-check { color: #1890ff; font-size: 18px; flex-shrink: 0; margin-left: 2px; }
 /* ALERTS */
 .cp-notice {
     padding: 10px 16px; font-size: 12px; color: #f87171;
@@ -416,7 +549,7 @@
 .cp-panel { padding: 20px 0 8px; }
 
 /* ══════════════════════════════════════════
-   SIGNAL ITEM — totally new layout
+   SIGNAL ITEM
 ══════════════════════════════════════════ */
 .cp-sig-wrap {
     display: flex;
@@ -439,7 +572,6 @@
     background: radial-gradient(ellipse at top left, rgba(239,68,68,0.05) 0%, transparent 60%);
 }
 
-/* Left accent bar */
 .cp-sig-accent {
     width: 4px; flex-shrink: 0;
     background: linear-gradient(180deg, #63b3ed 0%, #3182ce 100%);
@@ -453,7 +585,6 @@
     background: rgba(255,255,255,0.3); border-radius: 1px;
 }
 
-/* Body */
 .cp-sig-body { flex: 1; padding: 14px 14px 14px 12px; }
 
 .cp-sig-row-top {
@@ -482,7 +613,6 @@
     margin-bottom: 12px;
 }
 
-/* Stats row */
 .cp-sig-stats-row {
     display: flex; align-items: center;
     background: rgba(0,0,0,0.25);
@@ -510,7 +640,6 @@
     padding: 0 4px;
 }
 
-/* Join button */
 .cp-sig-join-btn {
     width: 100%; padding: 11px 16px;
     background: #fff; border: none; border-radius: 10px;
@@ -529,7 +658,6 @@
 }
 @keyframes cpShine { 0%{left:-60%} 40%,100%{left:120%} }
 
-/* Join/insuf strips */
 .cp-sig-joined-strip {
     display: flex; align-items: center; gap: 8px;
     padding: 10px 14px; border-radius: 10px;
@@ -560,43 +688,121 @@
 .cp-sc-l { font-size: 9px; font-weight: 800; letter-spacing: 1.5px; color: rgba(255,255,255,0.2); margin-top: 4px; }
 .cp-sc-vr { width: 1px; height: 28px; background: rgba(255,255,255,0.06); }
 
-/* HISTORY CARD */
-.cp-hcard {
-    margin: 0 14px 12px;
-    background: linear-gradient(135deg, #0c1424, #080f1d);
+/* ══════════════════════════════════════════
+   TRADE TICKET — historical order card
+══════════════════════════════════════════ */
+.cp-tk {
+    margin: 0 14px 14px;
+    background: linear-gradient(160deg, #0d1526 0%, #080f1d 100%);
     border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 14px; overflow: hidden;
-    border-left: 3px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 16px 16px 14px;
+    position: relative;
+    overflow: hidden;
 }
-.cp-hcard-w { border-left-color: #4ade80; }
-.cp-hcard-l { border-left-color: #f87171; }
-.cp-hcard-p { border-left-color: #fbbf24; }
+.cp-tk::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+}
+.cp-tk-w { box-shadow: inset 3px 0 0 #4ade80; }
+.cp-tk-l { box-shadow: inset 3px 0 0 #f87171; }
+.cp-tk-p { box-shadow: inset 3px 0 0 #fbbf24; }
 
-.cp-hcard-head {
+.cp-tk-head {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 14px 10px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    margin-bottom: 6px; gap: 8px;
 }
-.cp-hcard-title {
-    color: #fff; font-size: 13px; font-weight: 800;
-    flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.cp-hcard-badge {
+.cp-tk-asset { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.cp-tk-asset-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.cp-tk-asset-sym { color: rgba(255,255,255,0.55); font-size: 11px; font-weight: 800; letter-spacing: 0.5px; }
+.cp-tk-asset-n { color: rgba(255,255,255,0.25); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.cp-tk-badge {
+    display: flex; align-items: center; gap: 5px;
     font-size: 10px; font-weight: 800; letter-spacing: 0.5px;
-    padding: 3px 9px; border-radius: 6px; flex-shrink: 0; margin-left: 10px;
+    padding: 4px 10px; border-radius: 20px; flex-shrink: 0;
 }
-.cp-hbadge-w { background: rgba(74,222,128,0.1);  border: 1px solid rgba(74,222,128,0.25);  color: #4ade80; }
-.cp-hbadge-l { background: rgba(241,87,87,0.1);   border: 1px solid rgba(241,87,87,0.25);   color: #f87171; }
-.cp-hbadge-p { background: rgba(251,191,36,0.1);  border: 1px solid rgba(251,191,36,0.25);  color: #fbbf24; }
+.cp-tk-badge-w { background: rgba(74,222,128,0.1);  border: 1px solid rgba(74,222,128,0.25);  color: #4ade80; }
+.cp-tk-badge-l { background: rgba(241,87,87,0.1);   border: 1px solid rgba(241,87,87,0.25);   color: #f87171; }
+.cp-tk-badge-p { background: rgba(251,191,36,0.1);  border: 1px solid rgba(251,191,36,0.25);  color: #fbbf24; }
 
-.cp-hcard-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 8px 14px;
-    border-bottom: 1px solid rgba(255,255,255,0.03);
+.cp-tk-title { color: #fff; font-size: 15px; font-weight: 800; line-height: 1.3; margin-bottom: 14px; }
+
+/* Price gauge */
+.cp-tk-gauge {
+    display: flex; align-items: center; gap: 10px;
 }
-.cp-hcard-row:last-child { border-bottom: none; }
-.cp-hcard-lbl { color: rgba(255,255,255,0.35); font-size: 11px; }
-.cp-hcard-val { color: #fff; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.cp-tk-gauge-pt { flex-shrink: 0; }
+.cp-tk-gauge-pt.right { text-align: right; }
+.cp-tk-gauge-lbl {
+    font-size: 9px; font-weight: 800; letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.25); margin-bottom: 4px;
+}
+.cp-tk-gauge-val {
+    color: #fff; font-family: 'JetBrains Mono', monospace;
+    font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.cp-tk-gauge-track {
+    flex: 1; position: relative; height: 2px;
+    background: rgba(255,255,255,0.08); border-radius: 2px;
+    min-width: 30px;
+}
+.cp-tk-gauge-line {
+    position: absolute; inset: 0; border-radius: 2px;
+    background: rgba(255,255,255,0.15);
+}
+.cp-tk-gauge-line.up   { background: linear-gradient(90deg, rgba(74,222,128,0.15), #4ade80); }
+.cp-tk-gauge-line.down { background: linear-gradient(90deg, rgba(248,113,113,0.15), #f87171); }
+.cp-tk-gauge-chev {
+    position: absolute; right: -3px; top: 50%; transform: translateY(-50%);
+    font-size: 11px; color: rgba(255,255,255,0.2);
+}
+.cp-tk-gauge-chev.up   { color: #4ade80; }
+.cp-tk-gauge-chev.down { color: #f87171; }
+
+.cp-tk-delta {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 700; margin-top: 6px;
+}
+
+/* Perforated divider */
+.cp-tk-perf {
+    border-top: 1px dashed rgba(255,255,255,0.1);
+    margin: 16px -16px 12px;
+}
+
+/* Stat grid */
+.cp-tk-stats {
+    display: flex; align-items: center;
+    margin-bottom: 12px;
+}
+.cp-tk-stat { flex: 1; text-align: center; }
+.cp-tk-stat-k {
+    font-size: 9px; font-weight: 800; letter-spacing: 1.2px;
+    color: rgba(255,255,255,0.25); margin-bottom: 5px;
+}
+.cp-tk-stat-v {
+    color: #fff; font-family: 'JetBrains Mono', monospace;
+    font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.cp-tk-stat-vr { width: 1px; height: 26px; background: rgba(255,255,255,0.06); }
+
+/* Meta footer */
+.cp-tk-meta {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
+    padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.04);
+}
+.cp-tk-meta-time {
+    display: flex; align-items: center; gap: 5px;
+    color: rgba(255,255,255,0.3); font-size: 11px;
+}
+.cp-tk-meta-dir {
+    display: flex; align-items: center; gap: 4px;
+    color: rgba(255,255,255,0.4); font-size: 11px; font-weight: 800; letter-spacing: 0.5px;
+}
+
 .cp-val-g { color: #4ade80; }
 .cp-val-r { color: #f87171; }
 
@@ -735,6 +941,21 @@ function cpBsClose() {
     @endif
     document.getElementById('cp-bs-bg')?.classList.remove('on');
     document.getElementById('cp-bs')?.classList.remove('on');
+}
+
+function cpFilterMarkets(q) {
+    q = q.toLowerCase().trim();
+    document.querySelectorAll('#cpMarketList .cp-mkt').forEach(row => {
+        row.style.display = row.dataset.name.includes(q) ? '' : 'none';
+    });
+    document.querySelectorAll('#cpMarketList .cp-mkt-cat').forEach(cat => {
+        let sib = cat.nextElementSibling, hasVisible = false;
+        while (sib && !sib.classList.contains('cp-mkt-cat')) {
+            if (sib.style.display !== 'none') hasVisible = true;
+            sib = sib.nextElementSibling;
+        }
+        cat.style.display = hasVisible ? '' : 'none';
+    });
 }
 </script>
 @endpush

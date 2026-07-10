@@ -73,16 +73,7 @@
         </div>
     </div>
 
-    <!-- Rules -->
-    <div class="tm-pad" style="padding-bottom: 24px;">
-        <div class="tm-sec-label"><i class="bi bi-info-circle me-1"></i>{{ __('app.rules') }}</div>
-        <ul class="tm-rules-list">
-            <li>{{ __('app.rule_share_code') }}</li>
-            <li>{{ __('app.rule_earn_commission') }}</li>
-            <li>{{ __('app.rule_build_network') }}</li>
-            <li>{{ __('app.rule_higher_levels') }}</li>
-        </ul>
-    </div>
+   
 
 </div>
 @endsection

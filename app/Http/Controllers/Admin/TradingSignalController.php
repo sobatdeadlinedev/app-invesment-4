@@ -49,12 +49,17 @@ class TradingSignalController extends Controller
             'is_public' => 'nullable|boolean',
             'allowed_user_ids' => 'required_if:is_public,false|array',
             'allowed_user_ids.*' => 'exists:users,id',
+            'scheduled_at' => 'nullable|date',
         ]);
 
         try {
             DB::beginTransaction();
 
             $isPublic = $request->has('is_public') && $request->is_public;
+
+            $scheduledAt = $request->filled('scheduled_at')
+                ? \Carbon\Carbon::parse($request->scheduled_at)
+                : now();
 
             $signal = TradingSignal::create([
                 'title' => $request->title,
@@ -67,6 +72,7 @@ class TradingSignalController extends Controller
                 'is_public' => $isPublic,
                 'status' => 'open',
                 'created_by' => auth()->id(),
+                'scheduled_at' => $scheduledAt,
             ]);
 
             if (!$isPublic && !empty($request->allowed_user_ids)) {
@@ -80,6 +86,7 @@ class TradingSignalController extends Controller
                 'title' => $signal->title,
                 'entry_price' => $signal->entry_price,
                 'target_price' => $signal->target_price,
+                'scheduled_at' => $signal->scheduled_at,
             ]);
 
             return redirect()
@@ -141,6 +148,7 @@ class TradingSignalController extends Controller
             'is_public' => 'nullable|boolean',
             'allowed_user_ids' => 'required_if:is_public,false|array',
             'allowed_user_ids.*' => 'exists:users,id',
+            'scheduled_at' => 'nullable|date',
         ]);
 
         try {
@@ -157,6 +165,9 @@ class TradingSignalController extends Controller
                 'bet_type' => $request->bet_type,
                 'bet_value' => $request->bet_value,
                 'is_public' => $isPublic,
+                'scheduled_at' => $request->filled('scheduled_at')
+                    ? \Carbon\Carbon::parse($request->scheduled_at)
+                    : $signal->scheduled_at,
             ]);
 
             if (!$isPublic && !empty($request->allowed_user_ids)) {
@@ -276,125 +287,125 @@ class TradingSignalController extends Controller
      * - result = 'win' → Users menang (get profit)
      * - result = 'loss' → Users kalah (lose bet amount)
      */
-   public function settle($id)
-{
-    Log::info('=== SETTLE SIGNAL START ===', ['signal_id' => $id]);
+    public function settle($id)
+    {
+        Log::info('=== SETTLE SIGNAL START ===', ['signal_id' => $id]);
 
-    $signal = TradingSignal::with('participants.user')->findOrFail($id);
+        $signal = TradingSignal::with('participants.user')->findOrFail($id);
 
-    if ($signal->status !== 'closed') {
-        Log::warning('Signal not closed yet', [
-            'signal_id' => $signal->id,
-            'status' => $signal->status,
-        ]);
-
-        return redirect()
-            ->route('admin.signals.show', $signal->id)
-            ->with('error', 'Signal must be closed before settling. Current status: ' . $signal->status);
-    }
-
-    try {
-        DB::beginTransaction();
-
-        $settledCount = 0;
-        $totalRewards = 0;
-        $totalLosses = 0;
-        $usersWin = ($signal->result === 'win');
-
-        foreach ($signal->participants as $participant) {
-            Log::info('=== PARTICIPANT BEFORE SETTLEMENT ===', [
-                'participant_id' => $participant->id,
-                'user_id' => $participant->user_id,
-                'joined_at' => $participant->joined_at?->format('Y-m-d H:i:s'),
-                'bet_amount' => $participant->bet_amount,
+        if ($signal->status !== 'closed') {
+            Log::warning('Signal not closed yet', [
+                'signal_id' => $signal->id,
+                'status' => $signal->status,
             ]);
 
-            if ($participant->isSettled()) {
-                Log::info('Participant already settled, skipping');
-                continue;
+            return redirect()
+                ->route('admin.signals.show', $signal->id)
+                ->with('error', 'Signal must be closed before settling. Current status: ' . $signal->status);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $settledCount = 0;
+            $totalRewards = 0;
+            $totalLosses = 0;
+            $usersWin = ($signal->result === 'win');
+
+            foreach ($signal->participants as $participant) {
+                Log::info('=== PARTICIPANT BEFORE SETTLEMENT ===', [
+                    'participant_id' => $participant->id,
+                    'user_id' => $participant->user_id,
+                    'joined_at' => $participant->joined_at?->format('Y-m-d H:i:s'),
+                    'bet_amount' => $participant->bet_amount,
+                ]);
+
+                if ($participant->isSettled()) {
+                    Log::info('Participant already settled, skipping');
+                    continue;
+                }
+
+                $user = $participant->user;
+                $betAmount = $participant->bet_amount;
+
+                if ($usersWin) {
+                    $user->unlockBalance($betAmount);
+                    $profit = $betAmount * ($signal->rate_of_return / 100);
+                    $user->addTradeBalance($profit);
+                    $profitLoss = $profit;
+                    $totalRewards += $profit;
+
+                    Log::info('Participant WON', [
+                        'participant_id' => $participant->id,
+                        'bet_amount' => $betAmount,
+                        'profit' => $profit,
+                    ]);
+                } else {
+                    $user->removeLockedBalance($betAmount);
+                    $profitLoss = -$betAmount;
+                    $totalLosses += $betAmount;
+
+                    Log::info('Participant LOST', [
+                        'participant_id' => $participant->id,
+                        'bet_amount' => $betAmount,
+                    ]);
+                }
+
+                $user->addAchievedVolume($betAmount);
+
+                // ✅ GUNAKAN SAVE() INDIVIDUAL - BUKAN UPDATE()
+                $participant->profit_loss = $profitLoss;
+                $participant->fee_amount = 0;
+                $participant->status = 'settled';
+                $participant->settled_at = now();
+                $participant->save();
+
+                // ❌ HAPUS REFRESH - INI PENYEBAB JOINED_AT BERUBAH
+                // $participant->refresh();
+
+                Log::info('=== PARTICIPANT AFTER SETTLEMENT ===', [
+                    'participant_id' => $participant->id,
+                    'joined_at' => $participant->joined_at?->format('Y-m-d H:i:s'),
+                    'settled_at' => $participant->settled_at?->format('Y-m-d H:i:s'),
+                    'status' => $participant->status,
+                ]);
+
+                $settledCount++;
             }
 
-            $user = $participant->user;
-            $betAmount = $participant->bet_amount;
+            $signal->markAsSettled();
+
+            DB::commit();
+
+            Log::info('=== SETTLE SIGNAL SUCCESS ===', [
+                'signal_id' => $signal->id,
+                'total_settled' => $settledCount,
+                'users_outcome' => $usersWin ? 'ALL WIN' : 'ALL LOSE',
+            ]);
 
             if ($usersWin) {
-                $user->unlockBalance($betAmount);
-                $profit = $betAmount * ($signal->rate_of_return / 100);
-                $user->addTradeBalance($profit);
-                $profitLoss = $profit;
-                $totalRewards += $profit;
-
-                Log::info('Participant WON', [
-                    'participant_id' => $participant->id,
-                    'bet_amount' => $betAmount,
-                    'profit' => $profit,
-                ]);
+                return redirect()
+                    ->route('admin.signals.show', $signal->id)
+                    ->with('success', "Signal settled! All {$settledCount} participants WON. Total rewards: " . number_format($totalRewards, 2) . " USDT.");
             } else {
-                $user->removeLockedBalance($betAmount);
-                $profitLoss = -$betAmount;
-                $totalLosses += $betAmount;
-
-                Log::info('Participant LOST', [
-                    'participant_id' => $participant->id,
-                    'bet_amount' => $betAmount,
-                ]);
+                return redirect()
+                    ->route('admin.signals.show', $signal->id)
+                    ->with('success', "Signal settled! All {$settledCount} participants LOST. Total losses: " . number_format($totalLosses, 2) . " USDT.");
             }
+        } catch (\Exception $e) {
+            DB::rollBack();
 
-            $user->addAchievedVolume($betAmount);
-
-            // ✅ GUNAKAN SAVE() INDIVIDUAL - BUKAN UPDATE()
-            $participant->profit_loss = $profitLoss;
-            $participant->fee_amount = 0;
-            $participant->status = 'settled';
-            $participant->settled_at = now();
-            $participant->save();
-
-            // ❌ HAPUS REFRESH - INI PENYEBAB JOINED_AT BERUBAH
-            // $participant->refresh();
-
-            Log::info('=== PARTICIPANT AFTER SETTLEMENT ===', [
-                'participant_id' => $participant->id,
-                'joined_at' => $participant->joined_at?->format('Y-m-d H:i:s'),
-                'settled_at' => $participant->settled_at?->format('Y-m-d H:i:s'),
-                'status' => $participant->status,
+            Log::error('=== SETTLE SIGNAL FAILED ===', [
+                'signal_id' => $signal->id,
+                'error_message' => $e->getMessage(),
+                'stack_trace' => $e->getTraceAsString(),
             ]);
 
-            $settledCount++;
-        }
-
-        $signal->markAsSettled();
-
-        DB::commit();
-
-        Log::info('=== SETTLE SIGNAL SUCCESS ===', [
-            'signal_id' => $signal->id,
-            'total_settled' => $settledCount,
-            'users_outcome' => $usersWin ? 'ALL WIN' : 'ALL LOSE',
-        ]);
-
-        if ($usersWin) {
             return redirect()
                 ->route('admin.signals.show', $signal->id)
-                ->with('success', "Signal settled! All {$settledCount} participants WON. Total rewards: " . number_format($totalRewards, 2) . " USDT.");
-        } else {
-            return redirect()
-                ->route('admin.signals.show', $signal->id)
-                ->with('success', "Signal settled! All {$settledCount} participants LOST. Total losses: " . number_format($totalLosses, 2) . " USDT.");
+                ->with('error', 'Failed to settle signal: ' . $e->getMessage());
         }
-    } catch (\Exception $e) {
-        DB::rollBack();
-
-        Log::error('=== SETTLE SIGNAL FAILED ===', [
-            'signal_id' => $signal->id,
-            'error_message' => $e->getMessage(),
-            'stack_trace' => $e->getTraceAsString(),
-        ]);
-
-        return redirect()
-            ->route('admin.signals.show', $signal->id)
-            ->with('error', 'Failed to settle signal: ' . $e->getMessage());
     }
-}
 
     public function destroy($id)
     {

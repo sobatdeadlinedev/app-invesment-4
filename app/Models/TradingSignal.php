@@ -23,6 +23,7 @@ class TradingSignal extends Model
         'admin_choice',
         'result',
         'rate_of_return',
+        'scheduled_at',
         'opened_at',
         'closed_at',
         'settled_at',
@@ -36,6 +37,7 @@ class TradingSignal extends Model
         'bet_value' => 'decimal:2',
         'is_public' => 'boolean',
         'rate_of_return' => 'decimal:2',
+        'scheduled_at' => 'datetime',
         'opened_at' => 'datetime',
         'closed_at' => 'datetime',
         'settled_at' => 'datetime',
@@ -297,6 +299,18 @@ class TradingSignal extends Model
         });
     }
 
+    /**
+     * Scope: signals yang sudah waktunya tayang ke member
+     * (scheduled_at null ATAU scheduled_at sudah lewat/sama dengan sekarang)
+     */
+    public function scopeVisible($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereNull('scheduled_at')
+                ->orWhere('scheduled_at', '<=', now());
+        });
+    }
+
     // ==================== HELPER METHODS ====================
 
     public function isOpen()
@@ -312,6 +326,22 @@ class TradingSignal extends Model
     public function isSettled()
     {
         return $this->status === 'settled';
+    }
+
+    /**
+     * Cek apakah signal ini masih terjadwal (belum waktunya tayang)
+     */
+    public function isScheduledForFuture()
+    {
+        return $this->scheduled_at && $this->scheduled_at->isFuture();
+    }
+
+    /**
+     * Cek apakah signal ini sudah bisa dilihat member
+     */
+    public function isVisibleNow()
+    {
+        return is_null($this->scheduled_at) || $this->scheduled_at->lte(now());
     }
 
     public function getTotalParticipantsAttribute()
@@ -372,9 +402,6 @@ class TradingSignal extends Model
         return $this->allowedUsers()->pluck('user_id')->toArray();
     }
 
-    /**
-     * Close signal - set opened_at saat status closed
-     */
     /**
      * Close signal - set opened_at saat status closed
      */

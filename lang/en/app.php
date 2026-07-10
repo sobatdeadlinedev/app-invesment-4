@@ -452,7 +452,7 @@ return [
     'total_return' => 'Total Return',
     'up' => 'Up',
     'down' => 'Down',
-    'expert_signals' => 'Expert Signals',
+   'expert_signals' => 'Invitation',
     'legacy_mode' => 'Legacy',
     'trade_history' => 'Trade History',
     'no_trades_yet' => 'No trades yet',

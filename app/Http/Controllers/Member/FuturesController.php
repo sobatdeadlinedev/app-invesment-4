@@ -58,15 +58,18 @@ class FuturesController extends Controller
         $currentPrice = $this->cachedPrice($coin);
 
         // ========================================
-        // Notifikasi Sinyal Expert untuk coin ini
+        // Notifikasi Sinyal Expert — SEMUA COIN
+        // (bukan cuma coin yang lagi dibuka), supaya
+        // signal ETH/DOGE/dll juga ikut terhitung &
+        // memicu badge "sinyal aktif" di halaman ini.
         // ========================================
-        $openSignalCount = TradingSignal::forCoin($coin)
-            ->open()
+        $openSignalCount = TradingSignal::open()
+            ->visible()
             ->accessibleBy($user->id)
             ->count();
 
-        $latestSignal = TradingSignal::forCoin($coin)
-            ->open()
+        $latestSignal = TradingSignal::open()
+            ->visible()
             ->accessibleBy($user->id)
             ->latest()
             ->first();

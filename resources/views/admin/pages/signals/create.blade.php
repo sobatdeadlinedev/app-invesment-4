@@ -267,6 +267,20 @@
                             </div>
                         </div>
 
+                        {{-- Schedule Section --}}
+                        <div class="mb-10">
+                            <label class="form-label">Jadwal Tayang (opsional)</label>
+                            <input type="datetime-local" name="scheduled_at"
+                                class="form-control @error('scheduled_at') is-invalid @enderror"
+                                value="{{ old('scheduled_at') }}">
+                            @error('scheduled_at')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text">
+                                Kosongkan kalau ingin signal langsung tampil di member. Isi kalau ingin signal baru muncul di halaman member pada waktu tertentu (misal dibuat jam 12:50, baru tampil jam 13:00).
+                            </div>
+                        </div>
+
                         <div class="row mb-10">
                             <div class="col-md-6">
                                 <label class="form-label required">Opening Price (USDT)</label>

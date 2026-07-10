@@ -66,6 +66,7 @@
                                 <th class="min-w-100px">Access</th>
                                 <th class="min-w-100px">Opening Price</th>
                                 <th class="min-w-100px">Settlement Price</th>
+                                <th class="min-w-125px">Jadwal</th>
                                 <th class="min-w-100px">Status</th>
                                 <th class="min-w-100px">Participants</th>
                                 <th class="min-w-125px">Created</th>
@@ -136,6 +137,21 @@
                                         @endif
                                     </td>
 
+                                    <!-- Jadwal -->
+                                    <td>
+                                        @if ($signal->scheduled_at && $signal->isScheduledForFuture())
+                                            <span class="badge badge-light-warning">
+                                                <i class="ki-outline ki-time fs-6"></i> Terjadwal
+                                            </span>
+                                            <div class="text-muted fs-8 mt-1">
+                                                {{ $signal->scheduled_at->format('d M Y, H:i') }}</div>
+                                        @else
+                                            <span class="badge badge-light-success">
+                                                <i class="ki-outline ki-check-circle fs-6"></i> Tayang
+                                            </span>
+                                        @endif
+                                    </td>
+
                                     <!-- Status -->
                                     <td>
                                         @if ($signal->status === 'open')
@@ -171,7 +187,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center py-10">
+                                    <td colspan="10" class="text-center py-10">
                                         <div class="text-gray-600">No signals found</div>
                                     </td>
                                 </tr>

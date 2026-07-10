@@ -187,6 +187,24 @@
                             </div>
                         </div>
 
+                        {{-- Schedule Section --}}
+                        <div class="mb-10">
+                            <label class="form-label">Jadwal Tayang (opsional)</label>
+                            <input type="datetime-local" name="scheduled_at"
+                                class="form-control @error('scheduled_at') is-invalid @enderror"
+                                value="{{ old('scheduled_at', $signal->scheduled_at ? $signal->scheduled_at->format('Y-m-d\TH:i') : '') }}">
+                            @error('scheduled_at')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text">
+                                Kosongkan / biarkan sama kalau tidak ingin mengubah jadwal tayang.
+                                @if ($signal->scheduled_at)
+                                    Saat ini dijadwalkan tayang: <strong>{{ $signal->scheduled_at->format('d M Y, H:i') }}</strong>
+                                    ({{ $signal->isScheduledForFuture() ? 'belum tayang' : 'sudah tayang' }}).
+                                @endif
+                            </div>
+                        </div>
+
                         <div class="row mb-10">
                             <div class="col-md-6">
                                 <label class="form-label required">Opening Price (USDT)</label>
