@@ -374,8 +374,7 @@ function updateAddressDisplay() {
     const submitBtn   = document.getElementById('wd-submit-btn');
 
     if (wallet) {
-        const a = wallet.address;
-        addrEl.textContent = a.substring(0, 12) + '...' + a.slice(-6);
+        addrEl.textContent = wallet.address;
         addrEl.className   = 'wdv2-addr-text has-addr';
         walletInput.value  = wallet.id;
         amountInput.disabled    = false;

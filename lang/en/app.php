@@ -32,7 +32,7 @@ return [
 
     // Warnings & Messages
    'warning' => 'Warning',
-'penalty_warning' => 'Your trading volume is not completed yet. A 20% penalty will be applied to this transfer.',
+'penalty_warning' => 'Your trading volume is not completed yet. A 30% penalty will be applied to this transfer.',
 'penalty_warning_with_volume' => 'Your trading volume is not completed yet. Remaining: :remaining USDT (:percentage%). A 20% penalty will be applied to this transfer.',
 'volume_info' => 'This transfer will increase your trading volume target by the same amount.',
 
@@ -462,6 +462,9 @@ return [
     'error_try_again' => 'An error occurred. Please try again.',
     'win' => 'WIN!',
     'lose' => 'LOSE',
+    'exchange' => 'Exchange',
+'trade' => 'Trade',
+'wallet' => 'Wallet',
 
     // ===== MARKET PAGE =====
     'hot' => 'Hot',

@@ -348,12 +348,12 @@ class User extends Authenticatable
      * Calculate penalty amount (20%)
      */
     public function calculatePenalty($amount)
-    {
-        if (!$this->needsPenalty()) {
-            return 0;
-        }
-        return $amount * 0.20;
+{
+    if (!$this->needsPenalty()) {
+        return 0;
     }
+    return $amount * 0.30;
+}
 
     /**
      * Check if user can join signal (min 100 USDT available trade balance)

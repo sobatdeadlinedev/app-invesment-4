@@ -23,7 +23,7 @@
             </div>
             <div class="flex-grow-1">
                 <div class="wo-wallet-type">{{ strtoupper($wallet->type) }}</div>
-                <div class="wo-wallet-addr">{{ substr($wallet->account_number, 0, 12) }}...{{ substr($wallet->account_number, -6) }}</div>
+                <div class="wo-wallet-addr">{{ $wallet->account_number }}</div>
             </div>
             <div class="d-flex gap-2">
                 <button class="wo-action-btn edit"
@@ -165,11 +165,11 @@
 .wo-wallet-icon.trc20 { background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.2); color: var(--gold-color); }
 .wo-wallet-icon.bep20 { background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.2); color: #00e5ff; }
 .wo-wallet-type { color: var(--text-muted); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-.wo-wallet-addr { color: #fff; font-size: 12px; font-weight: 600; font-family: monospace; }
+.wo-wallet-addr { color: #fff; font-size: 12px; font-weight: 600; font-family: monospace; word-break: break-all; line-height: 1.5; }
 .wo-action-btn {
     width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border-color);
     background: transparent; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 13px; transition: background 0.15s;
+    cursor: pointer; font-size: 13px; transition: background 0.15s; flex-shrink: 0;
 }
 .wo-action-btn.edit { color: var(--gold-color); }
 .wo-action-btn.edit:hover { background: rgba(0,229,255,0.1); }

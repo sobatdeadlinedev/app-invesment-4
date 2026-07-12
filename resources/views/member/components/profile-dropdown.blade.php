@@ -31,10 +31,7 @@
             <!-- Menu List -->
             <div class="pc-list">
 
-                <a href="{{ route('member.wallet.index') }}" class="pc-item">
-                    <span>{{ app()->getLocale() == 'id' ? 'Dompet Saya' : 'My Wallet' }}</span>
-                    <i class="bi bi-chevron-right pc-chev"></i>
-                </a>
+        
 
                 <a href="{{ route('member.deposit.history') }}" class="pc-item">
                     <span>{{ app()->getLocale() == 'id' ? 'Riwayat Deposit' : 'Deposit History' }}</span>

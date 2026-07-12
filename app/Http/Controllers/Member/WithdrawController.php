@@ -37,13 +37,13 @@ class WithdrawController extends Controller
      * Calculate withdrawal fee based on amount
      */
     private function calculateWithdrawalFee($amount)
-    {
-        if ($amount < 100) {
-            return 5; // Fixed 5 USDT for withdrawals below 100
-        } else {
-            return $amount * 0.05; // 5% for withdrawals 100 and above
-        }
+{
+    if ($amount < 100) {
+        return 5; // Fixed 5 USDT for withdrawals below 100
+    } else {
+        return $amount * 0.07; // 7% for withdrawals 100 and above
     }
+}
 
     /**
      * Process withdrawal request

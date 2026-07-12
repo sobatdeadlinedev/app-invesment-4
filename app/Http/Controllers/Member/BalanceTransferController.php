@@ -136,7 +136,7 @@ class BalanceTransferController extends Controller
             $message = 'Successfully transferred ' . number_format($amount, 2) . ' USDT from Trade to Exchange Balance.';
 
             if ($penalty > 0) {
-                $message .= ' Penalty applied: ' . number_format($penalty, 2) . ' USDT (20%) because trading volume is not yet completed. Net amount received: ' . number_format($netAmount, 2) . ' USDT.';
+                $message .= ' Penalty applied: ' . number_format($penalty, 2) . ' USDT (30%) because trading volume is not yet completed. Net amount received: ' . number_format($netAmount, 2) . ' USDT.';
             }
 
             return redirect()

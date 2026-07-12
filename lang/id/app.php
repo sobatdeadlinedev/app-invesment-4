@@ -32,7 +32,7 @@ return [
 
     // Warnings & Messages
     'warning' => 'Peringatan',
-'penalty_warning' => 'Volume trading Anda belum selesai. Penalti 20% akan dikenakan pada transfer ini.',
+'penalty_warning' => 'Volume trading Anda belum selesai. Penalti 30% akan dikenakan pada transfer ini.',
 'penalty_warning_with_volume' => 'Volume trading Anda belum selesai. Kekurangan: :remaining USDT (:percentage%). Penalti 20% akan dikenakan pada transfer ini.',
 'volume_info' => 'Transfer ini akan meningkatkan target volume trading Anda sebesar jumlah yang sama.',
 
@@ -461,6 +461,9 @@ return [
     'error_try_again' => 'Terjadi kesalahan. Coba lagi.',
     'win' => 'MENANG!',
     'lose' => 'KALAH',
+    'exchange' => 'Exchange',
+'trade' => 'Trade',
+'wallet' => 'Wallet',
 
     // ===== MARKET PAGE =====
     'hot' => 'Hot',

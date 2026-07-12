@@ -27,61 +27,16 @@
                 </div>
             @endif
 
-            <!-- Balance Summary -->
-            <div class="stat-row">
-                <div class="stat-cell">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="transfer-bal-icon exchange">
-                            <i class="bi bi-wallet2"></i>
-                        </div>
-                        <div>
-                            <p class="text-muted mb-0" style="font-size: 11px;">{{ __('app.exchange_balance') }}</p>
-                            <h6 class="text-white mb-0 fw-bold">{{ number_format($exchangeBalance, 2) }}</h6>
-                            <small class="text-muted" style="font-size: 10px;">USDT</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="stat-cell">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="transfer-bal-icon trade">
-                            <i class="bi bi-graph-up"></i>
-                        </div>
-                        <div>
-                            <p class="text-muted mb-0" style="font-size: 11px;">{{ __('app.trade_balance') }}</p>
-                            <h6 class="text-white mb-0 fw-bold">{{ number_format($tradeBalance, 2) }}</h6>
-                            <small class="text-muted" style="font-size: 10px;">USDT</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Transfer Form -->
-            <form id="transferForm" action="" method="POST">
+            <form id="transferForm" action="{{ route('member.balance.transfer.to-trade') }}" method="POST">
                 @csrf
+                <input type="hidden" name="from_account" id="fromAccountInput" value="exchange">
+                <input type="hidden" name="to_account" id="toAccountInput" value="trade">
 
+                <!-- Select Currency -->
                 <div class="w-card">
-                    <div class="w-card-head"><i class="bi bi-arrow-left-right"></i>{{ __('app.from') }} → {{ __('app.transfer_to') }}</div>
+                    <div class="w-card-head"><i class="bi bi-coin"></i>{{ __('app.select_currency') }}</div>
                     <div class="form-block">
-                        <label class="form-block-title">{{ __('app.from') }}</label>
-                        <div class="select-wrapper">
-                            <select class="form-select-dark" id="fromAccount" name="from_account">
-                                <option value="exchange">{{ __('app.exchange_balance') }}</option>
-                                <option value="trade">{{ __('app.trade_balance') }}</option>
-                            </select>
-                            <i class="bi bi-chevron-down select-arrow"></i>
-                        </div>
-                    </div>
-                    <div class="form-block">
-                        <label class="form-block-title">{{ __('app.transfer_to') }}</label>
-                        <div class="select-wrapper">
-                            <select class="form-select-dark" id="toAccount" name="to_account" disabled>
-                                <option value="trade">{{ __('app.trade_balance') }}</option>
-                            </select>
-                            <i class="bi bi-chevron-down select-arrow"></i>
-                        </div>
-                    </div>
-                    <div class="form-block">
-                        <p class="form-block-title">{{ __('app.select_currency') }}</p>
                         <div class="currency-option selected">
                             <div class="d-flex align-items-center gap-2">
                                 <div class="currency-icon-box"><span>₮</span></div>
@@ -92,19 +47,41 @@
                     </div>
                 </div>
 
+                <!-- Wallet Swap -->
+                <div class="w-card">
+                    <div class="w-card-head"><i class="bi bi-wallet2"></i>{{ __('app.wallet') }}</div>
+                    <div class="form-block wallet-swap-wrap">
+                        <div class="wallet-row" id="fromWalletRow">
+                            <div class="wallet-row-icon from"><i class="bi bi-chevron-down"></i></div>
+                            <div class="wallet-info">
+                                <span class="wallet-name" id="fromWalletName">{{ __('app.exchange') }}</span>
+                                <span class="wallet-available">{{ __('app.available') }}:
+                                    <span id="fromWalletBalance">0</span> USDT</span>
+                            </div>
+                        </div>
+
+                        <button type="button" class="swap-btn" id="swapBtn">
+                            <i class="bi bi-arrow-down-up"></i>
+                        </button>
+
+                        <div class="wallet-row" id="toWalletRow">
+                            <div class="wallet-row-icon to"><i class="bi bi-chevron-up"></i></div>
+                            <div class="wallet-info">
+                                <span class="wallet-name" id="toWalletName">{{ __('app.trade') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quantity -->
                 <div class="w-card">
                     <div class="w-card-head"><i class="bi bi-currency-dollar"></i>{{ __('app.amount_of_transfers') }}</div>
                     <div class="form-block">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-muted" style="font-size: 12px;">
-                                {{ __('app.available') }}: <span class="text-gold fw-bold" id="availableAmount">0</span> USDT
-                            </span>
-                            <button type="button" class="btn-all" id="btnAll">{{ __('app.all') }}</button>
-                        </div>
-                        <div class="input-with-icon">
-                            <span class="input-icon">₮</span>
-                            <input type="number" class="form-control-dark with-icon" id="transferAmount" name="amount"
+                        <div class="qty-input-row">
+                            <input type="number" class="qty-input" id="transferAmount" name="amount"
                                 placeholder="{{ __('app.enter_transfer_amount') }}" min="10" step="0.01" required>
+                            <span class="qty-currency">USDT</span>
+                            <button type="button" class="qty-max" id="btnAll">{{ __('app.all') }}</button>
                         </div>
                         <small class="text-muted d-block mt-2">{{ __('app.minimum_transfer') }}: 10.00 USDT</small>
                     </div>
@@ -147,36 +124,7 @@
     </div>
 
     <style>
-        .transfer-bal-icon {
-            width: 38px; height: 38px; border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            border: 1px solid; flex-shrink: 0;
-        }
-        .transfer-bal-icon i { font-size: 18px; }
-        .transfer-bal-icon.exchange {
-            background: rgba(0,229,255,0.15); border-color: rgba(0,229,255,0.3);
-        }
-        .transfer-bal-icon.exchange i { color: var(--gold-color); }
-        .transfer-bal-icon.trade {
-            background: rgba(0,229,255,0.1); border-color: rgba(0,229,255,0.25);
-        }
-        .transfer-bal-icon.trade i { color: #00e5ff; }
-
         .select-wrapper { position: relative; }
-        .form-select-dark {
-            width: 100%; background: rgba(0,229,255,0.05);
-            border: 1px solid var(--border-color); border-radius: 10px;
-            padding: 13px 44px 13px 16px; color: var(--text-white);
-            font-size: 14px; font-weight: 500; appearance: none; cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .form-select-dark:focus { outline: none; border-color: var(--gold-color); background: rgba(0,229,255,0.08); }
-        .form-select-dark:disabled { opacity: 0.5; cursor: not-allowed; }
-        .form-select-dark option { background-color: #131d2e; color: var(--text-white); }
-        .select-arrow {
-            position: absolute; right: 14px; top: 50%;
-            transform: translateY(-50%); color: var(--text-muted); pointer-events: none;
-        }
 
         .currency-option {
             display: flex; align-items: center; justify-content: space-between;
@@ -190,13 +138,53 @@
         }
         .currency-icon-box span { color: var(--gold-color); font-size: 15px; font-weight: bold; }
 
-        .btn-all {
-            background: transparent; border: 1px solid var(--gold-color);
-            color: var(--gold-color); padding: 3px 10px;
-            border-radius: 6px; font-size: 11px; font-weight: 600;
-            cursor: pointer; transition: all 0.2s ease;
+        /* Wallet swap section */
+        .wallet-swap-wrap { position: relative; padding-top: 4px; padding-bottom: 4px; }
+        .wallet-row {
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(0,229,255,0.05); border: 1px solid var(--border-color);
+            border-radius: 10px; padding: 12px 14px; margin-bottom: 10px;
         }
-        .btn-all:hover { background: rgba(0,229,255,0.1); }
+        .wallet-row:last-child { margin-bottom: 0; }
+        .wallet-row-icon {
+            width: 26px; height: 26px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,229,255,0.15); border: 1px solid rgba(0,229,255,0.3);
+            color: var(--gold-color); font-size: 12px; flex-shrink: 0;
+        }
+        .wallet-info { display: flex; flex-direction: column; gap: 2px; }
+        .wallet-name { color: var(--text-white); font-weight: 600; font-size: 14px; }
+        .wallet-available { color: var(--text-muted); font-size: 11px; }
+        .wallet-available #fromWalletBalance { color: var(--gold-color); font-weight: 600; }
+
+        .swap-btn {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            width: 30px; height: 30px; border-radius: 50%;
+            background: var(--gold-color); border: none; color: #0b1420;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; cursor: pointer; z-index: 2;
+            box-shadow: 0 0 0 4px #0f1a2b;
+            transition: transform 0.2s ease;
+        }
+        .swap-btn:active { transform: translateY(-50%) rotate(180deg); }
+        .wallet-row { padding-left: 56px; }
+
+        /* Quantity */
+        .qty-input-row {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(0,229,255,0.05); border: 1px solid var(--border-color);
+            border-radius: 10px; padding: 4px 14px;
+        }
+        .qty-input {
+            flex: 1; background: transparent; border: none; outline: none;
+            color: var(--text-white); font-size: 14px; padding: 10px 0;
+        }
+        .qty-input::placeholder { color: var(--text-muted); }
+        .qty-currency { color: var(--text-muted); font-size: 12px; font-weight: 600; }
+        .qty-max {
+            background: transparent; border: none; color: var(--gold-color);
+            font-size: 12px; font-weight: 700; cursor: pointer; padding: 0;
+        }
     </style>
 
     @push('scripts')
@@ -209,74 +197,89 @@
             const volumePercentage = {{ $volumePercentage ?? 0 }};
 
             const translations = {
-                exchangeBalance: "{{ __('app.exchange_balance') }}",
-                tradeBalance: "{{ __('app.trade_balance') }}",
+                exchange: "{{ __('app.exchange') }}",
+                trade: "{{ __('app.trade') }}",
                 minimumTransferAlert: "{{ __('app.minimum_transfer_alert') }}",
                 insufficientBalance: "{{ __('app.insufficient_balance') }}",
                 warning: "{{ __('app.warning') }}"
             };
 
-            const fromAccount = document.getElementById('fromAccount');
-            const toAccount = document.getElementById('toAccount');
+            const fromAccountInput = document.getElementById('fromAccountInput');
+            const toAccountInput = document.getElementById('toAccountInput');
+            const fromWalletName = document.getElementById('fromWalletName');
+            const toWalletName = document.getElementById('toWalletName');
+            const fromWalletBalance = document.getElementById('fromWalletBalance');
+            const swapBtn = document.getElementById('swapBtn');
             const transferAmount = document.getElementById('transferAmount');
-            const availableAmount = document.getElementById('availableAmount');
             const btnAll = document.getElementById('btnAll');
             const transferForm = document.getElementById('transferForm');
             const penaltyWarning = document.getElementById('penaltyWarning');
             const volumeInfo = document.getElementById('volumeInfo');
 
-            function updateAvailableBalance() {
-                const from = fromAccount.value;
+            let direction = 'toTrade'; // 'toTrade' = exchange -> trade, 'toExchange' = trade -> exchange
+
+            function updateDirection() {
                 let available = 0;
-                if (from === 'exchange') {
+
+                if (direction === 'toTrade') {
+                    fromAccountInput.value = 'exchange';
+                    toAccountInput.value = 'trade';
+                    fromWalletName.textContent = translations.exchange;
+                    toWalletName.textContent = translations.trade;
                     available = exchangeBalance;
-                    toAccount.innerHTML = `<option value="trade">${translations.tradeBalance}</option>`;
-                    toAccount.value = 'trade';
+
                     penaltyWarning.style.display = 'none';
                     volumeInfo.style.display = 'block';
                     transferForm.action = "{{ route('member.balance.transfer.to-trade') }}";
                 } else {
+                    fromAccountInput.value = 'trade';
+                    toAccountInput.value = 'exchange';
+                    fromWalletName.textContent = translations.trade;
+                    toWalletName.textContent = translations.exchange;
                     available = availableTradeBalance;
-                    toAccount.innerHTML = `<option value="exchange">${translations.exchangeBalance}</option>`;
-                    toAccount.value = 'exchange';
+
                     volumeInfo.style.display = 'none';
                     penaltyWarning.style.display = needsPenalty ? 'block' : 'none';
                     transferForm.action = "{{ route('member.balance.transfer.to-exchange') }}";
                 }
-                availableAmount.textContent = available.toFixed(2);
+
+                fromWalletBalance.textContent = available.toFixed(2);
                 transferAmount.max = available;
             }
 
-            btnAll.addEventListener('click', function() {
-                transferAmount.value = parseFloat(availableAmount.textContent).toFixed(2);
+            swapBtn.addEventListener('click', function() {
+                direction = direction === 'toTrade' ? 'toExchange' : 'toTrade';
+                updateDirection();
             });
 
-            fromAccount.addEventListener('change', updateAvailableBalance);
+            btnAll.addEventListener('click', function() {
+                transferAmount.value = parseFloat(fromWalletBalance.textContent).toFixed(2);
+            });
 
             transferForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 const amount = parseFloat(transferAmount.value);
-                const from = fromAccount.value;
-                const to = toAccount.value;
+                const from = fromAccountInput.value;
+                const to = toAccountInput.value;
 
                 if (amount < 10) { alert(translations.minimumTransferAlert); return; }
-                if (amount > parseFloat(availableAmount.textContent)) { alert(translations.insufficientBalance); return; }
+                if (amount > parseFloat(fromWalletBalance.textContent)) { alert(translations.insufficientBalance); return; }
 
                 let message = `Transfer ${amount.toFixed(2)} USDT from ${from.toUpperCase()} to ${to.toUpperCase()}?`;
                 if (from === 'trade' && needsPenalty) {
-                    const penalty = amount * 0.20;
+                    const penalty = amount * 0.30;
                     const net = amount - penalty;
                     const remainingPercent = (100 - volumePercentage).toFixed(2);
-                    message = `${translations.warning}: 20% Penalty will be applied!\n\n` +
+                    message = `${translations.warning}: 30% Penalty will be applied!\n\n` +
                         `Remaining Trading Volume: ${remainingVolume.toFixed(2)} USDT (${remainingPercent}%)\n\n` +
                         `Transfer Amount: ${amount.toFixed(2)} USDT\n` +
-                        `Penalty (20%): ${penalty.toFixed(2)} USDT\n` +
+                        `Penalty (30%): ${penalty.toFixed(2)} USDT\n` +
                         `You will receive: ${net.toFixed(2)} USDT\n\nDo you want to continue?`;
                 }
                 if (confirm(message)) { this.submit(); }
             });
 
-            updateAvailableBalance();
+            updateDirection();
 
             setTimeout(function() {
                 document.querySelectorAll('.alert').forEach(function(alert) {

@@ -3,8 +3,8 @@
 @section('content')
 <div class="scrollable-content">
 
-    {{-- ═══ HERO — Welcome + Balance ═══ --}}
-    <div class="dash-hero">
+    {{-- ═══ HERO TOP — Welcome greeting only ═══ --}}
+    <div class="dash-hero-top">
         <div class="hero-top">
             <div class="hero-user">
                 <div class="hero-avatar">
@@ -17,128 +17,47 @@
             </div>
             <div class="hero-badge">LIVE</div>
         </div>
-
-        <div class="hero-balance-block">
-            <p class="hero-balance-label">{{ __('app.total_balance') }}</p>
-            <h2 class="hero-balance-amount">
-                <span class="hero-balance-int">{{ number_format((auth()->user()->exchange_balance ?? 0) + (auth()->user()->trade_balance ?? 0), 2) }}</span>
-                <span class="hero-balance-currency">USDT</span>
-            </h2>
-        </div>
-
-        <div class="hero-cards-row">
-            <div class="hero-card">
-                <div class="hero-card-icon hero-card-icon--blue">
-                    <i class="bi bi-arrow-down-circle-fill"></i>
-                </div>
-                <div>
-                    <div class="hero-card-label">{{ __('app.exchange') }}</div>
-                    <div class="hero-card-val">{{ number_format(auth()->user()->exchange_balance ?? 0, 2) }} <span>USDT</span></div>
-                </div>
-            </div>
-            <div class="hero-card-divider"></div>
-            <div class="hero-card">
-                <div class="hero-card-icon hero-card-icon--green">
-                    <i class="bi bi-graph-up-arrow"></i>
-                </div>
-                <div>
-                    <div class="hero-card-label">{{ __('app.trade') }}</div>
-                    <div class="hero-card-val">{{ number_format(auth()->user()->trade_balance ?? 0, 2) }} <span>USDT</span></div>
-                </div>
-            </div>
-        </div>
     </div>
 
-    {{-- ═══ QUICK ACTIONS ═══ --}}
-    <div class="dash-actions">
-        <a href="{{ route('member.deposit.index') }}" class="action-item">
-            <div class="action-icon action-icon--deposit">
-                <i class="bi bi-arrow-down-circle-fill"></i>
-            </div>
-            <span>{{ __('app.deposit') }}</span>
-        </a>
-        <a href="{{ route('member.withdraw.index') }}" class="action-item">
-            <div class="action-icon action-icon--withdraw">
-                <i class="bi bi-arrow-up-circle-fill"></i>
-            </div>
-            <span>{{ __('app.withdraw') }}</span>
-        </a>
-        <a href="{{ route('member.balance.transfer') }}" class="action-item">
-            <div class="action-icon action-icon--transfer">
-                <i class="bi bi-arrow-left-right"></i>
-            </div>
-            <span>{{ __('app.transfer') }}</span>
-        </a>
-        <a href="{{ route('member.team.index') }}" class="action-item">
-            <div class="action-icon action-icon--invite">
-                <i class="bi bi-person-plus-fill"></i>
-            </div>
-            <span>{{ __('app.invite') }}</span>
-        </a>
-    </div>
-
-    {{-- ═══ BANNER CAROUSEL ═══ --}}
-    <div class="dash-banners px-3 mb-4">
-        <div class="banner-track" id="bannerTrack">
-
-            @if ($announcement && !empty($announcement))
-            <div class="banner-slide">
-                <div class="banner-card banner-announcement">
-                    <div class="d-flex align-items-start gap-3">
-                        <div class="banner-ico"><i class="bi bi-megaphone-fill"></i></div>
-                        <div>
-                            <h6 class="banner-title">{{ __('app.announcement') }}</h6>
-                            <p class="banner-text">{{ $announcement }}</p>
-                        </div>
+    {{-- ═══ MINI TICKER CARDS — Sparkline Preview ═══ --}}
+    <div class="dash-ticker-row">
+        <div class="ticker-track" id="tickerTrack">
+            @php
+                $tickerSymbols = ['BTCUSDT', 'ETHUSDT', 'DOGEUSDT'];
+            @endphp
+            @foreach ($tickerSymbols as $sym)
+                @php
+                    $coin      = $availableCoins[$sym] ?? null;
+                    $priceData = $allPrices[$sym] ?? ['price' => '0.00', 'change' => '0.00', 'isPositive' => true];
+                    if (!$coin) continue;
+                    $base = preg_replace('/USD(T)?$/', '', $sym);
+                @endphp
+                <a href="{{ route('member.invest.coin', ['coin' => strtolower($sym)]) }}"
+                   class="ticker-card ticker-card--{{ $priceData['isPositive'] ? 'up' : 'down' }}"
+                   data-symbol="{{ $sym }}"
+                   data-positive="{{ $priceData['isPositive'] ? '1' : '0' }}">
+                    <div class="ticker-card-top">
+                        <span class="ticker-symbol">{{ $base }}<span class="ticker-quote">/{{ str_ends_with($sym, 'USDT') ? 'USDT' : 'USD' }}</span></span>
+                        <span class="ticker-badge ticker-badge--{{ $priceData['isPositive'] ? 'up' : 'down' }} ticker-change" data-symbol="{{ $sym }}">
+                            {{ $priceData['isPositive'] ? '+' : '' }}{{ $priceData['change'] }}%
+                        </span>
                     </div>
-                </div>
-            </div>
-            @endif
-
-            <div class="banner-slide">
-                <div class="banner-card banner-trade">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="banner-thumb">
-                            <i class="bi bi-graph-up-arrow"></i>
-                        </div>
-                        <div>
-                            <h6 class="banner-title">{{ __('app.banner_trade_title') }}</h6>
-                            <p class="banner-text">{{ __('app.banner_trade_text') }}</p>
-                        </div>
+                    <div class="ticker-price ticker-price-val" data-symbol="{{ $sym }}">{{ $priceData['price'] }}</div>
+                    <div class="ticker-spark">
+                        <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="ticker-spark-svg" data-symbol="{{ $sym }}">
+                            <defs>
+                                <linearGradient id="grad-{{ $sym }}" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="{{ $priceData['isPositive'] ? '#10b981' : '#ef4444' }}" stop-opacity="0.35"/>
+                                    <stop offset="100%" stop-color="{{ $priceData['isPositive'] ? '#10b981' : '#ef4444' }}" stop-opacity="0"/>
+                                </linearGradient>
+                            </defs>
+                            <path class="ticker-spark-area" fill="url(#grad-{{ $sym }})" stroke="none" d=""></path>
+                            <path class="ticker-spark-line" fill="none" stroke="{{ $priceData['isPositive'] ? '#10b981' : '#ef4444' }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d=""></path>
+                        </svg>
                     </div>
-                </div>
-            </div>
-
-            <div class="banner-slide">
-                <div class="banner-card banner-invite">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="banner-thumb banner-thumb-gold">
-                            <i class="bi bi-trophy-fill"></i>
-                        </div>
-                        <div>
-                            <h6 class="banner-title">{{ __('app.banner_invite_title') }}</h6>
-                            <p class="banner-text">{{ __('app.banner_invite_text') }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="banner-slide">
-                <div class="banner-card banner-signal">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="banner-thumb banner-thumb-purple">
-                            <i class="bi bi-broadcast"></i>
-                        </div>
-                        <div>
-                            <h6 class="banner-title">{{ __('app.trading_signals') }}</h6>
-                            <p class="banner-text">{{ __('app.banner_signal_text') }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+                </a>
+            @endforeach
         </div>
-        <div class="banner-dots" id="bannerDots"></div>
     </div>
 
     {{-- ═══ MINI MARKET ═══ --}}
@@ -197,16 +116,16 @@
 @push('styles')
 <style>
 /* ════════════════════════════════
-   HERO
+   HERO TOP (greeting only)
 ════════════════════════════════ */
-.dash-hero {
-    padding: 20px 20px 0;
+.dash-hero-top {
+    padding: 20px 20px 16px;
     background: #070e1a;
     border-bottom: 1px solid rgba(255,255,255,0.06);
     position: relative;
     overflow: hidden;
 }
-.dash-hero::before {
+.dash-hero-top::before {
     content: '';
     position: absolute;
     top: -60px; right: -60px;
@@ -214,20 +133,13 @@
     background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%);
     pointer-events: none;
 }
-.dash-hero::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: -40px;
-    width: 140px; height: 140px;
-    background: radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%);
-    pointer-events: none;
-}
 
 .hero-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
 }
 .hero-user {
     display: flex;
@@ -280,219 +192,81 @@
     50% { opacity: 0.4; transform: scale(0.7); }
 }
 
-.hero-balance-block {
-    margin-bottom: 20px;
-}
-.hero-balance-label {
-    color: rgba(255,255,255,0.4);
-    font-size: 11px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    margin: 0 0 6px;
-}
-.hero-balance-amount {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    margin: 0;
-}
-.hero-balance-int {
-    color: #fff;
-    font-size: 34px;
-    font-weight: 800;
-    letter-spacing: -1px;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-}
-.hero-balance-currency {
-    color: #3b82f6;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-}
-
-.hero-cards-row {
-    display: flex;
-    align-items: stretch;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 14px 14px 0 0;
-    overflow: hidden;
-    margin: 0 -20px;
-    padding: 0 20px;
-}
-.hero-card {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 14px 0;
-}
-.hero-card-divider {
-    width: 1px;
-    background: rgba(255,255,255,0.07);
-    margin: 12px 16px;
-}
-.hero-card-icon {
-    width: 34px; height: 34px;
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-}
-.hero-card-icon--blue { background: rgba(59,130,246,0.15); }
-.hero-card-icon--blue i { color: #60a5fa; font-size: 16px; }
-.hero-card-icon--green { background: rgba(16,185,129,0.15); }
-.hero-card-icon--green i { color: #34d399; font-size: 16px; }
-.hero-card-label {
-    color: rgba(255,255,255,0.4);
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    margin-bottom: 2px;
-}
-.hero-card-val {
-    color: #fff;
-    font-size: 13px;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-}
-.hero-card-val span {
-    color: rgba(255,255,255,0.35);
-    font-size: 10px;
-    font-weight: 500;
-}
-
 /* ════════════════════════════════
-   QUICK ACTIONS
+   MINI TICKER CARDS (sparkline)
 ════════════════════════════════ */
-.dash-actions {
-    display: flex;
-    justify-content: space-around;
-    padding: 20px 8px;
+.dash-ticker-row {
     background: #070e1a;
     border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 16px 0 18px;
 }
-.action-item {
+.ticker-track {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 0 20px;
+}
+.ticker-track::-webkit-scrollbar { display: none; }
+
+.ticker-card {
+    flex: 0 0 auto;
+    width: 132px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 12px 12px 8px;
+    text-decoration: none;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 7px;
-    text-decoration: none;
-    color: rgba(255,255,255,0.45);
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-    transition: color 0.2s;
+    transition: border-color 0.2s, transform 0.2s;
 }
-.action-item:hover { color: #fff; }
-.action-icon {
-    width: 50px; height: 50px;
-    border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: 1px solid transparent;
-}
-.action-item:hover .action-icon { transform: translateY(-2px); }
-.action-icon i { font-size: 20px; }
+.ticker-card:active { transform: scale(0.97); }
+.ticker-card--up   { border-color: rgba(16,185,129,0.18); }
+.ticker-card--down { border-color: rgba(239,68,68,0.18); }
 
-.action-icon--deposit {
-    background: rgba(59,130,246,0.12);
-    border-color: rgba(59,130,246,0.25);
-}
-.action-icon--deposit i { color: #60a5fa; }
-.action-item:hover .action-icon--deposit { box-shadow: 0 6px 20px rgba(59,130,246,0.25); }
-
-.action-icon--withdraw {
-    background: rgba(239,68,68,0.1);
-    border-color: rgba(239,68,68,0.2);
-}
-.action-icon--withdraw i { color: #f87171; }
-.action-item:hover .action-icon--withdraw { box-shadow: 0 6px 20px rgba(239,68,68,0.2); }
-
-.action-icon--transfer {
-    background: rgba(139,92,246,0.12);
-    border-color: rgba(139,92,246,0.25);
-}
-.action-icon--transfer i { color: #a78bfa; }
-.action-item:hover .action-icon--transfer { box-shadow: 0 6px 20px rgba(139,92,246,0.25); }
-
-.action-icon--invite {
-    background: rgba(16,185,129,0.1);
-    border-color: rgba(16,185,129,0.2);
-}
-.action-icon--invite i { color: #34d399; }
-.action-item:hover .action-icon--invite { box-shadow: 0 6px 20px rgba(16,185,129,0.2); }
-
-/* ════════════════════════════════
-   BANNERS
-════════════════════════════════ */
-.dash-banners { padding-top: 20px; }
-.banner-track {
+.ticker-card-top {
     display: flex;
-    gap: 12px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    padding-bottom: 4px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 8px;
 }
-.banner-track::-webkit-scrollbar { display: none; }
-.banner-slide {
-    flex-shrink: 0;
-    width: calc(100% - 32px);
-    scroll-snap-align: start;
+.ticker-symbol {
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
 }
-.banner-card {
-    border-radius: 14px;
-    padding: 16px;
-    border: 1px solid rgba(255,255,255,0.07);
+.ticker-quote {
+    color: rgba(255,255,255,0.3);
+    font-size: 9px;
+    font-weight: 500;
 }
-.banner-announcement {
-    background: linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(16,185,129,0.06) 100%);
-    border-color: rgba(59,130,246,0.2);
+.ticker-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 6px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
 }
-.banner-trade {
-    background: linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(99,102,241,0.06) 100%);
-    border-color: rgba(59,130,246,0.2);
+.ticker-badge--up   { color: #10b981; background: rgba(16,185,129,0.12); }
+.ticker-badge--down { color: #ef4444; background: rgba(239,68,68,0.1); }
+
+.ticker-price {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 6px;
 }
-.banner-invite {
-    background: linear-gradient(135deg, rgba(16,185,129,0.1) 0%, rgba(59,130,246,0.05) 100%);
-    border-color: rgba(16,185,129,0.2);
-}
-.banner-signal {
-    background: linear-gradient(135deg, rgba(139,92,246,0.1) 0%, rgba(59,130,246,0.05) 100%);
-    border-color: rgba(139,92,246,0.2);
-}
-.banner-title { color: #fff; font-size: 13px; font-weight: 700; margin: 0 0 4px; }
-.banner-text  { color: rgba(255,255,255,0.45); font-size: 12px; margin: 0; line-height: 1.5; }
-.banner-ico {
-    width: 38px; height: 38px; flex-shrink: 0;
-    background: rgba(59,130,246,0.15); border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-}
-.banner-ico i { font-size: 18px; color: #60a5fa; }
-.banner-thumb {
-    width: 52px; height: 52px; flex-shrink: 0; border-radius: 12px;
-    background: rgba(59,130,246,0.12);
-    display: flex; align-items: center; justify-content: center;
-}
-.banner-thumb i { font-size: 24px; color: #60a5fa; }
-.banner-thumb-gold { background: rgba(234,179,8,0.12); }
-.banner-thumb-gold i { color: #fbbf24; }
-.banner-thumb-purple { background: rgba(139,92,246,0.15); }
-.banner-thumb-purple i { color: #a78bfa; }
-.banner-dots {
-    display: flex; justify-content: center; align-items: center;
-    gap: 5px; margin-top: 10px;
-}
-.banner-dot {
-    width: 5px; height: 5px; border-radius: 50%;
-    background: rgba(255,255,255,0.15); transition: all 0.3s ease;
-    cursor: pointer;
-}
-.banner-dot.active {
-    background: #3b82f6; width: 16px; border-radius: 3px;
+
+.ticker-spark { width: 100%; height: 32px; }
+.ticker-spark-svg { width: 100%; height: 100%; display: block; }
+
+@media (max-width: 375px) {
+    .ticker-card { width: 116px; }
 }
 
 /* ════════════════════════════════
@@ -618,9 +392,6 @@
 .price-updated { animation: priceFlash 0.6s ease; }
 
 @media (max-width: 375px) {
-    .hero-balance-int { font-size: 28px; }
-    .action-icon { width: 44px; height: 44px; }
-    .action-icon i { font-size: 18px; }
     .mini-price { min-width: 68px; font-size: 11px; }
 }
 </style>
@@ -630,42 +401,96 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    // ── Banner Slider ──
+    // ── Mini Ticker Cards: Sparkline Renderer ──
     (function () {
-        const track   = document.getElementById('bannerTrack');
-        const dotsEl  = document.getElementById('bannerDots');
-        const slides  = track ? track.querySelectorAll('.banner-slide') : [];
-        if (!slides.length) return;
+        const cards = document.querySelectorAll('.ticker-card');
+        if (!cards.length) return;
 
-        let current = 0;
+        const history = {};
 
-        slides.forEach((_, i) => {
-            const d = document.createElement('span');
-            d.className = 'banner-dot' + (i === 0 ? ' active' : '');
-            dotsEl.appendChild(d);
+        function seedHistory(sym, currentPrice, isPositive) {
+            const points = 20;
+            const arr = [];
+            let val = 50;
+            for (let i = 0; i < points; i++) {
+                const trendBias = isPositive ? 0.6 : -0.6;
+                const noise = (Math.random() - 0.5) * 8;
+                val += trendBias + noise;
+                val = Math.max(10, Math.min(90, val));
+                arr.push(val);
+            }
+            arr[arr.length - 1] = isPositive ? Math.max(arr[arr.length - 2] + 3, 60) : Math.min(arr[arr.length - 2] - 3, 40);
+            history[sym] = arr;
+        }
+
+        function renderSpark(card, sym) {
+            const svg = card.querySelector('.ticker-spark-svg');
+            if (!svg || !history[sym]) return;
+
+            const linePath = svg.querySelector('.ticker-spark-line');
+            const areaPath = svg.querySelector('.ticker-spark-area');
+            const data = history[sym];
+            const w = 100, h = 32;
+            const step = w / (data.length - 1);
+
+            let d = '';
+            data.forEach((v, i) => {
+                const x = i * step;
+                const y = h - (v / 100) * h;
+                d += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+            });
+            linePath.setAttribute('d', d.trim());
+
+            const areaD = d.trim() + ` L${w},${h} L0,${h} Z`;
+            areaPath.setAttribute('d', areaD);
+        }
+
+        cards.forEach(card => {
+            const sym = card.dataset.symbol;
+            const isPositive = card.dataset.positive === '1';
+            seedHistory(sym, 0, isPositive);
+            renderSpark(card, sym);
         });
 
-        function goTo(idx) {
-            current = idx;
-            slides[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-            dotsEl.querySelectorAll('.banner-dot').forEach((d, i) => {
-                d.classList.toggle('active', i === idx);
-            });
+        const ROUTE = '{{ route('member.dashboard.prices') }}';
+        const CSRF  = '{{ csrf_token() }}';
+        const TICKER_SYMS = Array.from(cards).map(c => c.dataset.symbol);
+
+        function refreshTickers() {
+            fetch(ROUTE, {
+                method : 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
+                body   : JSON.stringify({ symbols: TICKER_SYMS })
+            }).then(r => r.json()).then(({ success, data }) => {
+                if (!success || !data) return;
+                Object.entries(data).forEach(([sym, d]) => {
+                    const card = document.querySelector(`.ticker-card[data-symbol="${sym}"]`);
+                    if (!card) return;
+
+                    const priceEl = card.querySelector('.ticker-price-val');
+                    if (priceEl) priceEl.textContent = d.price;
+
+                    const badgeEl = card.querySelector('.ticker-change');
+                    if (badgeEl) {
+                        badgeEl.textContent = (d.isPositive ? '+' : '') + d.change + '%';
+                        badgeEl.classList.remove('ticker-badge--up', 'ticker-badge--down');
+                        badgeEl.classList.add(d.isPositive ? 'ticker-badge--up' : 'ticker-badge--down');
+                    }
+
+                    const arr = history[sym] || [];
+                    const nextVal = d.isPositive
+                        ? Math.min(90, (arr[arr.length - 1] || 50) + Math.random() * 4)
+                        : Math.max(10, (arr[arr.length - 1] || 50) - Math.random() * 4);
+                    arr.push(nextVal);
+                    if (arr.length > 20) arr.shift();
+                    history[sym] = arr;
+
+                    renderSpark(card, sym);
+                });
+            }).catch(() => {});
         }
 
-        setInterval(() => goTo((current + 1) % slides.length), 4000);
-
-        if (track) {
-            track.addEventListener('scroll', () => {
-                const idx = Math.round(track.scrollLeft / track.clientWidth);
-                if (idx !== current) {
-                    current = idx;
-                    dotsEl.querySelectorAll('.banner-dot').forEach((d, i) => {
-                        d.classList.toggle('active', i === idx);
-                    });
-                }
-            }, { passive: true });
-        }
+        setInterval(refreshTickers, 10000);
     })();
 
     // ── Mini Market Real-time Prices ──
