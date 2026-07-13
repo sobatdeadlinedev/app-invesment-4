@@ -23,15 +23,52 @@
                 <div class="pc-uid">ID:{{ auth()->user()->id }}</div>
             </div>
 
-           <!-- Banner -->
-<div class="pc-banner">
-    <span>{{ app()->getLocale() == 'id' ? 'UNDANG TRADER' : 'INVITE TRADERS' }}<br>{{ app()->getLocale() == 'id' ? 'DAPAT KOMISI.' : 'EARN COMMISSION.' }}</span>
-</div>
+            <!-- Banner -->
+            <div class="pc-banner">
+                <span>{{ app()->getLocale() == 'id' ? 'UNDANG TRADER' : 'INVITE TRADERS' }}<br>{{ app()->getLocale() == 'id' ? 'DAPAT KOMISI.' : 'EARN COMMISSION.' }}</span>
+            </div>
 
             <!-- Menu List -->
             <div class="pc-list">
 
-        
+                <!-- Language (Collapsible) -->
+                <div class="pc-item pc-item-expandable" id="pcLangToggle">
+                    <span><i class="bi bi-translate me-2"></i> {{ app()->getLocale() == 'id' ? 'Bahasa' : 'Language' }}</span>
+                    <span class="pc-lang-current">
+                        {{ app()->getLocale() == 'id' ? 'Indonesia' : 'English' }}
+                        <i class="bi bi-chevron-down pc-chev pc-lang-chev" id="pcLangChev"></i>
+                    </span>
+                </div>
+
+                <div class="pc-lang-submenu" id="pcLangSubmenu">
+                    <a href="{{ route('language.switch', 'id') }}" class="pc-item pc-item-sub">
+                        <span>🇮🇩 Indonesia</span>
+                        @if(app()->getLocale() == 'id')
+                            <i class="bi bi-check-circle-fill pc-status-icon pc-status-ok"></i>
+                        @endif
+                    </a>
+                    <a href="{{ route('language.switch', 'en') }}" class="pc-item pc-item-sub">
+                        <span>🇬🇧 English</span>
+                        @if(app()->getLocale() == 'en')
+                            <i class="bi bi-check-circle-fill pc-status-icon pc-status-ok"></i>
+                        @endif
+                    </a>
+                    <span class="pc-item pc-item-sub pc-item-disabled">
+                        <span>🇨🇳 中文</span>
+                    </span>
+                    <span class="pc-item pc-item-sub pc-item-disabled">
+                        <span>🇯🇵 日本語</span>
+                    </span>
+                    <span class="pc-item pc-item-sub pc-item-disabled">
+                        <span>🇰🇷 한국어</span>
+                    </span>
+                    <span class="pc-item pc-item-sub pc-item-disabled">
+                        <span>🇪🇸 Español</span>
+                    </span>
+                    <span class="pc-item pc-item-sub pc-item-disabled">
+                        <span>🇸🇦 العربية</span>
+                    </span>
+                </div>
 
                 <a href="{{ route('member.deposit.history') }}" class="pc-item">
                     <span>{{ app()->getLocale() == 'id' ? 'Riwayat Deposit' : 'Deposit History' }}</span>
@@ -144,11 +181,11 @@
     overflow-y: auto;
     flex: 1;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;       /* Firefox */
-    -ms-overflow-style: none;    /* IE/Edge */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 .pc-scroll::-webkit-scrollbar {
-    width: 0px;                  /* Chrome/Safari */
+    width: 0px;
     background: transparent;
 }
 
@@ -195,6 +232,28 @@
 .pc-status-icon { font-size: 15px; }
 .pc-status-ok { color: #34d399; }
 .pc-status-pending { color: rgba(255,255,255,0.3); }
+
+/* ── Expandable language row ── */
+.pc-item-expandable { cursor: pointer; }
+.pc-lang-current {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: rgba(255,255,255,0.45); font-size: 13px;
+}
+.pc-lang-chev { transition: transform 0.2s; font-size: 11px; }
+.pc-lang-chev.open { transform: rotate(180deg); }
+
+.pc-lang-submenu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: rgba(255,255,255,0.02);
+}
+.pc-lang-submenu.open { max-height: 500px; }
+
+.pc-item-sub {
+    padding-left: 34px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
 
 /* ── Toggle row ── */
 .pc-item-toggle { cursor: default; }
@@ -257,6 +316,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
         window.addEventListener('resize', function() {
             if (dropdownMenu.classList.contains('show')) positionDropdown();
+        });
+    }
+
+    // Language collapsible toggle
+    const langToggle  = document.getElementById('pcLangToggle');
+    const langSubmenu = document.getElementById('pcLangSubmenu');
+    const langChev    = document.getElementById('pcLangChev');
+
+    if (langToggle && langSubmenu) {
+        langToggle.addEventListener('click', function() {
+            langSubmenu.classList.toggle('open');
+            langChev.classList.toggle('open');
         });
     }
 });
