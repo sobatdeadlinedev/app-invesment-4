@@ -8,27 +8,27 @@
     <link rel="shortcut icon" href="{{ $appConfig['app_logo']['value'] }}" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --gold: #F5C842;
-            --gold-dim: rgba(245,200,66,0.12);
-            --bg: #0B0E12;
-            --bg-card: #12161C;
-            --bg-input: #171C24;
-            --border: rgba(255,255,255,0.08);
-            --border-hover: rgba(255,255,255,0.16);
-            --text-primary: #F0F4F8;
-            --text-secondary: #7A8699;
-            --text-muted: #4A5568;
-            --red: #F04F59;
-            --red-dim: rgba(240,79,89,0.1);
-            --green: #16A879;
-            --green-dim: rgba(22,168,121,0.1);
+            --green: #1CB760;
+            --green-dark: #159A50;
+            --green-dim: rgba(28,183,96,0.10);
+            --bg: #F4F6F8;
+            --bg-card: #FFFFFF;
+            --bg-input: #F0F2F5;
+            --bg-input-focus: #FFFFFF;
+            --border: #E4E8ED;
+            --border-hover: #CBD3DC;
+            --text-primary: #17181A;
+            --text-secondary: #6B7280;
+            --text-muted: #9AA2AD;
+            --red: #E5484D;
+            --red-dim: rgba(229,72,77,0.08);
             --mono: 'JetBrains Mono', monospace;
             --sans: 'Inter', sans-serif;
         }
@@ -42,132 +42,153 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ── Background accents ── */
-        .bg-canvas { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-
-        .bg-grid {
-            position: absolute; inset: 0;
-            background-image:
-                linear-gradient(rgba(245,200,66,0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(245,200,66,0.02) 1px, transparent 1px);
-            background-size: 44px 44px;
-        }
-
-        .bg-glow-1 {
-            position: absolute; top: -25%; left: -10%;
-            width: 55vw; height: 55vw; border-radius: 50%;
-            background: radial-gradient(circle, rgba(245,200,66,0.08) 0%, transparent 65%);
-            animation: drift1 20s ease-in-out infinite;
-        }
-
-        .bg-glow-2 {
-            position: absolute; bottom: -25%; right: -10%;
-            width: 50vw; height: 50vw; border-radius: 50%;
-            background: radial-gradient(circle, rgba(22,168,121,0.06) 0%, transparent 65%);
-            animation: drift2 24s ease-in-out infinite;
-        }
-
-        @keyframes drift1 {
-            0%, 100% { transform: translate(0,0) scale(1); }
-            50% { transform: translate(4%,5%) scale(1.06); }
-        }
-        @keyframes drift2 {
-            0%, 100% { transform: translate(0,0) scale(1); }
-            50% { transform: translate(-4%,-4%) scale(1.05); }
-        }
-
         .page-wrap {
             min-height: 100vh;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
-            padding: 24px 20px;
-            position: relative; z-index: 1;
         }
 
-        .form-box {
+        .phone-shell {
             width: 100%;
-            max-width: 400px;
-            background: linear-gradient(180deg, #14181f 0%, var(--bg-card) 100%);
-            border: 1px solid var(--border);
-            border-top: 2px solid var(--gold);
-            border-radius: 16px;
-            padding: 36px 32px;
-            box-shadow: 0 24px 60px -20px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02);
-            animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+            max-width: 460px;
+            min-height: 100vh;
+            background: var(--bg);
+            position: relative;
+            overflow: hidden;
         }
 
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(18px); }
-            to   { opacity: 1; transform: translateY(0); }
+        /* ── Top bar ── */
+        .top-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 20px 0;
         }
 
-        /* Brand */
-        .brand {
+        .back-btn {
+            width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-primary);
+            font-size: 18px;
+            background: none; border: none; cursor: pointer;
+            text-decoration: none;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            padding: 10px 24px 4px;
             display: flex; flex-direction: column; align-items: center;
-            gap: 12px; margin-bottom: 28px;
+            text-align: center;
+            gap: 14px;
         }
 
-        .brand img {
-            width: 44px; height: 44px; object-fit: contain;
-            filter: drop-shadow(0 0 14px rgba(245,200,66,0.35));
+        .hero-logo {
+            width: 56px; height: 56px;
+            border-radius: 16px;
+            background: #fff;
+            border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            padding: 10px;
+            box-shadow: 0 10px 24px -12px rgba(20,30,25,0.25);
         }
 
-        .brand-name {
-            font-family: var(--mono);
-            font-size: 11px; font-weight: 700;
-            letter-spacing: 2.5px; text-transform: uppercase;
-            color: var(--gold);
+        .hero-logo img { width: 100%; height: 100%; object-fit: contain; }
+
+        .hero-copy h1 {
+            font-size: 21px; font-weight: 800;
+            line-height: 1.25; letter-spacing: -0.3px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
         }
+
+        .hero-copy p {
+            font-size: 12.5px; line-height: 1.6;
+            color: var(--text-secondary);
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        /* ── Card ── */
+        .register-box {
+            margin: 20px 16px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 26px 22px 24px;
+            box-shadow: 0 20px 40px -24px rgba(20,30,25,0.18);
+        }
+
+        /* Stepper */
+        .steps {
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 22px;
+        }
+        .step { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .step-circle {
+            width: 26px; height: 26px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--mono); font-size: 10px; font-weight: 700;
+            transition: all 0.3s;
+        }
+        .step.done .step-circle {
+            background: var(--green-dim); border: 2px solid var(--green); color: var(--green-dark);
+        }
+        .step.active .step-circle {
+            background: var(--green); color: #fff; border: 2px solid var(--green);
+            box-shadow: 0 0 0 4px var(--green-dim);
+        }
+        .step-lbl { font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+        .step.done .step-lbl { color: var(--green-dark); }
+        .step.active .step-lbl { color: var(--green-dark); }
+        .step-line {
+            flex: 0 0 44px; height: 1px; margin: 0 8px 17px;
+            background: var(--border);
+        }
+        .step-line.done { background: var(--green); }
 
         /* Form header */
-        .form-head { text-align: center; margin-bottom: 24px; }
+        .form-head { text-align: center; margin-bottom: 20px; }
 
-        .form-head h1 {
-            font-size: 20px; font-weight: 700;
-            color: var(--text-primary); letter-spacing: -0.2px;
+        .form-head h2 {
+            font-size: 19px; font-weight: 700;
+            color: var(--text-primary);
             margin-bottom: 6px;
         }
 
-        .form-head p {
-            font-size: 13px; color: var(--text-secondary);
-        }
+        .form-head p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; }
 
-        /* Alert */
-        .alert {
-            display: flex; gap: 10px; align-items: flex-start;
-            border-radius: 8px;
-            padding: 12px 14px;
-            margin-bottom: 20px;
-        }
-
+        /* Alerts */
         .alert-success {
+            display: flex; gap: 10px; align-items: flex-start;
             background: var(--green-dim);
-            border: 1px solid rgba(22,168,121,0.2);
+            border: 1px solid rgba(28,183,96,0.22);
+            border-radius: 10px; padding: 12px 14px; margin-bottom: 18px;
+            font-size: 13px; color: var(--green-dark);
         }
-        .alert-success i { color: var(--green); font-size: 16px; flex-shrink: 0; margin-top: 1px; }
-        .alert-success .alert-msg { font-size: 12px; color: #6ee7b7; line-height: 1.5; }
+        .alert-success i { color: var(--green-dark); font-size: 16px; flex-shrink: 0; }
 
         .alert-error {
+            display: flex; gap: 10px; align-items: flex-start;
             background: var(--red-dim);
-            border: 1px solid rgba(240,79,89,0.25);
+            border: 1px solid rgba(229,72,77,0.2);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 18px;
         }
-        .alert-error i { color: var(--red); font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+        .alert-error-icon { color: var(--red); font-size: 16px; flex-shrink: 0; margin-top: 1px; }
         .alert-error-title { font-size: 12px; font-weight: 700; color: var(--red); margin-bottom: 2px; }
-        .alert-error .alert-msg { font-size: 12px; color: #fca5a5; line-height: 1.5; }
+        .alert-error-msg { font-size: 12px; color: #b93338; line-height: 1.5; }
         .alert-error ul { margin: 0; padding-left: 16px; }
-        .alert-error li { font-size: 12px; color: #fca5a5; line-height: 1.6; }
 
         /* Fields */
         .field { margin-bottom: 16px; }
 
         .field-label {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 7px;
+            margin-bottom: 8px;
         }
 
         .field-label span {
-            font-size: 12px; font-weight: 500;
+            font-size: 12.5px; font-weight: 500;
             color: var(--text-secondary);
         }
 
@@ -175,22 +196,22 @@
 
         .input-prefix {
             position: absolute; left: 0; top: 0; bottom: 0;
-            width: 42px;
+            width: 44px;
             display: flex; align-items: center; justify-content: center;
             color: var(--text-muted);
             font-size: 15px;
             transition: color 0.2s;
         }
 
-        .input-wrap:focus-within .input-prefix { color: var(--gold); }
+        .input-wrap:focus-within .input-prefix { color: var(--green-dark); }
 
         .field-input {
             width: 100%;
-            height: 46px;
-            padding: 0 44px 0 42px;
+            height: 50px;
+            padding: 0 44px 0 44px;
             background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 8px;
+            border: 1px solid transparent;
+            border-radius: 12px;
             font-size: 14px;
             font-family: var(--sans);
             color: var(--text-primary);
@@ -201,83 +222,86 @@
         .field-input::placeholder { color: var(--text-muted); }
 
         .field-input:focus {
-            border-color: var(--gold);
-            background: #1a1f28;
-            box-shadow: 0 0 0 3px var(--gold-dim);
+            border-color: var(--green);
+            background: var(--bg-input-focus);
+            box-shadow: 0 0 0 3px var(--green-dim);
         }
 
-        .field-input.is-invalid { border-color: rgba(240,79,89,0.5); }
+        .field-input.is-invalid { border-color: var(--red); background: var(--red-dim); }
 
         .toggle-pw {
-            position: absolute; right: 0; top: 0; bottom: 0;
-            width: 44px;
+            position: absolute; right: 4px; top: 0; bottom: 0;
+            width: 42px;
             display: flex; align-items: center; justify-content: center;
             background: none; border: none; cursor: pointer;
             color: var(--text-muted); font-size: 15px;
         }
-        .toggle-pw:hover { color: var(--gold); }
+        .toggle-pw:hover { color: var(--green-dark); }
 
-        .invalid-feedback {
-            font-size: 11px; color: #fca5a5; margin-top: 5px;
-        }
+        .field-error { font-size: 11px; color: var(--red); margin-top: 6px; }
 
         /* Submit button */
         .btn-submit {
-            width: 100%; height: 46px;
-            background: var(--gold);
-            border: none; border-radius: 8px;
-            font-size: 14px; font-weight: 700;
+            width: 100%; height: 52px;
+            background: var(--green);
+            border: none; border-radius: 999px;
+            font-size: 15px; font-weight: 700;
             font-family: var(--sans);
-            color: #0B0E12;
+            color: #fff;
             cursor: pointer;
-            box-shadow: 0 4px 20px rgba(245,200,66,0.25);
+            box-shadow: 0 10px 24px -8px rgba(28,183,96,0.55);
             transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
             display: flex; align-items: center; justify-content: center; gap: 8px;
-            margin-top: 22px;
+            margin-top: 4px;
         }
 
         .btn-submit:hover {
             transform: translateY(-1px);
-            box-shadow: 0 8px 28px rgba(245,200,66,0.35);
+            box-shadow: 0 14px 28px -8px rgba(28,183,96,0.6);
         }
         .btn-submit:active { transform: translateY(0); }
-        .btn-submit.loading { pointer-events: none; opacity: 0.7; }
+        .btn-submit.loading { pointer-events: none; opacity: 0.75; }
 
         .btn-submit .spinner {
             display: none;
             width: 15px; height: 15px;
-            border: 2px solid rgba(0,0,0,0.3);
-            border-top-color: #0B0E12;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: #fff;
             border-radius: 50%;
             animation: spin 0.7s linear infinite;
         }
 
         .btn-submit.loading .spinner { display: block; }
-        .btn-submit.loading .btn-text { opacity: 0.6; }
+        .btn-submit.loading .btn-text { opacity: 0.8; }
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Back to login */
-        .back-row {
-            text-align: center; margin-top: 22px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border);
+        /* Sign in row */
+        .signin-row {
+            text-align: center; margin-top: 20px;
             font-size: 13px; color: var(--text-secondary);
         }
-
-        .back-row a {
-            color: var(--gold); text-decoration: none;
-            font-weight: 600;
+        .signin-row a {
+            color: var(--green-dark); text-decoration: none;
+            font-weight: 700;
         }
-        .back-row a:hover { text-decoration: underline; }
+        .signin-row a:hover { text-decoration: underline; }
+
+        /* Security note */
+        .security-note {
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            margin-top: 16px; margin-bottom: 4px;
+            font-size: 11px; color: var(--text-muted);
+        }
+        .security-note i { color: var(--green); font-size: 13px; }
 
         @media (max-width: 420px) {
-            .form-box { padding: 28px 22px; }
+            .register-box { padding: 22px 18px 20px; }
         }
 
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: #1e2533; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 3px; }
     </style>
     <script>
         if (window.top != window.self) {
@@ -307,126 +331,144 @@
         }
     </script>
 
-    <div class="bg-canvas">
-        <div class="bg-grid"></div>
-        <div class="bg-glow-1"></div>
-        <div class="bg-glow-2"></div>
-    </div>
-
     <div class="page-wrap">
-        <div class="form-box">
+        <div class="phone-shell">
 
-            <div class="brand">
-                <img src="{{ $appConfig['app_logo']['value'] ?? 'assets/media/logos/default-dark.svg' }}" alt="Logo" />
-                <div class="brand-name">{{ $appConfig['app_name']['value'] }}</div>
+            <div class="top-bar">
+                <a href="{{ route('login') }}" class="back-btn" aria-label="Back">
+                    <i class="ki-duotone ki-arrow-left"><span class="path1"></span><span class="path2"></span></i>
+                </a>
             </div>
 
-            <div class="form-head">
-                <h1>Reset Password</h1>
-                <p>Masukkan password baru Anda</p>
+            <div class="hero">
+                <div class="hero-logo">
+                    <img src="{{ $appConfig['app_logo']['value'] ?? 'assets/media/logos/default-dark.svg' }}" alt="Logo" />
+                </div>
+                <div class="hero-copy">
+                    <h1>Reset Password</h1>
+                    <p>Masukkan password baru Anda di bawah ini</p>
+                </div>
             </div>
 
-            @if (session('success'))
-                <div class="alert alert-success">
-                    <i class="ki-duotone ki-check-circle">
-                        <span class="path1"></span><span class="path2"></span>
-                    </i>
-                    <div class="alert-msg">{{ session('success') }}</div>
-                </div>
-            @endif
+            <div class="register-box">
 
-            @if (session('error'))
-                <div class="alert alert-error">
-                    <i class="ki-duotone ki-cross-circle">
-                        <span class="path1"></span><span class="path2"></span>
-                    </i>
-                    <div class="alert-msg">{{ session('error') }}</div>
+                <!-- Stepper -->
+                <div class="steps">
+                    <div class="step done">
+                        <div class="step-circle">
+                            <i class="ki-duotone ki-check" style="font-size:12px;">
+                                <span class="path1"></span><span class="path2"></span>
+                            </i>
+                        </div>
+                        <span class="step-lbl">Email</span>
+                    </div>
+                    <div class="step-line done"></div>
+                    <div class="step done">
+                        <div class="step-circle">
+                            <i class="ki-duotone ki-check" style="font-size:12px;">
+                                <span class="path1"></span><span class="path2"></span>
+                            </i>
+                        </div>
+                        <span class="step-lbl">Verify</span>
+                    </div>
+                    <div class="step-line done"></div>
+                    <div class="step active">
+                        <div class="step-circle">3</div>
+                        <span class="step-lbl">Reset</span>
+                    </div>
                 </div>
-            @endif
 
-            @if ($errors->any())
-                <div class="alert alert-error">
-                    <i class="ki-duotone ki-shield-cross">
-                        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-                    </i>
-                    <div>
-                        <ul>
+                <div class="form-head">
+                    <h2>Set New Password</h2>
+                    <p>Choose a strong password you haven't used before</p>
+                </div>
+
+                @if (session('success'))
+                    <div class="alert-success">
+                        <i class="ki-duotone ki-check-circle"><span class="path1"></span><span class="path2"></span></i>
+                        <div>{{ session('success') }}</div>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="alert-error">
+                        <i class="ki-duotone ki-shield-cross alert-error-icon">
+                            <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                        </i>
+                        <div class="alert-error-msg">{{ session('error') }}</div>
+                    </div>
+                @endif
+
+                @if ($errors->any())
+                    <div class="alert-error">
+                        <i class="ki-duotone ki-shield-cross alert-error-icon">
+                            <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                        </i>
+                        <div>
+                            <div class="alert-error-title">Validation Error</div>
                             @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
+                                <div class="alert-error-msg">{{ $error }}</div>
                             @endforeach
-                        </ul>
-                    </div>
-                </div>
-            @endif
-
-            <form method="POST" action="{{ route('reset-password.post') }}">
-                @csrf
-
-                <div class="field">
-                    <div class="field-label">
-                        <span>Password Baru</span>
-                    </div>
-                    <div class="input-wrap">
-                        <div class="input-prefix">
-                            <i class="ki-duotone ki-lock">
-                                <span class="path1"></span><span class="path2"></span>
-                            </i>
                         </div>
-                        <input
-                            type="password"
-                            name="password"
-                            id="pw1"
-                            placeholder="Password Baru"
-                            autocomplete="off"
-                            class="field-input @error('password') is-invalid @enderror"
-                            required
-                        />
-                        <button type="button" class="toggle-pw" onclick="togglePw('pw1','eye1')" aria-label="Toggle password">
-                            <i class="ki-duotone ki-eye" id="eye1">
-                                <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-                            </i>
-                        </button>
                     </div>
-                    @error('password')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
+                @endif
 
-                <div class="field">
-                    <div class="field-label">
-                        <span>Konfirmasi Password</span>
-                    </div>
-                    <div class="input-wrap">
-                        <div class="input-prefix">
-                            <i class="ki-duotone ki-lock">
-                                <span class="path1"></span><span class="path2"></span>
-                            </i>
+                <form method="POST" action="{{ route('reset-password.post') }}">
+                    @csrf
+
+                    <div class="field">
+                        <div class="field-label">
+                            <span>Password Baru</span>
                         </div>
-                        <input
-                            type="password"
-                            name="password_confirmation"
-                            id="pw2"
-                            placeholder="Konfirmasi Password"
-                            autocomplete="off"
-                            class="field-input"
-                            required
-                        />
-                        <button type="button" class="toggle-pw" onclick="togglePw('pw2','eye2')" aria-label="Toggle password">
-                            <i class="ki-duotone ki-eye" id="eye2">
-                                <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-                            </i>
-                        </button>
+                        <div class="input-wrap">
+                            <div class="input-prefix">
+                                <i class="ki-duotone ki-lock"><span class="path1"></span><span class="path2"></span></i>
+                            </div>
+                            <input type="password" name="password" id="pw1" placeholder="Min. 8 characters"
+                                autocomplete="off"
+                                class="field-input @error('password') is-invalid @enderror" required />
+                            <button type="button" class="toggle-pw" onclick="togglePw('pw1','eye1')" aria-label="Toggle password">
+                                <i class="ki-duotone ki-eye" id="eye1">
+                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                                </i>
+                            </button>
+                        </div>
+                        @error('password')<div class="field-error">{{ $message }}</div>@enderror
                     </div>
+
+                    <div class="field">
+                        <div class="field-label">
+                            <span>Konfirmasi Password</span>
+                        </div>
+                        <div class="input-wrap">
+                            <div class="input-prefix">
+                                <i class="ki-duotone ki-lock"><span class="path1"></span><span class="path2"></span></i>
+                            </div>
+                            <input type="password" name="password_confirmation" id="pw2" placeholder="Repeat password"
+                                autocomplete="off" class="field-input" required />
+                            <button type="button" class="toggle-pw" onclick="togglePw('pw2','eye2')" aria-label="Toggle password">
+                                <i class="ki-duotone ki-eye" id="eye2">
+                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                                </i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <div class="spinner"></div>
+                        <span class="btn-text">Reset Password</span>
+                    </button>
+                </form>
+
+                <div class="signin-row">
+                    <a href="{{ route('login') }}">Kembali ke Login</a>
                 </div>
 
-                <button type="submit" class="btn-submit" id="submitBtn">
-                    <div class="spinner"></div>
-                    <span class="btn-text">Reset Password</span>
-                </button>
-            </form>
+                <div class="security-note">
+                    <i class="ki-duotone ki-shield-tick"><span class="path1"></span><span class="path2"></span></i>
+                    <span>Protected by 256-bit SSL encryption</span>
+                </div>
 
-            <div class="back-row">
-                <a href="{{ route('login') }}">Kembali ke Login</a>
             </div>
 
         </div>
