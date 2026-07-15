@@ -406,7 +406,7 @@ return [
     'invite' => 'Undang',
     'announcement' => 'Pengumuman',
     'see_all' => 'Lihat Semua',
-    'market' => 'Pasar',
+    'market' => 'Quotes',
     'banner_trade_title' => 'Ikuti Trader Expert',
     'banner_trade_text' => 'Dapatkan penghasilan pasif secara otomatis dengan strategi yang telah terbukti.',
     'banner_invite_title' => 'Undang & Dapatkan',
@@ -475,7 +475,7 @@ return [
 
     // ===== BOTTOMBAR =====
     'nav_home' => 'Beranda',
-    'nav_futures' => 'Futures',
+    'nav_futures' => 'Perdagangan',
     'nav_access' => 'Validasi',
     'nav_wallet' => 'Dompet',
 

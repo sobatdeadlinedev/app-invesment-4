@@ -79,6 +79,7 @@
             <span class="mini-col-label text-end">24h</span>
         </div>
 
+        <div class="mini-market-body px-3">
         @php
             $featured = ['BTCUSDT', 'ETHUSDT', 'DOGEUSDT', 'XAUUSD', 'EURUSDT'];
         @endphp
@@ -93,9 +94,6 @@
             <a href="{{ route('member.invest.coin', ['coin' => strtolower($sym)]) }}"
                class="mini-row" data-symbol="{{ $sym }}">
                 <div class="mini-coin">
-                    <div class="mini-icon" style="background:{{ $coin['color'] }}18; border-color:{{ $coin['color'] }}40;">
-                        <i class="{{ $coin['icon'] }}" style="color:{{ $coin['color'] }};"></i>
-                    </div>
                     <div>
                         <div class="mini-symbol">{{ $base }}<span class="mini-quote">/{{ str_ends_with($sym, 'USDT') ? 'USDT' : 'USD' }}</span></div>
                         <div class="mini-name">{{ $coin['name'] }}</div>
@@ -107,6 +105,7 @@
                 </div>
             </a>
         @endforeach
+        </div>
 
     </div>
 
@@ -318,8 +317,7 @@
     grid-template-columns: 1fr auto auto;
     gap: 8px;
     padding-bottom: 6px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    margin-bottom: 2px;
+    margin-bottom: 10px;
 }
 .mini-col-label {
     color: rgba(255,255,255,0.25);
@@ -329,61 +327,67 @@
     text-transform: uppercase;
 }
 
+.mini-market-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 .mini-row {
     display: grid;
     grid-template-columns: 1fr auto auto;
-    gap: 8px;
+    gap: 10px;
     align-items: center;
-    padding: 11px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+    padding: 13px 14px;
     text-decoration: none;
-    transition: background 0.15s;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
     position: relative;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.055);
+    border-radius: 14px;
 }
-.mini-row::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 2px;
-    background: transparent;
-    transition: background 0.2s;
+.mini-row:hover {
+    background: rgba(59,130,246,0.06);
+    border-color: rgba(59,130,246,0.25);
+    transform: translateY(-1px);
 }
-.mini-row:hover { background: rgba(59,130,246,0.04); }
-.mini-row:hover::before { background: #3b82f6; }
-.mini-row:last-child { border-bottom: none; }
+.mini-row:active { transform: translateY(0); }
 
-.mini-coin { display: flex; align-items: center; gap: 10px; }
-.mini-icon {
-    width: 32px; height: 32px; flex-shrink: 0;
-    border-radius: 8px; border: 1px solid;
-    display: flex; align-items: center; justify-content: center;
-}
-.mini-icon i { font-size: 15px; }
-.mini-symbol { color: #fff; font-size: 12px; font-weight: 700; }
-.mini-quote  { color: rgba(255,255,255,0.3); font-size: 10px; font-weight: 400; }
-.mini-name   { color: rgba(255,255,255,0.35); font-size: 10px; margin-top: 1px; }
+.mini-coin { display: flex; align-items: center; }
+.mini-symbol { color: #fff; font-size: 13px; font-weight: 700; }
+.mini-quote  { color: rgba(255,255,255,0.32); font-size: 11px; font-weight: 500; }
+.mini-name   { color: rgba(255,255,255,0.38); font-size: 11px; margin-top: 2px; }
 
 .mini-price {
-    min-width: 80px;
+    min-width: 84px;
     text-align: right;
     color: #fff;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.3px;
 }
 
 .mini-change {
-    min-width: 60px;
-    text-align: right;
-    font-size: 11px;
+    min-width: 72px;
+    text-align: center;
+    font-size: 11.5px;
     font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 6px;
+    padding: 6px 10px;
+    border-radius: 20px;
     font-variant-numeric: tabular-nums;
+    border: 1px solid transparent;
 }
-.mini-change.positive { color: #10b981; background: rgba(16,185,129,0.1); }
-.mini-change.negative { color: #ef4444; background: rgba(239,68,68,0.08); }
+.mini-change.positive {
+    color: #34d399;
+    background: rgba(16,185,129,0.12);
+    border-color: rgba(16,185,129,0.25);
+}
+.mini-change.negative {
+    color: #f87171;
+    background: rgba(239,68,68,0.1);
+    border-color: rgba(239,68,68,0.22);
+}
 
 @keyframes priceFlash {
     0%   { color: #60a5fa; }

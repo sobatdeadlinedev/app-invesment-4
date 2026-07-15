@@ -404,7 +404,7 @@ return [
     'invite' => 'Invite',
     'announcement' => 'Announcement',
     'see_all' => 'See All',
-    'market' => 'Market',
+    'market' => 'Quotes',
     'banner_trade_title' => 'Copy Expert Traders',
     'banner_trade_text' => 'Earn passive income automatically and proven strategies at your fingertips.',
     'banner_invite_title' => 'Invite & Earn',
@@ -476,7 +476,7 @@ return [
 
     // ===== BOTTOMBAR =====
     'nav_home' => 'Home',
-    'nav_futures' => 'Futures',
+    'nav_futures' => 'Trade',
     'nav_access' => 'Validation',
     'nav_wallet' => 'Wallet',
     

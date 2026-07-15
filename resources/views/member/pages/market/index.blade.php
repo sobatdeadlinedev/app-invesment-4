@@ -37,6 +37,7 @@
         <span>{{ __('app.change_24h') }}</span>
     </div>
 
+    <div class="mlist-body">
     {{-- ═══ CRYPTO ═══ --}}
     @foreach ($coinsByCategory['crypto'] as $coin)
         @php
@@ -46,9 +47,6 @@
         <a href="{{ route('member.invest.coin', ['coin' => strtolower($coin['symbol'])]) }}"
            class="mlist-row" data-symbol="{{ $coin['symbol'] }}" data-category="crypto">
             <div class="mlist-coin">
-                <div class="mlist-icon" style="background:{{ $coin['color'] }}18; border-color:{{ $coin['color'] }}40;">
-                    <i class="{{ $coin['icon'] }}" style="color:{{ $coin['color'] }};"></i>
-                </div>
                 <div>
                     <div class="mlist-symbol">{{ $base }}<span class="mlist-quote">/USDT</span></div>
                     <div class="mlist-name">{{ $coin['name'] }}</div>
@@ -70,9 +68,6 @@
         <a href="{{ route('member.invest.coin', ['coin' => strtolower($coin['symbol'])]) }}"
            class="mlist-row" data-symbol="{{ $coin['symbol'] }}" data-category="forex">
             <div class="mlist-coin">
-                <div class="mlist-icon" style="background:{{ $coin['color'] }}18; border-color:{{ $coin['color'] }}40;">
-                    <i class="{{ $coin['icon'] }}" style="color:{{ $coin['color'] }};"></i>
-                </div>
                 <div>
                     <div class="mlist-symbol">{{ $base }}<span class="mlist-quote">/USD</span></div>
                     <div class="mlist-name">{{ $coin['name'] }}</div>
@@ -94,9 +89,6 @@
         <a href="{{ route('member.invest.coin', ['coin' => strtolower($coin['symbol'])]) }}"
            class="mlist-row" data-symbol="{{ $coin['symbol'] }}" data-category="precious">
             <div class="mlist-coin">
-                <div class="mlist-icon" style="background:{{ $coin['color'] }}18; border-color:{{ $coin['color'] }}40;">
-                    <i class="{{ $coin['icon'] }}" style="color:{{ $coin['color'] }};"></i>
-                </div>
                 <div>
                     <div class="mlist-symbol">{{ $base }}<span class="mlist-quote">/USD</span></div>
                     <div class="mlist-name">{{ $coin['name'] }}</div>
@@ -108,6 +100,8 @@
             </div>
         </a>
     @endforeach
+
+    </div>
 
     <div style="height: 16px;"></div>
 </div>
@@ -206,81 +200,96 @@
 .mlist-header {
     display: grid;
     grid-template-columns: 1fr auto auto;
-    gap: 8px;
-    padding: 8px 20px;
-    background: rgba(255,255,255,0.02);
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    color: rgba(255,255,255,0.25);
+    gap: 10px;
+    padding: 10px 20px;
+    color: rgba(255,255,255,0.3);
     font-size: 10px;
     font-weight: 700;
-    letter-spacing: 0.8px;
+    letter-spacing: 1px;
     text-transform: uppercase;
 }
-.mlist-header span:nth-child(2) { min-width: 86px; text-align: right; }
-.mlist-header span:nth-child(3) { min-width: 66px; text-align: right; }
+.mlist-header span:nth-child(2) { min-width: 90px; text-align: right; }
+.mlist-header span:nth-child(3) { min-width: 78px; text-align: right; }
+
+/* ── BODY WRAPPER ── */
+.mlist-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 2px 14px 0;
+}
 
 /* ── ROWS ── */
 .mlist-row {
     display: grid;
     grid-template-columns: 1fr auto auto;
-    gap: 8px;
+    gap: 10px;
     align-items: center;
-    padding: 12px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+    padding: 14px 16px;
     text-decoration: none;
-    transition: background 0.15s;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
     position: relative;
     cursor: pointer;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.055);
+    border-radius: 14px;
 }
-.mlist-row::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 2px;
-    background: transparent;
-    transition: background 0.2s;
-    border-radius: 0 2px 2px 0;
+.mlist-row:hover {
+    background: rgba(59,130,246,0.06);
+    border-color: rgba(59,130,246,0.25);
+    transform: translateY(-1px);
 }
-.mlist-row:hover { background: rgba(59,130,246,0.04); }
-.mlist-row:hover::before { background: #3b82f6; }
-.mlist-row:last-of-type { border-bottom: none; }
+.mlist-row:active { transform: translateY(0); }
 
-.mlist-coin { display: flex; align-items: center; gap: 11px; }
-.mlist-icon {
-    width: 36px; height: 36px; flex-shrink: 0;
-    border-radius: 9px; border: 1px solid;
-    display: flex; align-items: center; justify-content: center;
-}
-.mlist-icon i { font-size: 17px; }
+.mlist-coin { display: flex; align-items: center; }
 .mlist-symbol {
     color: #fff;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     letter-spacing: -0.2px;
 }
-.mlist-quote  { color: rgba(255,255,255,0.3); font-size: 10px; font-weight: 500; }
-.mlist-name   { color: rgba(255,255,255,0.35); font-size: 10px; margin-top: 2px; }
+.mlist-quote  { color: rgba(255,255,255,0.32); font-size: 11px; font-weight: 500; }
+.mlist-name   { color: rgba(255,255,255,0.38); font-size: 11px; margin-top: 3px; }
 
 .mlist-price {
-    min-width: 86px;
+    min-width: 90px;
     text-align: right;
     color: #fff;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.3px;
 }
 .mlist-change {
-    min-width: 66px;
+    min-width: 78px;
     text-align: center;
-    font-size: 11px;
+    font-size: 11.5px;
     font-weight: 700;
-    padding: 4px 8px;
-    border-radius: 6px;
+    padding: 6px 10px;
+    border-radius: 20px;
     font-variant-numeric: tabular-nums;
+    border: 1px solid transparent;
 }
-.mlist-change.positive { color: #10b981; background: rgba(16,185,129,0.1); }
-.mlist-change.negative { color: #ef4444; background: rgba(239,68,68,0.08); }
+.mlist-change.positive {
+    color: #34d399;
+    background: rgba(16,185,129,0.12);
+    border-color: rgba(16,185,129,0.25);
+}
+.mlist-change.negative {
+    color: #f87171;
+    background: rgba(239,68,68,0.1);
+    border-color: rgba(239,68,68,0.22);
+}
+
+/* ── SECTION LABEL (optional group heading) ── */
+.mlist-group-label {
+    color: rgba(255,255,255,0.28);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 6px 2px;
+}
 
 /* ── PRICE FLASH ── */
 @keyframes priceFlash {
