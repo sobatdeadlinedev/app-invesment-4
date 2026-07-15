@@ -223,8 +223,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; wid
         </button>
     </div>
 
-    {{-- ═══ DELIVERY ORDER (placeholder panel, tidak ada konten khusus) ═══ --}}
-    <div id="tab-panel-delivery"></div>
+    {{-- ═══ DELIVERY ORDER (empty state supaya tidak blank di HP) ═══ --}}
+    <div id="tab-panel-delivery">
+        <div class="cp-void">
+            <div class="cp-void-hex"><i class="bi bi-hourglass-split"></i></div>
+            <div class="cp-void-text">{{ __('app.no_delivery_order') ?? 'Tidak ada order berjalan' }}</div>
+        </div>
+        <div style="height:120px;"></div>
+    </div>
 
     {{-- ═══ INVITE ME (Expert Signals / Invitation) ═══ --}}
     @php $coinSlug = strtolower(str_replace(['USDT','USD'], '', $coin)); @endphp
@@ -246,6 +252,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; wid
             </div>
             <i class="bi bi-chevron-right ex-signals-arrow"></i>
         </a>
+        <div style="height:120px;"></div>
     </div>
 
     {{-- ═══ HISTORICAL ORDERS (trade ticket style — sama seperti tampilan Coin) ═══ --}}
@@ -419,6 +426,7 @@ body::-webkit-scrollbar { display: none !important; width: 0 !important; }
     -ms-overflow-style: none;
     min-height: 100vh;
     padding-bottom: 80px;
+    touch-action: pan-y;
 }
 .ex-root::-webkit-scrollbar { display: none; width: 0; }
 
@@ -537,7 +545,14 @@ body::-webkit-scrollbar { display: none !important; width: 0 !important; }
 .ex-mkt-nm  { color: var(--t2); font-size: 11px; }
 
 /* ── Chart ── */
-.ex-chart { background: #0d1117; border-bottom: 1px solid var(--bd); }
+.ex-chart { background: #0d1117; border-bottom: 1px solid var(--bd); touch-action: pan-y; position: relative; }
+.ex-chart iframe { touch-action: pan-y; pointer-events: auto; }
+.ex-chart::after {
+    content: '';
+    position: absolute; inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
 
 /* ── Active trade ── */
 .ex-active {
@@ -1251,6 +1266,23 @@ document.addEventListener('click', e => {
     if (historicalPanel) historicalPanel.style.display = (name === 'historical') ? '' : 'none';
     if (invitePanel)     invitePanel.style.display     = (name === 'invite')     ? '' : 'none';
 });
+
+/* ─ Fix: scroll terkunci di area chart pada HP (iframe menangkap touch) ─ */
+(function() {
+    const chartBox = document.querySelector('.ex-chart');
+    if (!chartBox) return;
+    let startY = 0;
+    chartBox.addEventListener('touchstart', e => {
+        startY = e.touches[0].clientY;
+    }, { passive: true });
+    chartBox.addEventListener('touchmove', e => {
+        const dy = e.touches[0].clientY - startY;
+        if (Math.abs(dy) > 4) {
+            window.scrollBy(0, -dy * 0.35);
+            startY = e.touches[0].clientY;
+        }
+    }, { passive: true });
+})();
 
 /* ─ Boot ─ */
 document.addEventListener('DOMContentLoaded', () => {
