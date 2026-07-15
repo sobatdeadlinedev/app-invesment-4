@@ -233,9 +233,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; wid
     </div>
 
     {{-- ═══ INVITE ME (Expert Signals / Invitation) ═══ --}}
-    @php $coinSlug = strtolower(str_replace(['USDT','USD'], '', $coin)); @endphp
-    <div class="ex-signals-wrap" id="tab-panel-invite" style="display:none;">
-        <a href="{{ route('member.invest.coin', ['coin' => $coinSlug]) }}" class="ex-signals-card">
+   @php
+    // Kalau ada signal aktif, arahkan ke coin milik signal itu.
+    // Kalau tidak ada signal aktif, fallback ke coin yang lagi dibuka di chart.
+    $inviteTargetCoin = $latestSignal ? $latestSignal->coin : $coin;
+    $coinSlug = strtolower(str_replace(['USDT','USD'], '', $inviteTargetCoin));
+@endphp
+<div class="ex-signals-wrap" id="tab-panel-invite" style="display:none;">
+    <a href="{{ route('member.invest.coin', ['coin' => $coinSlug]) }}" class="ex-signals-card">
             <div class="ex-signals-ico">
                 <i class="bi bi-broadcast-pin"></i>
             </div>

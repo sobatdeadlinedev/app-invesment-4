@@ -34,9 +34,16 @@ class FuturesController extends Controller
             'GBPUSDT'  => ['name' => 'British Pound',      'symbol' => 'GBP/USD',   'icon' => 'bi bi-currency-pound',    'color' => '#012169', 'cat' => 'forex',  'fx' => 'GBP',          'tv' => 'FX:GBPUSD'],
             'AUDUSDT'  => ['name' => 'Australian Dollar',  'symbol' => 'AUD/USD',   'icon' => 'bi bi-currency-dollar',   'color' => '#00008B', 'cat' => 'forex',  'fx' => 'AUD',          'tv' => 'FX:AUDUSD'],
             'NZDUSDT'  => ['name' => 'New Zealand Dollar', 'symbol' => 'NZD/USD',   'icon' => 'bi bi-currency-dollar',   'color' => '#00247D', 'cat' => 'forex',  'fx' => 'NZD',          'tv' => 'FX:NZDUSD'],
+            'BRLUSDT'  => ['name' => 'Brazilian Real',     'symbol' => 'BRL/USDT',  'icon' => 'bi bi-currency-dollar',   'color' => '#009739', 'cat' => 'forex',  'fx' => 'BRL',          'tv' => 'FX:BRLUSD'],
+            'TRYUSDT'  => ['name' => 'Turkish Lira',       'symbol' => 'TRY/USDT',  'icon' => 'bi bi-currency-exchange', 'color' => '#E30A17', 'cat' => 'forex',  'fx' => 'TRY',          'tv' => 'FX:TRYUSD'],
+            'HKDUSD'   => ['name' => 'Hong Kong Dollar',   'symbol' => 'HKD/USD',   'icon' => 'bi bi-currency-dollar',   'color' => '#DC2626', 'cat' => 'forex',  'fx' => 'HKD',          'tv' => 'FX:HKDUSD'],
+            'INRUSD'   => ['name' => 'Indian Rupee',       'symbol' => 'INR/USD',   'icon' => 'bi bi-currency-rupee',    'color' => '#FF9933', 'cat' => 'forex',  'fx' => 'INR',          'tv' => 'FX:INRUSD'],
+            'KRWUSD'   => ['name' => 'Korean Won',         'symbol' => 'KRW/USD',   'icon' => 'bi bi-currency-won',      'color' => '#0047A0', 'cat' => 'forex',  'fx' => 'KRW',          'tv' => 'FX:KRWUSD'],
+            'SGDUSD'   => ['name' => 'Singapore Dollar',   'symbol' => 'SGD/USD',   'icon' => 'bi bi-currency-dollar',   'color' => '#ED2939', 'cat' => 'forex',  'fx' => 'SGD',          'tv' => 'FX:SGDUSD'],
             // ── Precious Metals ────────────────────────────────────────────────
             'XAUUSD'   => ['name' => 'Gold',               'symbol' => 'XAU/USD',   'icon' => 'bi bi-gem',               'color' => '#FFD700', 'cat' => 'metals', 'fx' => 'XAU',          'tv' => 'TVC:GOLD'],
             'XAGUSD'   => ['name' => 'Silver',             'symbol' => 'XAG/USD',   'icon' => 'bi bi-gem',               'color' => '#C0C0C0', 'cat' => 'metals', 'fx' => 'XAG',          'tv' => 'TVC:SILVER'],
+            'XPTUSD'   => ['name' => 'Platinum',           'symbol' => 'XPT/USD',   'icon' => 'bi bi-gem',               'color' => '#E5E4E2', 'cat' => 'metals', 'fx' => 'XPT',          'tv' => 'TVC:XPTUSD'],
         ];
     }
 
@@ -58,10 +65,14 @@ class FuturesController extends Controller
         $currentPrice = $this->cachedPrice($coin);
 
         // ========================================
-        // Notifikasi Sinyal Expert — SEMUA COIN
-        // (bukan cuma coin yang lagi dibuka), supaya
-        // signal ETH/DOGE/dll juga ikut terhitung &
-        // memicu badge "sinyal aktif" di halaman ini.
+        // Notifikasi Sinyal Expert — SEMUA COIN.
+        // Badge "Invite Me" ini SENGAJA tidak di-scope ke
+        // $coin yang lagi dibuka di chart. Kalau ada signal
+        // aktif untuk coin apapun (BTC, ETH, pair USDT lain,
+        // dst), tetap muncul di sini walau chart yang lagi
+        // dibuka BTC. Link tujuan ikut coin milik signal itu
+        // sendiri (lihat $latestSignal->coin di view), bukan
+        // ikut $coin yang sedang aktif di chart.
         // ========================================
         $openSignalCount = TradingSignal::open()
             ->visible()
