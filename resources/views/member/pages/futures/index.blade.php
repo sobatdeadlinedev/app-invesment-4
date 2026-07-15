@@ -158,92 +158,77 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; wid
     {{-- ═══ TRADE ORDER PANEL ═══ --}}
     <div id="tradePanel" style="{{ $openTrade ? 'display:none' : '' }}">
 
-        {{-- Info strip --}}
-        <div class="ex-info-strip">
-            <div class="ex-info-item">
-                <span class="ex-info-lbl">Balance</span>
-                <span class="ex-info-val" id="tradeBalance">${{ number_format(auth()->user()->trade_balance, 2) }}</span>
+        {{-- Duration / Expiry row (display only — logic unchanged: fixed 60s) --}}
+        <div class="ex-meta-row">
+            <div class="ex-meta-box">
+                <span class="ex-meta-val">60s</span>
+                <i class="bi bi-chevron-down"></i>
             </div>
-            <div class="ex-info-div"></div>
-            <div class="ex-info-item">
-                <span class="ex-info-lbl">Payout</span>
-                <span class="ex-info-val c-buy">{{ \App\Http\Controllers\Member\FuturesController::PAYOUT_RATE }}%</span>
-            </div>
-            <div class="ex-info-div"></div>
-            <div class="ex-info-item">
-                <span class="ex-info-lbl">Duration</span>
-                <span class="ex-info-val">60s</span>
+            <div class="ex-meta-box ex-meta-box--wide">
+                <span class="ex-meta-val" id="expiryWindow">--:-- - --:--</span>
+                <i class="bi bi-chevron-down"></i>
             </div>
         </div>
 
-        {{-- Order section --}}
-        <div class="ex-order-section">
-
-            {{-- Amount input --}}
-            <div class="ex-field-label">{{ __('app.trade_amount_usdt') }}</div>
-            <div class="ex-amount-row">
-                <div class="ex-amount-box" id="amountBox">
-                    <span class="ex-amount-currency">USDT</span>
-                    <div class="ex-amount-divider"></div>
-                    <input type="number" id="tradeAmount" class="ex-amount-input"
-                        placeholder="0.00" min="1" step="1" autocomplete="off">
-                </div>
-                <button class="ex-max-btn" onclick="setMaxAmount()">MAX</button>
+        {{-- Amount input --}}
+        <div class="ex-amount-row">
+            <div class="ex-amount-box" id="amountBox">
+                <input type="number" id="tradeAmount" class="ex-amount-input"
+                    placeholder="0.00" min="1" step="1" autocomplete="off">
+                <span class="ex-amount-currency">USDT</span>
             </div>
+        </div>
 
-            {{-- Slider --}}
-            <div class="ex-slider-wrap">
-                <input type="range" id="amountSlider" min="0" max="100" value="0" class="ex-slider">
-                <div class="ex-slider-ticks">
-                    @foreach([0,25,50,75,100] as $tick)
-                    <span class="ex-slider-tick" onclick="setPercent({{ $tick }})">{{ $tick }}%</span>
-                    @endforeach
-                </div>
-            </div>
+        {{-- Available balance --}}
+        <div class="ex-avail-row">
+            <span class="ex-avail-lbl">{{ __('app.available') ?? 'available' }}</span>
+            <span class="ex-avail-val" id="tradeBalance">{{ number_format(auth()->user()->trade_balance, 2) }}</span>
+            <span class="ex-avail-cur">USDT</span>
+        </div>
 
-            {{-- Quick amounts --}}
-            <div class="ex-quick-grid">
-                @foreach ([10, 25, 50, 100, 250, 500] as $q)
-                <button class="ex-qbtn" onclick="setAmount({{ $q }})">{{ $q }}</button>
-                @endforeach
-            </div>
+        {{-- Quick percent chips --}}
+        <div class="ex-quick-grid">
+            @foreach ([1, 50, 75, 100] as $q)
+            <button class="ex-qbtn" onclick="setPercent({{ $q }})">{{ $q }}%</button>
+            @endforeach
+        </div>
 
-            {{-- Payout preview --}}
-            <div class="ex-preview-box">
-                <div class="ex-preview-row">
-                    <span class="ex-preview-lbl">Est. Profit</span>
-                    <span class="ex-preview-val c-buy" id="payoutAmount">—</span>
-                </div>
-                <div class="ex-preview-sep"></div>
-                <div class="ex-preview-row">
-                    <span class="ex-preview-lbl">Total Return</span>
-                    <span class="ex-preview-val" id="totalReturn">—</span>
-                </div>
-            </div>
+        {{-- CALL / PUT buttons --}}
+        <div class="ex-action-row">
+            <button class="ex-action-btn ex-call" id="btnCall" onclick="openTrade('call')">
+                <span class="ex-action-main">{{ __('app.call') }}</span>
+            </button>
+            <button class="ex-action-btn ex-put" id="btnPut" onclick="openTrade('put')">
+                <span class="ex-action-main">{{ __('app.put') }}</span>
+            </button>
+        </div>
 
-            {{-- CALL / PUT buttons --}}
-            <div class="ex-action-row">
-                <button class="ex-action-btn ex-call" id="btnCall" onclick="openTrade('call')">
-                    <i class="bi bi-graph-up-arrow"></i>
-                    <div class="ex-action-txt">
-                        <span class="ex-action-main">{{ __('app.call') }}</span>
-                        <span class="ex-action-sub">{{ strtoupper(__('app.up')) }}</span>
-                    </div>
-                </button>
-                <button class="ex-action-btn ex-put" id="btnPut" onclick="openTrade('put')">
-                    <div class="ex-action-txt">
-                        <span class="ex-action-main">{{ __('app.put') }}</span>
-                        <span class="ex-action-sub">{{ strtoupper(__('app.down')) }}</span>
-                    </div>
-                    <i class="bi bi-graph-down-arrow"></i>
-                </button>
-            </div>
+        {{-- Hidden preview fields kept for JS compatibility (not shown, logic untouched) --}}
+        <div style="display:none;">
+            <span id="payoutAmount">—</span>
+            <span id="totalReturn">—</span>
+            <input type="range" id="amountSlider" min="0" max="100" value="0">
         </div>
     </div>
 
-    {{-- ═══ SIGNALS LINK ═══ --}}
+    {{-- ═══ TABS: delivery order / historical orders / invite me ═══ --}}
+    <div class="ex-tabs-row">
+        <button class="ex-tab is-active" data-tab="delivery">{{ __('app.delivery_order') ?? 'delivery order' }}</button>
+        <button class="ex-tab" data-tab="historical">{{ __('app.historical_orders') ?? 'historical orders' }}</button>
+        <button class="ex-tab ex-tab--invite" data-tab="invite">
+            {{ __('app.invite_me') ?? 'invite me' }}
+            @if($openSignalCount > 0)
+            <span class="ex-tab-badge">{{ $openSignalCount }}</span>
+            @endif
+        </button>
+    </div>
+
+    {{-- ═══ DELIVERY ORDER (placeholder panel, tidak ada konten khusus) ═══ --}}
+    <div id="tab-panel-delivery"></div>
+
+    {{-- ═══ INVITE ME (Expert Signals / Invitation) ═══ --}}
     @php $coinSlug = strtolower(str_replace(['USDT','USD'], '', $coin)); @endphp
-    <div class="ex-signals-wrap">
+    <div class="ex-signals-wrap" id="tab-panel-invite" style="display:none;">
         <a href="{{ route('member.invest.coin', ['coin' => $coinSlug]) }}" class="ex-signals-card">
             <div class="ex-signals-ico">
                 <i class="bi bi-broadcast-pin"></i>
@@ -263,38 +248,119 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; wid
         </a>
     </div>
 
-    {{-- ═══ TRADE HISTORY ═══ --}}
-    <div class="ex-hist-hd">
-        <span class="ex-hist-title">{{ __('app.trade_history') }}</span>
-        <span class="ex-hist-count">{{ $recentTrades->count() }} trades</span>
-    </div>
-    <div class="ex-hist-list">
+    {{-- ═══ HISTORICAL ORDERS (trade ticket style — sama seperti tampilan Coin) ═══ --}}
+    <div id="tab-panel-historical" style="display:none;">
+
+        @php
+            $ftTotal    = $recentTrades->count();
+            $ftWins     = $recentTrades->where('result', 'win')->count();
+            $ftWinRate  = $ftTotal > 0 ? ($ftWins / $ftTotal) * 100 : 0;
+            $ftPnl      = $recentTrades->sum('profit_loss');
+        @endphp
+
+        @if($ftTotal > 0)
+        <div class="cp-scorecard">
+            <div class="cp-sc-cell">
+                <div class="cp-sc-n">{{ $ftTotal }}</div>
+                <div class="cp-sc-l">ORDER</div>
+            </div>
+            <div class="cp-sc-vr"></div>
+            <div class="cp-sc-cell">
+                <div class="cp-sc-n {{ $ftWinRate >= 50 ? 'g' : 'r' }}">{{ number_format($ftWinRate, 1) }}%</div>
+                <div class="cp-sc-l">WIN RATE</div>
+            </div>
+            <div class="cp-sc-vr"></div>
+            <div class="cp-sc-cell">
+                <div class="cp-sc-n {{ $ftPnl >= 0 ? 'g' : 'r' }}">{{ $ftPnl >= 0 ? '+' : '' }}{{ number_format($ftPnl, 0) }}</div>
+                <div class="cp-sc-l">P&amp;L</div>
+            </div>
+            <div class="cp-sc-vr"></div>
+            <div class="cp-sc-cell">
+                <div class="cp-sc-n a">0</div>
+                <div class="cp-sc-l">FEE</div>
+            </div>
+        </div>
+        @endif
+
         @forelse ($recentTrades as $t)
-        <div class="ex-hist-item">
-            <div class="ex-hist-accent {{ $t->direction }}"></div>
-            <div class="ex-hist-ico {{ $t->result }}">
-                <i class="bi bi-arrow-{{ $t->direction === 'call' ? 'up' : 'down' }}-short"></i>
-            </div>
-            <div class="ex-hist-body">
-                <div class="ex-hist-r1">
-                    <span class="ex-hist-sym">{{ isset($coins[$t->coin]) ? $coins[$t->coin]['symbol'] : $t->coin }}</span>
-                    <span class="ex-hist-dir {{ $t->direction }}">{{ strtoupper($t->direction) }}</span>
+        @php
+            $ftIsWin   = $t->result === 'win';
+            $ftSym     = isset($coins[$t->coin]) ? $coins[$t->coin] : null;
+            $ftColor   = $ftSym['color'] ?? '#1890ff';
+            $ftEntry   = $t->entry_price;
+            $ftClose   = $t->close_price;
+            $ftMoved   = ($ftEntry !== null && $ftClose !== null) ? ($ftClose - $ftEntry) : null;
+        @endphp
+        <div class="cp-tk {{ $ftIsWin ? 'cp-tk-w' : 'cp-tk-l' }}">
+            <div class="cp-tk-head">
+                <div class="cp-tk-asset">
+                    <span class="cp-tk-asset-dot" style="background:{{ $ftColor }};box-shadow:0 0 6px {{ $ftColor }};"></span>
+                    <span class="cp-tk-asset-sym">{{ $ftSym['symbol'] ?? $t->coin }}</span>
+                    <span class="cp-tk-asset-n">{{ $ftSym['name'] ?? '' }}</span>
                 </div>
-                <div class="ex-hist-prices">
-                    ${{ number_format($t->entry_price, $t->entry_price < 1 ? 6 : 2, '.', ',') }}
-                    <i class="bi bi-arrow-right" style="font-size:8px;opacity:.35;margin:0 2px;"></i>
-                    ${{ number_format($t->close_price, $t->close_price < 1 ? 6 : 2, '.', ',') }}
+                <div class="cp-tk-badge {{ $ftIsWin ? 'cp-tk-badge-w' : 'cp-tk-badge-l' }}">
+                    @if($ftIsWin) <i class="bi bi-check-circle-fill"></i> WIN
+                    @else <i class="bi bi-x-circle-fill"></i> LOSS
+                    @endif
                 </div>
             </div>
-            <div class="ex-hist-rhs">
-                <div class="ex-hist-pnl {{ $t->result }}">{{ $t->result === 'win' ? '+' : '' }}${{ number_format($t->profit_loss, 2) }}</div>
-                <div class="ex-hist-date">{{ $t->closed_at->format('d M H:i') }}</div>
+
+            {{-- Title row: disamakan posisi & style dengan cp-tk-title di halaman Coin --}}
+            <div class="cp-tk-title">{{ $ftSym['symbol'] ?? $t->coin }} Futures</div>
+
+            {{-- Price gauge: Entry -> Close --}}
+            <div class="cp-tk-gauge">
+                <div class="cp-tk-gauge-pt">
+                    <div class="cp-tk-gauge-lbl">ENTRY</div>
+                    <div class="cp-tk-gauge-val">{{ $ftEntry !== null ? number_format($ftEntry, $ftEntry < 1 ? 6 : 2) : '--' }}</div>
+                </div>
+                <div class="cp-tk-gauge-track">
+                    <div class="cp-tk-gauge-line {{ $ftMoved !== null ? ($ftMoved >= 0 ? 'up' : 'down') : '' }}"></div>
+                    <i class="bi bi-caret-right-fill cp-tk-gauge-chev {{ $ftMoved !== null ? ($ftMoved >= 0 ? 'up' : 'down') : '' }}"></i>
+                </div>
+                <div class="cp-tk-gauge-pt right">
+                    <div class="cp-tk-gauge-lbl">TARGET</div>
+                    <div class="cp-tk-gauge-val {{ $ftMoved !== null ? ($ftMoved >= 0 ? 'cp-val-g' : 'cp-val-r') : '' }}">{{ $ftClose !== null ? number_format($ftClose, $ftClose < 1 ? 6 : 2) : '--' }}</div>
+                </div>
+            </div>
+            <div class="cp-tk-perf"></div>
+
+            <div class="cp-tk-stats">
+                <div class="cp-tk-stat">
+                    <div class="cp-tk-stat-k">BET</div>
+                    <div class="cp-tk-stat-v">{{ number_format($t->amount, 2) }}</div>
+                </div>
+                <div class="cp-tk-stat-vr"></div>
+                <div class="cp-tk-stat">
+                    <div class="cp-tk-stat-k">PROFIT/LOSS</div>
+                    <div class="cp-tk-stat-v {{ $ftIsWin ? 'cp-val-g' : 'cp-val-r' }}">{{ $ftIsWin ? '+' : '' }}{{ number_format($t->profit_loss, 2) }}</div>
+                </div>
+                <div class="cp-tk-stat-vr"></div>
+                <div class="cp-tk-stat">
+                    <div class="cp-tk-stat-k">RATE</div>
+                    <div class="cp-tk-stat-v">{{ $t->amount > 0 ? number_format(abs($t->profit_loss) / $t->amount * 100, 1) . '%' : '--' }}</div>
+                </div>
+            </div>
+
+            {{-- Meta footer: waktu ditampilkan sebagai rentang opened_at - closed_at, sama seperti Coin --}}
+            <div class="cp-tk-meta">
+                <span class="cp-tk-meta-time">
+                    <i class="bi bi-clock-history"></i>
+                    {{ $t->opened_at ? $t->opened_at->format('d M · H:i') : '--' }}
+                    –
+                    {{ $t->closed_at ? $t->closed_at->format('H:i') : '~' }}
+                </span>
+                <span class="cp-tk-meta-dir {{ $t->direction === 'call' ? 'cp-val-g' : 'cp-val-r' }}">
+                    @if($t->direction === 'call') <i class="bi bi-graph-up-arrow"></i> CALL
+                    @else <i class="bi bi-graph-down-arrow"></i> PUT
+                    @endif
+                </span>
             </div>
         </div>
         @empty
-        <div class="ex-hist-empty">
-            <i class="bi bi-clock-history"></i>
-            <p>{{ __('app.no_trades_yet') }}</p>
+        <div class="cp-void">
+            <div class="cp-void-hex"><i class="bi bi-archive"></i></div>
+            <div class="cp-void-text">{{ __('app.no_trades_yet') }}</div>
         </div>
         @endforelse
     </div>
@@ -521,138 +587,93 @@ body::-webkit-scrollbar { display: none !important; width: 0 !important; }
 .ex-ag-lbl { color: var(--t2); font-size: 10px; }
 .ex-ag-val { color: var(--t1); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
 
-/* ── Info strip ── */
-.ex-info-strip {
-    display: flex; align-items: center;
-    padding: 10px 14px;
-    background: var(--panel);
-    border-bottom: 1px solid var(--bd);
-    border-top: 1px solid var(--bd);
-    margin-top: 10px;
-}
-.ex-info-item { flex: 1; }
-.ex-info-div { width: 1px; height: 24px; background: var(--bd); margin: 0 10px; }
-.ex-info-lbl { display: block; color: var(--t2); font-size: 10px; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 2px; }
-.ex-info-val { color: var(--t1); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
-
-/* ── Order section ── */
-.ex-order-section {
-    background: var(--panel);
-    padding: 14px;
-    border-bottom: 1px solid var(--bd);
-}
-.ex-field-label {
-    color: var(--t2); font-size: 10px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: .6px;
-    margin-bottom: 8px;
+/* ── Order section (redesigned to match reference) ── */
+#tradePanel {
+    background: var(--bg);
+    padding: 14px 12px 10px;
 }
 
-/* Amount row */
-.ex-amount-row { display: flex; gap: 8px; margin-bottom: 12px; }
-.ex-amount-box {
-    flex: 1; display: flex; align-items: center;
-    background: var(--card);
+/* Duration / expiry meta row */
+.ex-meta-row {
+    display: flex; gap: 8px;
+    margin-bottom: 10px;
+}
+.ex-meta-box {
+    flex: 1;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--panel);
     border: 1px solid var(--bd);
-    border-radius: var(--r);
+    border-radius: 22px;
+    padding: 11px 16px;
+    color: var(--t1); font-size: 13px; font-weight: 600;
+}
+.ex-meta-box--wide { flex: 1.5; }
+.ex-meta-box i { color: var(--t2); font-size: 11px; }
+.ex-meta-val { font-variant-numeric: tabular-nums; }
+
+/* Amount input */
+.ex-amount-row { margin-bottom: 8px; }
+.ex-amount-box {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--panel);
+    border: 1px solid var(--bd);
+    border-radius: 22px;
+    padding: 12px 16px;
     transition: border-color .15s;
 }
 .ex-amount-box:focus-within { border-color: var(--blue); }
-.ex-amount-currency {
-    color: var(--t2); font-size: 11px; font-weight: 700;
-    padding: 0 10px; white-space: nowrap;
-    border-right: 1px solid var(--bd);
-    height: 100%; display: flex; align-items: center;
-    background: rgba(255,255,255,.02);
-}
-.ex-amount-divider { width: 1px; }
 .ex-amount-input {
     flex: 1; background: none; border: none; outline: none;
-    color: var(--t1); font-size: 17px; font-weight: 600;
-    padding: 12px 10px;
+    color: var(--t1); font-size: 16px; font-weight: 600;
     font-variant-numeric: tabular-nums;
 }
-.ex-amount-input::placeholder { color: var(--t3); font-size: 14px; font-weight: 400; }
+.ex-amount-input::placeholder { color: var(--t3); font-weight: 400; }
 .ex-amount-input::-webkit-outer-spin-button,
 .ex-amount-input::-webkit-inner-spin-button { -webkit-appearance: none; }
-.ex-max-btn {
-    background: rgba(24,144,255,.08); border: 1px solid rgba(24,144,255,.25);
-    border-radius: var(--r); color: var(--blue);
-    font-size: 11px; font-weight: 700; padding: 0 14px;
-    cursor: pointer; letter-spacing: .5px; white-space: nowrap;
-    transition: all .15s;
+.ex-amount-currency {
+    color: var(--t2); font-size: 12px; font-weight: 700;
+    letter-spacing: .3px; margin-left: 8px; white-space: nowrap;
 }
-.ex-max-btn:hover { background: rgba(24,144,255,.16); }
 
-/* Slider */
-.ex-slider-wrap { margin-bottom: 12px; }
-.ex-slider {
-    width: 100%; height: 3px; -webkit-appearance: none;
-    background: var(--bd); border-radius: 2px; outline: none;
-    cursor: pointer; margin-bottom: 8px;
+/* Available balance row */
+.ex-avail-row {
+    display: flex; align-items: baseline; gap: 6px;
+    padding: 2px 6px 12px;
 }
-.ex-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 16px; height: 16px; border-radius: 50%;
-    background: var(--blue);
-    border: 2px solid #0b0e11;
-    box-shadow: 0 0 0 2px rgba(24,144,255,.3);
-}
-.ex-slider-ticks {
-    display: flex; justify-content: space-between;
-}
-.ex-slider-tick {
-    color: var(--t3); font-size: 10px; cursor: pointer;
-    transition: color .15s;
-}
-.ex-slider-tick:hover { color: var(--blue); }
+.ex-avail-lbl { color: var(--t2); font-size: 12px; }
+.ex-avail-val { color: var(--t1); font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.ex-avail-cur { color: var(--t2); font-size: 11px; }
 
-/* Quick grid */
+/* Quick percent chips */
 .ex-quick-grid {
-    display: grid; grid-template-columns: repeat(6,1fr); gap: 5px;
-    margin-bottom: 12px;
+    display: grid; grid-template-columns: repeat(4,1fr); gap: 8px;
+    margin-bottom: 14px;
 }
 .ex-qbtn {
-    padding: 6px 2px;
-    background: var(--card); border: 1px solid var(--bd);
-    border-radius: 4px;
-    color: var(--t2); font-size: 11px; font-weight: 600;
+    padding: 9px 2px;
+    background: var(--panel); border: 1px solid var(--bd);
+    border-radius: 20px;
+    color: var(--buy); font-size: 12px; font-weight: 700;
     cursor: pointer; transition: all .15s; text-align: center;
 }
 .ex-qbtn:hover {
-    background: rgba(24,144,255,.08);
-    border-color: rgba(24,144,255,.3);
-    color: var(--blue);
+    background: rgba(14,203,129,.08);
+    border-color: rgba(14,203,129,.3);
 }
 
-/* Preview box */
-.ex-preview-box {
-    background: var(--card); border: 1px solid var(--bd);
-    border-radius: var(--r); padding: 10px 12px;
-    margin-bottom: 14px;
-}
-.ex-preview-row { display: flex; align-items: center; justify-content: space-between; }
-.ex-preview-sep { height: 1px; background: var(--bd); margin: 7px 0; }
-.ex-preview-lbl { color: var(--t2); font-size: 11px; }
-.ex-preview-val { color: var(--t1); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
-
-/* Action buttons */
-.ex-action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+/* Action buttons — CALL / PUT with odds */
+.ex-action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .ex-action-btn {
-    display: flex; align-items: center; gap: 8px;
-    justify-content: center;
-    padding: 14px 10px; border: none; border-radius: var(--r);
+    display: flex; align-items: center; justify-content: center;
+    padding: 15px 10px; border: none; border-radius: 24px;
     cursor: pointer; transition: filter .15s, transform .1s;
-    position: relative; overflow: hidden;
 }
 .ex-action-btn:active { transform: scale(.97); }
 .ex-action-btn:disabled { opacity: .35; cursor: not-allowed; transform: none; }
-.ex-action-btn i { font-size: 24px; line-height: 1; }
-.ex-action-txt { text-align: left; }
-.ex-action-main { display: block; font-size: 16px; font-weight: 800; letter-spacing: .1px; }
-.ex-action-sub  { display: block; font-size: 9px; font-weight: 600; opacity: .7; letter-spacing: 1px; text-transform: uppercase; }
+.ex-action-main { font-size: 15px; font-weight: 700; letter-spacing: .1px; }
 .ex-call {
     background: linear-gradient(160deg, #0a8f5a 0%, #0ecb81 100%);
-    color: #001a0e;
+    color: #ffffff;
 }
 .ex-call:hover { filter: brightness(1.1); }
 .ex-put {
@@ -660,6 +681,181 @@ body::-webkit-scrollbar { display: none !important; width: 0 !important; }
     color: #fff;
 }
 .ex-put:hover { filter: brightness(1.08); }
+
+/* ── Tabs row (delivery order / historical orders) ── */
+.ex-tabs-row {
+    display: flex; align-items: center; gap: 24px;
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid var(--bd);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.ex-tabs-row::-webkit-scrollbar { display: none; }
+.ex-tab {
+    background: none; border: none; cursor: pointer;
+    color: var(--t2); font-size: 13px; font-weight: 600;
+    padding: 0 0 10px; white-space: nowrap;
+    position: relative;
+}
+.ex-tab.is-active { color: var(--t1); }
+.ex-tab.is-active::after {
+    content: '';
+    position: absolute; left: 0; right: 0; bottom: -1px;
+    height: 2px; background: var(--buy); border-radius: 2px;
+}
+.ex-tab--invite { display: inline-flex; align-items: center; gap: 5px; }
+.ex-tab-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 16px; height: 16px; padding: 0 4px;
+    background: var(--buy); color: #06120c;
+    font-size: 10px; font-weight: 800; line-height: 1;
+    border-radius: 999px;
+    box-shadow: 0 0 0 2px rgba(14,203,129,.25);
+    animation: exBadgePulse 1.6s ease-in-out infinite;
+}
+@keyframes exBadgePulse {
+    0%,100% { box-shadow: 0 0 0 2px rgba(14,203,129,.25); }
+    50%     { box-shadow: 0 0 0 4px rgba(14,203,129,.08); }
+}
+
+/* ── SCORECARD (historical orders summary) ── */
+.cp-scorecard {
+    display: flex; align-items: center;
+    margin: 14px 12px 16px;
+    background: linear-gradient(135deg, #0c1424, #080f1d);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px; padding: 14px 0;
+}
+.cp-sc-cell { flex: 1; text-align: center; }
+.cp-sc-n { font-size: 17px; font-weight: 900; color: #fff; font-variant-numeric: tabular-nums; }
+.cp-sc-n.g { color: #4ade80; }
+.cp-sc-n.r { color: #f87171; }
+.cp-sc-n.a { color: #fbbf24; }
+.cp-sc-l { font-size: 9px; font-weight: 800; letter-spacing: 1.5px; color: rgba(255,255,255,0.2); margin-top: 4px; }
+.cp-sc-vr { width: 1px; height: 28px; background: rgba(255,255,255,0.06); }
+
+/* ── TRADE TICKET (historical order card) ── */
+.cp-tk {
+    margin: 0 12px 14px;
+    background: linear-gradient(160deg, #0d1526 0%, #080f1d 100%);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 16px 16px 14px;
+    position: relative;
+    overflow: hidden;
+}
+.cp-tk::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+}
+.cp-tk-w { box-shadow: inset 3px 0 0 #4ade80; }
+.cp-tk-l { box-shadow: inset 3px 0 0 #f87171; }
+
+.cp-tk-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 6px; gap: 8px;
+}
+.cp-tk-asset { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.cp-tk-asset-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.cp-tk-asset-sym { color: rgba(255,255,255,0.55); font-size: 11px; font-weight: 800; letter-spacing: 0.5px; }
+.cp-tk-asset-n { color: rgba(255,255,255,0.25); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.cp-tk-badge {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 10px; font-weight: 800; letter-spacing: 0.5px;
+    padding: 4px 10px; border-radius: 20px; flex-shrink: 0;
+}
+.cp-tk-badge-w { background: rgba(74,222,128,0.1);  border: 1px solid rgba(74,222,128,0.25);  color: #4ade80; }
+.cp-tk-badge-l { background: rgba(241,87,87,0.1);   border: 1px solid rgba(241,87,87,0.25);   color: #f87171; }
+
+/* Title row — sama seperti cp-tk-title di halaman Coin */
+.cp-tk-title { color: #fff; font-size: 15px; font-weight: 800; line-height: 1.3; margin-bottom: 14px; }
+
+/* Price gauge */
+.cp-tk-gauge {
+    display: flex; align-items: center; gap: 10px;
+}
+.cp-tk-gauge-pt { flex-shrink: 0; }
+.cp-tk-gauge-pt.right { text-align: right; }
+.cp-tk-gauge-lbl {
+    font-size: 9px; font-weight: 800; letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.25); margin-bottom: 4px;
+}
+.cp-tk-gauge-val {
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.cp-tk-gauge-track {
+    flex: 1; position: relative; height: 2px;
+    background: rgba(255,255,255,0.08); border-radius: 2px;
+    min-width: 30px;
+}
+.cp-tk-gauge-line {
+    position: absolute; inset: 0; border-radius: 2px;
+    background: rgba(255,255,255,0.15);
+}
+.cp-tk-gauge-line.up   { background: linear-gradient(90deg, rgba(74,222,128,0.15), #4ade80); }
+.cp-tk-gauge-line.down { background: linear-gradient(90deg, rgba(248,113,113,0.15), #f87171); }
+.cp-tk-gauge-chev {
+    position: absolute; right: -3px; top: 50%; transform: translateY(-50%);
+    font-size: 11px; color: rgba(255,255,255,0.2);
+}
+.cp-tk-gauge-chev.up   { color: #4ade80; }
+.cp-tk-gauge-chev.down { color: #f87171; }
+
+/* Perforated divider */
+.cp-tk-perf {
+    border-top: 1px dashed rgba(255,255,255,0.1);
+    margin: 16px -16px 12px;
+}
+
+/* Stat grid */
+.cp-tk-stats {
+    display: flex; align-items: center;
+    margin-bottom: 12px;
+}
+.cp-tk-stat { flex: 1; text-align: center; }
+.cp-tk-stat-k {
+    font-size: 9px; font-weight: 800; letter-spacing: 1.2px;
+    color: rgba(255,255,255,0.25); margin-bottom: 5px;
+}
+.cp-tk-stat-v {
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.cp-tk-stat-vr { width: 1px; height: 26px; background: rgba(255,255,255,0.06); }
+
+/* Meta footer */
+.cp-tk-meta {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
+    padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.04);
+}
+.cp-tk-meta-time {
+    display: flex; align-items: center; gap: 5px;
+    color: rgba(255,255,255,0.3); font-size: 11px;
+}
+.cp-tk-meta-dir {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 800; letter-spacing: 0.5px;
+}
+.cp-val-g { color: #4ade80; }
+.cp-val-r { color: #f87171; }
+
+/* Void state for empty historical orders */
+.cp-void { padding: 60px 20px; text-align: center; }
+.cp-void-hex {
+    width: 60px; height: 60px;
+    border: 1px dashed rgba(255,255,255,0.1);
+    border-radius: 14px; rotate: 45deg;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px; font-size: 22px; color: rgba(255,255,255,0.15);
+}
+.cp-void-hex i { rotate: -45deg; }
+.cp-void-text { color: rgba(255,255,255,0.3); font-size: 13px; font-weight: 600; margin-bottom: 5px; }
 
 /* ── Signals ── */
 .ex-signals-wrap { padding: 10px 12px 6px; }
@@ -905,6 +1101,17 @@ function updatePayout() {
     if (tEl)   tEl.textContent = amt > 0 ? `$${total}` : '—';
 }
 
+/* ─ Expiry window display (visual only) ─ */
+function updateExpiryWindow() {
+    const el = document.getElementById('expiryWindow');
+    if (!el) return;
+    const now = new Date();
+    const start = new Date(now.getTime() + (60 - now.getSeconds() % 60) * 1000);
+    const end = new Date(start.getTime() + 60000);
+    const fmt = d => String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+    el.textContent = fmt(start) + ' - ' + fmt(end);
+}
+
 /* ─ Open trade ─ */
 async function openTrade(direction) {
     const amount = parseFloat(amtInput()?.value);
@@ -1021,7 +1228,7 @@ function showResult(result) {
     document.getElementById('resultAmount').className   = 'ex-result-amt ' + (win ? 'c-buy' : 'c-sell');
     document.getElementById('resultDetail').textContent = `Entry $${formatPrice(result.entry_price)} → Close $${formatPrice(result.close_price)}`;
     document.getElementById('resultBalance').textContent = '$' + parseFloat(result.new_balance).toFixed(2);
-    document.getElementById('tradeBalance').textContent  = '$' + parseFloat(result.new_balance).toFixed(2);
+    document.getElementById('tradeBalance').textContent  = parseFloat(result.new_balance).toFixed(2);
     tradeBalance = parseFloat(result.new_balance);
     document.getElementById('resultOverlay').style.display = 'flex';
 }
@@ -1030,6 +1237,21 @@ function dismissResult() {
     window.location.reload();
 }
 
+/* ─ Tabs (delivery order / historical orders / invite me) ─ */
+document.addEventListener('click', e => {
+    const tab = e.target.closest('.ex-tab');
+    if (!tab) return;
+    document.querySelectorAll('.ex-tab').forEach(t => t.classList.remove('is-active'));
+    tab.classList.add('is-active');
+    const name = tab.dataset.tab;
+    const deliveryPanel   = document.getElementById('tab-panel-delivery');
+    const historicalPanel = document.getElementById('tab-panel-historical');
+    const invitePanel     = document.getElementById('tab-panel-invite');
+    if (deliveryPanel)   deliveryPanel.style.display   = (name === 'delivery')   ? '' : 'none';
+    if (historicalPanel) historicalPanel.style.display = (name === 'historical') ? '' : 'none';
+    if (invitePanel)     invitePanel.style.display     = (name === 'invite')     ? '' : 'none';
+});
+
 /* ─ Boot ─ */
 document.addEventListener('DOMContentLoaded', () => {
     fetchPrice();
@@ -1037,6 +1259,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (activeTrade) startTimer();
     // Init slider fill
     sliderEl()?.dispatchEvent(new Event('input'));
+    updateExpiryWindow();
+    setInterval(updateExpiryWindow, 1000);
 });
 document.addEventListener('visibilitychange', () => {
     if (document.hidden) { clearInterval(priceInterval); }

@@ -14,20 +14,23 @@
         </span>
     </div>
 
-    {{-- ═══ FILTER TABS ═══ --}}
+    {{-- ═══ FILTER TABS (Digital / Forex / Precious) ═══ --}}
     <div class="mfilter-wrap">
-        <button class="mfilter-tab active" data-filter="all">
-            <i class="bi bi-fire"></i> {{ __('app.hot') }}
-        </button>
-        <button class="mfilter-tab" data-filter="crypto">
-            <i class="bi bi-currency-bitcoin"></i> {{ __('app.crypto') }}
-        </button>
-        <button class="mfilter-tab" data-filter="forex">
-            <i class="bi bi-currency-exchange"></i> {{ __('app.forex') }}
-        </button>
-        <button class="mfilter-tab" data-filter="precious">
-            <i class="bi bi-gem"></i> {{ __('app.metals') }}
-        </button>
+        <div class="mfilter-track">
+            <button class="mfilter-tab active" data-filter="crypto">
+                <i class="bi bi-currency-bitcoin"></i>
+                <span>{{ __('app.digital') ?? 'Digital' }}</span>
+            </button>
+            <button class="mfilter-tab" data-filter="forex">
+                <i class="bi bi-currency-exchange"></i>
+                <span>{{ __('app.forex') }}</span>
+            </button>
+            <button class="mfilter-tab" data-filter="precious">
+                <i class="bi bi-gem"></i>
+                <span>{{ __('app.precious') ?? 'Precious' }}</span>
+            </button>
+            <div class="mfilter-glider" id="mfilterGlider"></div>
+        </div>
     </div>
 
     {{-- ═══ TABLE HEADER ═══ --}}
@@ -38,7 +41,7 @@
     </div>
 
     <div class="mlist-body">
-    {{-- ═══ CRYPTO ═══ --}}
+    {{-- ═══ CRYPTO (Digital) ═══ --}}
     @foreach ($coinsByCategory['crypto'] as $coin)
         @php
             $priceData = $allPrices[$coin['symbol']] ?? ['price' => '0.00', 'change' => '0.00', 'isPositive' => true];
@@ -66,7 +69,7 @@
             $base = preg_replace('/USD(T)?$/', '', $coin['symbol']);
         @endphp
         <a href="{{ route('member.invest.coin', ['coin' => strtolower($coin['symbol'])]) }}"
-           class="mlist-row" data-symbol="{{ $coin['symbol'] }}" data-category="forex">
+           class="mlist-row" data-symbol="{{ $coin['symbol'] }}" data-category="forex" style="display:none;">
             <div class="mlist-coin">
                 <div>
                     <div class="mlist-symbol">{{ $base }}<span class="mlist-quote">/USD</span></div>
@@ -87,7 +90,7 @@
             $base = str_replace('USD', '', $coin['symbol']);
         @endphp
         <a href="{{ route('member.invest.coin', ['coin' => strtolower($coin['symbol'])]) }}"
-           class="mlist-row" data-symbol="{{ $coin['symbol'] }}" data-category="precious">
+           class="mlist-row" data-symbol="{{ $coin['symbol'] }}" data-category="precious" style="display:none;">
             <div class="mlist-coin">
                 <div>
                     <div class="mlist-symbol">{{ $base }}<span class="mlist-quote">/USD</span></div>
@@ -156,45 +159,58 @@
     50%       { opacity: 0.3; transform: scale(0.7); }
 }
 
-/* ── FILTER TABS ── */
+/* ── FILTER TABS (segmented pill, 3 items: Digital / Forex / Precious) ── */
 .mfilter-wrap {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding: 14px 20px;
-    scrollbar-width: none;
+    padding: 16px 20px;
     background: #070e1a;
     border-bottom: 1px solid rgba(255,255,255,0.06);
 }
-.mfilter-wrap::-webkit-scrollbar { display: none; }
+.mfilter-track {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    padding: 4px;
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+}
+.mfilter-glider {
+    position: absolute;
+    top: 4px; bottom: 4px;
+    left: 4px;
+    width: calc(33.333% - 4px);
+    background: linear-gradient(135deg, rgba(59,130,246,0.22), rgba(96,165,250,0.14));
+    border: 1px solid rgba(96,165,250,0.4);
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(59,130,246,0.18), inset 0 1px 0 rgba(255,255,255,0.06);
+    transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+    z-index: 0;
+    pointer-events: none;
+}
 .mfilter-tab {
-    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
-    gap: 5px;
-    padding: 7px 14px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 8px;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 8px;
+    background: none;
+    border: none;
+    border-radius: 10px;
     color: rgba(255,255,255,0.4);
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 12.5px;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: color 0.2s;
     white-space: nowrap;
     letter-spacing: 0.2px;
 }
-.mfilter-tab:hover {
-    background: rgba(59,130,246,0.08);
-    border-color: rgba(59,130,246,0.2);
-    color: #fff;
-}
-.mfilter-tab.active {
-    background: rgba(59,130,246,0.15);
-    border-color: rgba(59,130,246,0.4);
-    color: #60a5fa;
-}
-.mfilter-tab i { font-size: 12px; }
+.mfilter-tab i { font-size: 13px; transition: transform 0.25s ease; }
+.mfilter-tab:hover { color: rgba(255,255,255,0.75); }
+.mfilter-tab.active { color: #fff; }
+.mfilter-tab.active i { color: #60a5fa; transform: scale(1.1); }
 
 /* ── TABLE HEADER ── */
 .mlist-header {
@@ -297,6 +313,14 @@
     100% { color: #fff; }
 }
 .price-updated { animation: priceFlash 0.6s ease; }
+
+/* ── EMPTY STATE ── */
+.mlist-empty {
+    text-align: center;
+    padding: 50px 20px;
+    color: rgba(255,255,255,0.25);
+    font-size: 12.5px;
+}
 </style>
 @endpush
 
@@ -304,17 +328,35 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    // ── Filter Tabs ──
-    document.querySelectorAll('.mfilter-tab').forEach(btn => {
+    // ── Filter Tabs (segmented, 3 items, glider follows active tab) ──
+    const tabs   = Array.from(document.querySelectorAll('.mfilter-tab'));
+    const glider = document.getElementById('mfilterGlider');
+
+    function moveGlider(tab) {
+        if (!glider || !tab) return;
+        glider.style.transform = `translateX(${tab.offsetLeft - 4}px)`;
+    }
+
+    function applyFilter(filter) {
+        document.querySelectorAll('.mlist-row').forEach(row => {
+            row.style.display = (row.dataset.category === filter) ? '' : 'none';
+        });
+    }
+
+    tabs.forEach(btn => {
         btn.addEventListener('click', function () {
-            document.querySelectorAll('.mfilter-tab').forEach(b => b.classList.remove('active'));
+            tabs.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            const filter = this.dataset.filter;
-            document.querySelectorAll('.mlist-row').forEach(row => {
-                row.style.display = (filter === 'all' || row.dataset.category === filter) ? '' : 'none';
-            });
+            moveGlider(this);
+            applyFilter(this.dataset.filter);
         });
     });
+
+    // Init: position glider under default active tab and apply its filter
+    const initialTab = document.querySelector('.mfilter-tab.active') || tabs[0];
+    requestAnimationFrame(() => moveGlider(initialTab));
+    window.addEventListener('resize', () => moveGlider(document.querySelector('.mfilter-tab.active')));
+    if (initialTab) applyFilter(initialTab.dataset.filter);
 
     // ── Real-time Price Updates ──
     const CONFIG = {

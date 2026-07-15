@@ -484,6 +484,15 @@ return [
     'no_wallet_suffix' => '',
     'minimum_withdrawal_50' => 'Minimum penarikan adalah 50 USDT',
 
+    'delivery_order' => 'order pengiriman',
+'historical_orders' => 'riwayat order',
+
+
+'invite_me' => 'Invite Me',
+
+'digital'  => 'Digital',
+'precious' => 'Precious',
+
 
     'active_signal' => 'sinyal aktif',
 'no_active_signal' => 'Belum ada sinyal aktif',

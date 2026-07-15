@@ -480,6 +480,13 @@ return [
     'nav_access' => 'Validation',
     'nav_wallet' => 'Wallet',
     
+    'delivery_order' => 'delivery order',
+'historical_orders' => 'historical orders',
+
+'invite_me' => 'Invite Me',
+'digital'  => 'Digital',
+'precious' => 'Precious',
+
 
     'active_signal' => 'active signal',
 'no_active_signal' => 'No active signal',
