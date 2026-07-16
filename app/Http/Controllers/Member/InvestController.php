@@ -81,47 +81,30 @@ class InvestController extends Controller
         $tab = $request->query('tab', 'signals');
 
         // ========================================
-        // TAB 2: Historical Orders untuk coin ini
+        // TAB 2: Historical Orders — SEMUA COIN
+        // (tidak lagi difilter berdasarkan coin yang sedang dipilih)
         // ========================================
         $historyForThisCoin = SignalParticipant::where('user_id', $user->id)
-            ->whereHas('signal', function ($q) use ($coin) {
-                $q->where('coin', $coin);
-            })
             ->with('signal')
             ->orderBy('joined_at', 'desc')
             ->paginate(10);
 
         $totalJoinedThisCoin = SignalParticipant::where('user_id', $user->id)
-            ->whereHas('signal', function ($q) use ($coin) {
-                $q->where('coin', $coin);
-            })
             ->count();
 
         $totalSettledThisCoin = SignalParticipant::where('user_id', $user->id)
-            ->whereHas('signal', function ($q) use ($coin) {
-                $q->where('coin', $coin);
-            })
             ->settled()
             ->count();
 
         $totalProfitLossThisCoin = SignalParticipant::where('user_id', $user->id)
-            ->whereHas('signal', function ($q) use ($coin) {
-                $q->where('coin', $coin);
-            })
             ->settled()
             ->sum('profit_loss');
 
         $totalFeesThisCoin = SignalParticipant::where('user_id', $user->id)
-            ->whereHas('signal', function ($q) use ($coin) {
-                $q->where('coin', $coin);
-            })
             ->settled()
             ->sum('fee_amount');
 
         $totalWinsThisCoin = SignalParticipant::where('user_id', $user->id)
-            ->whereHas('signal', function ($q) use ($coin) {
-                $q->where('coin', $coin);
-            })
             ->settled()
             ->where('profit_loss', '>', 0)
             ->count();

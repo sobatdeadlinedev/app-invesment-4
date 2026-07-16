@@ -232,42 +232,74 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; wid
         <div style="height:120px;"></div>
     </div>
 
-    {{-- ═══ INVITE ME (Expert Signals / Invitation) ═══ --}}
-   @php
-    // Kalau ada signal aktif, arahkan ke coin milik signal itu.
-    // Kalau tidak ada signal aktif, fallback ke coin yang lagi dibuka di chart.
+   {{-- ═══ INVITE ME (Expert Signals / Invitation) ═══ --}}
+@php
     $inviteTargetCoin = $latestSignal ? $latestSignal->coin : $coin;
     $coinSlug = strtolower(str_replace(['USDT','USD'], '', $inviteTargetCoin));
+    $inviteCoinInfo = $latestSignal ? $latestSignal->getCoinInfo() : null;
 @endphp
 <div class="ex-signals-wrap" id="tab-panel-invite" style="display:none;">
-    <a href="{{ route('member.invest.coin', ['coin' => $coinSlug]) }}" class="ex-signals-card">
-            <div class="ex-signals-ico">
-                <i class="bi bi-broadcast-pin"></i>
+
+    @if($latestSignal)
+    <div class="sg-card">
+        <div class="sg-card-hd">
+            <div class="sg-card-hd-ico" style="background:{{ ($inviteCoinInfo['color'] ?? '#1890ff') }}22;border:1px solid {{ ($inviteCoinInfo['color'] ?? '#1890ff') }}55;">
+                <i class="{{ $inviteCoinInfo['icon'] ?? 'bi bi-broadcast-pin' }}" style="color:{{ $inviteCoinInfo['color'] ?? '#1890ff' }};"></i>
             </div>
-            <div class="ex-signals-text">
-                <div class="ex-signals-title">{{ __('app.expert_signals') }}</div>
-                @if($openSignalCount > 0 && $latestSignal)
-                <div class="ex-signals-notif">
-                    <span class="ex-signals-notif-dot"></span>
-                    <span class="ex-signals-notif-txt">{{ $openSignalCount }} {{ __('app.active_signal') ?? 'sinyal aktif' }}</span>
+            <div class="sg-card-hd-txt">
+                <div class="sg-card-title">{{ __('app.expert_signals') }}</div>
+                @if($openSignalCount > 0)
+                <div class="sg-card-badge">
+                    <span class="sg-badge-dot"></span>
+                    {{ $openSignalCount }} {{ __('app.active_signal') ?? 'sinyal aktif' }}
                 </div>
-                @else
-                <div class="ex-signals-sub">{{ __('app.no_active_signal') ?? 'Belum ada sinyal aktif' }}</div>
                 @endif
             </div>
-            <i class="bi bi-chevron-right ex-signals-arrow"></i>
-        </a>
-        <div style="height:120px;"></div>
-    </div>
+            <span class="sg-status sg-status--{{ $latestSignal->status }}">{{ strtoupper($latestSignal->status) }}</span>
+        </div>
 
-    {{-- ═══ HISTORICAL ORDERS (trade ticket style — sama seperti tampilan Coin) ═══ --}}
+        <div class="sg-rows">
+            <div class="sg-row">
+                <span class="sg-row-k">{{ __('app.title') ?? 'Title' }}</span>
+                <span class="sg-row-v">{{ $latestSignal->title }}</span>
+            </div>
+            <div class="sg-row">
+                <span class="sg-row-k">{{ __('app.trading_pair') ?? 'Trading pair' }}</span>
+                <span class="sg-row-v">{{ $inviteCoinInfo['symbol'] ?? $latestSignal->coin }}</span>
+            </div>
+            <div class="sg-row">
+                <span class="sg-row-k">{{ __('app.release_time') ?? 'Release time' }}</span>
+                <span class="sg-row-v">{{ optional($latestSignal->opened_at ?? $latestSignal->created_at)->format('d/m/Y, H:i:s') }}</span>
+            </div>
+            <div class="sg-row">
+                <span class="sg-row-k">{{ __('app.order_amount') ?? 'Order amount' }}</span>
+                <span class="sg-row-v">{{ $latestSignal->bet_display }}</span>
+            </div>
+        </div>
+
+        <a href="{{ route('member.invest.coin', ['coin' => $coinSlug]) }}" class="sg-cta">
+            {{ __('app.confirm_follow_order') ?? 'Confirm to follow the order' }}
+        </a>
+    </div>
+    @else
+    <div class="cp-void">
+        <div class="cp-void-hex"><i class="bi bi-broadcast-pin"></i></div>
+        <div class="cp-void-text">{{ __('app.no_active_signal') ?? 'Belum ada sinyal aktif' }}</div>
+    </div>
+    @endif
+
+    <div style="height:120px;"></div>
+</div>
+
+    {{-- ═══ HISTORICAL ORDERS (gabungan Futures + Signal, semua coin — sama seperti tampilan Coin) ═══ --}}
     <div id="tab-panel-historical" style="display:none;">
 
         @php
-            $ftTotal    = $recentTrades->count();
-            $ftWins     = $recentTrades->where('result', 'win')->count();
-            $ftWinRate  = $ftTotal > 0 ? ($ftWins / $ftTotal) * 100 : 0;
-            $ftPnl      = $recentTrades->sum('profit_loss');
+            $ftTotal    = $recentTrades->total();
+            $ftWins     = $recentTrades->getCollection()->where('is_win', true)->count();
+            $ftSettled  = $recentTrades->getCollection()->where('is_pending', false)->count();
+            $ftWinRate  = $ftSettled > 0 ? ($ftWins / $ftSettled) * 100 : 0;
+            $ftPnl      = $recentTrades->getCollection()->where('is_pending', false)->sum('net_result');
         @endphp
 
         @if($ftTotal > 0)
@@ -296,31 +328,30 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; wid
 
         @forelse ($recentTrades as $t)
         @php
-            $ftIsWin   = $t->result === 'win';
-            $ftSym     = isset($coins[$t->coin]) ? $coins[$t->coin] : null;
-            $ftColor   = $ftSym['color'] ?? '#1890ff';
-            $ftEntry   = $t->entry_price;
-            $ftClose   = $t->close_price;
-            $ftMoved   = ($ftEntry !== null && $ftClose !== null) ? ($ftClose - $ftEntry) : null;
+            $stateKey   = $t->is_pending ? 'p' : ($t->is_win ? 'w' : 'l');
+            $ftEntry    = $t->entry_price;
+            $ftClose    = $t->close_price;
+            $ftMoved    = ($ftEntry !== null && $ftClose !== null) ? ($ftClose - $ftEntry) : null;
+            $direction  = strtolower($t->direction ?? '');
         @endphp
-        <div class="cp-tk {{ $ftIsWin ? 'cp-tk-w' : 'cp-tk-l' }}">
+        <div class="cp-tk cp-tk-{{ $stateKey }}">
             <div class="cp-tk-head">
                 <div class="cp-tk-asset">
-                    <span class="cp-tk-asset-dot" style="background:{{ $ftColor }};box-shadow:0 0 6px {{ $ftColor }};"></span>
-                    <span class="cp-tk-asset-sym">{{ $ftSym['symbol'] ?? $t->coin }}</span>
-                    <span class="cp-tk-asset-n">{{ $ftSym['name'] ?? '' }}</span>
+                    <span class="cp-tk-asset-dot" style="background:{{ $t->coin_color }};box-shadow:0 0 6px {{ $t->coin_color }};"></span>
+                    <span class="cp-tk-asset-sym">{{ $t->coin_symbol }}</span>
+                    <span class="cp-tk-asset-n">{{ $t->coin_name }}</span>
                 </div>
-                <div class="cp-tk-badge {{ $ftIsWin ? 'cp-tk-badge-w' : 'cp-tk-badge-l' }}">
-                    @if($ftIsWin) <i class="bi bi-check-circle-fill"></i> WIN
+                <div class="cp-tk-badge cp-tk-badge-{{ $stateKey }}">
+                    @if($t->is_pending) <i class="bi bi-hourglass-split"></i> PENDING
+                    @elseif($t->is_win) <i class="bi bi-check-circle-fill"></i> WIN
                     @else <i class="bi bi-x-circle-fill"></i> LOSS
                     @endif
                 </div>
             </div>
 
-            {{-- Title row: disamakan posisi & style dengan cp-tk-title di halaman Coin --}}
-            <div class="cp-tk-title">{{ $ftSym['symbol'] ?? $t->coin }} Futures</div>
+            <div class="cp-tk-title">{{ $t->title }}</div>
 
-            {{-- Price gauge: Entry -> Close --}}
+            {{-- Price gauge: Entry -> Close/Target --}}
             <div class="cp-tk-gauge">
                 <div class="cp-tk-gauge-pt">
                     <div class="cp-tk-gauge-lbl">ENTRY</div>
@@ -340,31 +371,37 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; wid
             <div class="cp-tk-stats">
                 <div class="cp-tk-stat">
                     <div class="cp-tk-stat-k">BET</div>
-                    <div class="cp-tk-stat-v">{{ number_format($t->amount, 2) }}</div>
+                    <div class="cp-tk-stat-v">{{ number_format($t->bet_amount, 2) }}</div>
                 </div>
                 <div class="cp-tk-stat-vr"></div>
                 <div class="cp-tk-stat">
                     <div class="cp-tk-stat-k">PROFIT/LOSS</div>
-                    <div class="cp-tk-stat-v {{ $ftIsWin ? 'cp-val-g' : 'cp-val-r' }}">{{ $ftIsWin ? '+' : '' }}{{ number_format($t->profit_loss, 2) }}</div>
+                    <div class="cp-tk-stat-v {{ $t->is_pending ? '' : ($t->net_result >= 0 ? 'cp-val-g' : 'cp-val-r') }}">
+                        @if($t->is_pending) ~
+                        @else {{ ($t->net_result >= 0 ? '+' : '') . number_format($t->net_result, 2) }}
+                        @endif
+                    </div>
                 </div>
                 <div class="cp-tk-stat-vr"></div>
                 <div class="cp-tk-stat">
                     <div class="cp-tk-stat-k">RATE</div>
-                    <div class="cp-tk-stat-v">{{ $t->amount > 0 ? number_format(abs($t->profit_loss) / $t->amount * 100, 1) . '%' : '--' }}</div>
+                    <div class="cp-tk-stat-v">{{ $t->rate !== null ? number_format($t->rate, 1) . '%' : '--' }}</div>
                 </div>
             </div>
 
-            {{-- Meta footer: waktu ditampilkan sebagai rentang opened_at - closed_at, sama seperti Coin --}}
+            {{-- Meta footer --}}
             <div class="cp-tk-meta">
                 <span class="cp-tk-meta-time">
                     <i class="bi bi-clock-history"></i>
-                    {{ $t->opened_at ? $t->opened_at->format('d M · H:i') : '--' }}
+                    {{ $t->opened_at ? \Illuminate\Support\Carbon::parse($t->opened_at)->format('d M · H:i') : '--' }}
                     –
-                    {{ $t->closed_at ? $t->closed_at->format('H:i') : '~' }}
+                    {{ $t->closed_at ? \Illuminate\Support\Carbon::parse($t->closed_at)->format('H:i') : '~' }}
                 </span>
-                <span class="cp-tk-meta-dir {{ $t->direction === 'call' ? 'cp-val-g' : 'cp-val-r' }}">
-                    @if($t->direction === 'call') <i class="bi bi-graph-up-arrow"></i> CALL
-                    @else <i class="bi bi-graph-down-arrow"></i> PUT
+                <span class="cp-tk-meta-dir {{ $direction === 'call' ? 'cp-val-g' : ($direction === 'put' ? 'cp-val-r' : '') }}">
+                    @if($t->is_pending) —
+                    @elseif($direction === 'call') <i class="bi bi-graph-up-arrow"></i> CALL
+                    @elseif($direction === 'put') <i class="bi bi-graph-down-arrow"></i> PUT
+                    @else N/A
                     @endif
                 </span>
             </div>
@@ -375,6 +412,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; wid
             <div class="cp-void-text">{{ __('app.no_trades_yet') }}</div>
         </div>
         @endforelse
+
+        @if($recentTrades->hasPages())
+        <div class="cp-pages">{{ $recentTrades->links() }}</div>
+        @endif
+
+        <div style="height:40px;"></div>
     </div>
 
 </div>
@@ -613,6 +656,64 @@ body::-webkit-scrollbar { display: none !important; width: 0 !important; }
     padding: 14px 12px 10px;
 }
 
+
+/* ── Signal detail card (invite me) ── */
+.sg-card {
+    margin: 10px 12px 0;
+    background: linear-gradient(160deg, #0d1526 0%, #080f1d 100%);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 16px;
+}
+.sg-card-hd {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px;
+}
+.sg-card-hd-ico {
+    width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+}
+.sg-card-hd-ico i { font-size: 15px; }
+.sg-card-hd-txt { flex: 1; min-width: 0; }
+.sg-card-title { color: #fff; font-size: 13px; font-weight: 700; }
+.sg-card-badge { display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+.sg-badge-dot {
+    width: 5px; height: 5px; background: #0ecb81; border-radius: 50%;
+    animation: blink 1.4s ease-in-out infinite;
+}
+.sg-card-badge { color: #0ecb81; font-size: 11px; font-weight: 500; }
+.sg-status {
+    font-size: 9px; font-weight: 800; letter-spacing: .5px;
+    padding: 3px 8px; border-radius: 20px; flex-shrink: 0;
+}
+.sg-status--open    { background: rgba(14,203,129,.1); border: 1px solid rgba(14,203,129,.25); color: #0ecb81; }
+.sg-status--closed   { background: rgba(240,185,11,.1); border: 1px solid rgba(240,185,11,.25); color: #f0b90b; }
+.sg-status--settled  { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.5); }
+
+.sg-rows {
+    border-top: 1px dashed rgba(255,255,255,0.1);
+    padding-top: 12px;
+}
+.sg-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.sg-row:last-child { border-bottom: none; }
+.sg-row-k { color: rgba(255,255,255,0.4); font-size: 12px; }
+.sg-row-v { color: #fff; font-size: 12px; font-weight: 600; text-align: right; }
+
+.sg-cta {
+    display: block; text-align: center;
+    margin-top: 16px;
+    padding: 13px;
+    background: linear-gradient(160deg, #1890ff 0%, #0e6dd6 100%);
+    color: #fff; font-size: 13px; font-weight: 700;
+    border-radius: 24px; text-decoration: none;
+    transition: filter .15s;
+}
+.sg-cta:hover { filter: brightness(1.1); color: #fff; }
+
 /* Duration / expiry meta row */
 .ex-meta-row {
     display: flex; gap: 8px;
@@ -771,6 +872,7 @@ body::-webkit-scrollbar { display: none !important; width: 0 !important; }
 }
 .cp-tk-w { box-shadow: inset 3px 0 0 #4ade80; }
 .cp-tk-l { box-shadow: inset 3px 0 0 #f87171; }
+.cp-tk-p { box-shadow: inset 3px 0 0 #fbbf24; }
 
 .cp-tk-head {
     display: flex; align-items: center; justify-content: space-between;
@@ -788,6 +890,7 @@ body::-webkit-scrollbar { display: none !important; width: 0 !important; }
 }
 .cp-tk-badge-w { background: rgba(74,222,128,0.1);  border: 1px solid rgba(74,222,128,0.25);  color: #4ade80; }
 .cp-tk-badge-l { background: rgba(241,87,87,0.1);   border: 1px solid rgba(241,87,87,0.25);   color: #f87171; }
+.cp-tk-badge-p { background: rgba(251,191,36,0.1);  border: 1px solid rgba(251,191,36,0.25);  color: #fbbf24; }
 
 /* Title row — sama seperti cp-tk-title di halaman Coin */
 .cp-tk-title { color: #fff; font-size: 15px; font-weight: 800; line-height: 1.3; margin-bottom: 14px; }
@@ -877,6 +980,9 @@ body::-webkit-scrollbar { display: none !important; width: 0 !important; }
 .cp-void-hex i { rotate: -45deg; }
 .cp-void-text { color: rgba(255,255,255,0.3); font-size: 13px; font-weight: 600; margin-bottom: 5px; }
 
+/* Pagination wrapper */
+.cp-pages { padding: 14px; }
+
 /* ── Signals ── */
 .ex-signals-wrap { padding: 10px 12px 6px; }
 .ex-signals-card {
@@ -912,56 +1018,6 @@ body::-webkit-scrollbar { display: none !important; width: 0 !important; }
 .ex-signals-notif-txt { color: var(--buy); font-size: 11px; font-weight: 500; }
 
 .ex-signals-arrow { color: var(--t3); font-size: 14px; flex-shrink: 0; }
-
-/* ── History ── */
-.ex-hist-hd {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 14px 6px;
-}
-.ex-hist-title { color: var(--t2); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; }
-.ex-hist-count { color: var(--t3); font-size: 10px; }
-.ex-hist-list {
-    margin: 0 12px 80px;
-    background: var(--panel); border: 1px solid var(--bd);
-    border-radius: var(--r); overflow: hidden;
-}
-.ex-hist-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 12px 10px 0;
-    border-bottom: 1px solid rgba(255,255,255,.03);
-    position: relative;
-}
-.ex-hist-item:last-child { border-bottom: none; }
-.ex-hist-accent {
-    width: 2px; height: 100%; position: absolute; left: 0; top: 0;
-}
-.ex-hist-accent.call { background: var(--buy); }
-.ex-hist-accent.put  { background: var(--sell); }
-.ex-hist-ico {
-    width: 30px; height: 30px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 19px; flex-shrink: 0; margin-left: 10px;
-}
-.ex-hist-ico.win  { background: rgba(14,203,129,.08); color: var(--buy); }
-.ex-hist-ico.lose { background: rgba(246,70,93,.08);  color: var(--sell); }
-.ex-hist-body { flex: 1; min-width: 0; }
-.ex-hist-r1 { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
-.ex-hist-sym { color: var(--t1); font-size: 12px; font-weight: 600; }
-.ex-hist-dir {
-    font-size: 9px; font-weight: 700; padding: 1px 5px;
-    border-radius: 3px; text-transform: uppercase;
-}
-.ex-hist-dir.call { background: rgba(14,203,129,.1); color: var(--buy); }
-.ex-hist-dir.put  { background: rgba(246,70,93,.08); color: var(--sell); }
-.ex-hist-prices { color: var(--t2); font-size: 10px; font-variant-numeric: tabular-nums; }
-.ex-hist-rhs { text-align: right; flex-shrink: 0; }
-.ex-hist-pnl { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; margin-bottom: 2px; }
-.ex-hist-pnl.win  { color: var(--buy); }
-.ex-hist-pnl.lose { color: var(--sell); }
-.ex-hist-date { color: var(--t3); font-size: 10px; }
-.ex-hist-empty { padding: 30px; text-align: center; color: var(--t3); }
-.ex-hist-empty i { font-size: 24px; display: block; margin-bottom: 8px; }
-.ex-hist-empty p { margin: 0; font-size: 12px; }
 
 /* ── Result popup ── */
 .ex-result-mask {

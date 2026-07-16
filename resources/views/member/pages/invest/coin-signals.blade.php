@@ -197,7 +197,7 @@
         @endforelse
     </div>
 
-    {{-- HISTORY PANEL --}}
+    {{-- HISTORY PANEL (semua coin) --}}
     <div class="cp-panel" id="tab-history" style="display:none;">
 
         @if($totalJoinedThisCoin > 0)
@@ -238,15 +238,19 @@
             $closePrice  = $signal->target_price ?? null;
             $priceMoved  = ($openPrice !== null && $closePrice !== null) ? ($closePrice - $openPrice) : null;
             $priceUpPct  = ($priceMoved !== null && $openPrice > 0) ? ($priceMoved / $openPrice) * 100 : null;
+
+            // Riwayat sekarang lintas coin — ambil info coin dari signal tiap baris,
+            // bukan dari coin yang sedang aktif dipilih di popup ($coinInfo).
+            $rowCoinInfo = $allCoins[$signal->coin] ?? $coinInfo;
         @endphp
 
         <div class="cp-tk cp-tk-{{ $stateKey }}">
             {{-- Head: asset + status --}}
             <div class="cp-tk-head">
                 <div class="cp-tk-asset">
-                    <span class="cp-tk-asset-dot" style="background:{{ $coinInfo['color'] }};box-shadow:0 0 6px {{ $coinInfo['color'] }};"></span>
-                    <span class="cp-tk-asset-sym">{{ $coinInfo['symbol'] }}</span>
-                    <span class="cp-tk-asset-n">{{ $coinInfo['name'] }}</span>
+                    <span class="cp-tk-asset-dot" style="background:{{ $rowCoinInfo['color'] }};box-shadow:0 0 6px {{ $rowCoinInfo['color'] }};"></span>
+                    <span class="cp-tk-asset-sym">{{ $rowCoinInfo['symbol'] }}</span>
+                    <span class="cp-tk-asset-n">{{ $rowCoinInfo['name'] }}</span>
                 </div>
                 <div class="cp-tk-badge cp-tk-badge-{{ $stateKey }}">
                     @if($isPending) <i class="bi bi-hourglass-split"></i> PENDING
@@ -319,7 +323,7 @@
         @empty
         <div class="cp-void">
             <div class="cp-void-hex"><i class="bi bi-archive"></i></div>
-            <div class="cp-void-text">Belum ada riwayat order untuk {{ $coinInfo['name'] }}</div>
+            <div class="cp-void-text">Belum ada riwayat order</div>
             <div class="cp-void-sub">Ikuti sinyal untuk mulai</div>
         </div>
         @endforelse

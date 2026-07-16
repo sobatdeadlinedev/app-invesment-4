@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Member;
 
 use App\Models\FuturesTrade;
 use App\Models\TradingSignal;
+use App\Models\SignalParticipant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -56,11 +57,6 @@ class FuturesController extends Controller
         $user         = auth()->user();
         $coinInfo     = $coins[$coin];
         $openTrade    = FuturesTrade::where('user_id', $user->id)->open()->first();
-        $recentTrades = FuturesTrade::where('user_id', $user->id)
-            ->closed()
-            ->latest('closed_at')
-            ->limit(10)
-            ->get();
 
         $currentPrice = $this->cachedPrice($coin);
 
@@ -84,6 +80,84 @@ class FuturesController extends Controller
             ->accessibleBy($user->id)
             ->latest()
             ->first();
+
+        // ========================================
+        // TAB: Historical Orders — GABUNGAN
+        // Futures trades (60s call/put) + Signal participations
+        // (ikut sinyal expert), lintas semua coin, disatukan
+        // dalam satu daftar riwayat terurut waktu terbaru.
+        // ========================================
+        $futuresHistory = FuturesTrade::where('user_id', $user->id)
+            ->closed()
+            ->get()
+            ->map(function ($t) use ($coins) {
+                $sym   = $coins[$t->coin] ?? null;
+                $isWin = $t->result === 'win';
+                return (object) [
+                    'source'      => 'futures',
+                    'sort_time'   => $t->closed_at,
+                    'coin'        => $t->coin,
+                    'coin_symbol' => $sym['symbol'] ?? $t->coin,
+                    'coin_name'   => $sym['name'] ?? '',
+                    'coin_color'  => $sym['color'] ?? '#1890ff',
+                    'title'       => ($sym['symbol'] ?? $t->coin) . ' Futures',
+                    'is_win'      => $isWin,
+                    'is_pending'  => false,
+                    'entry_price' => $t->entry_price,
+                    'close_price' => $t->close_price,
+                    'bet_amount'  => $t->amount,
+                    'net_result'  => $t->profit_loss,
+                    'rate'        => $t->amount > 0 ? abs($t->profit_loss) / $t->amount * 100 : null,
+                    'opened_at'   => $t->opened_at,
+                    'closed_at'   => $t->closed_at,
+                    'direction'   => $t->direction,
+                ];
+            });
+
+        $signalHistory = SignalParticipant::where('user_id', $user->id)
+            ->with('signal')
+            ->get()
+            ->map(function ($p) use ($coins) {
+                $signal      = $p->signal;
+                $sym         = $coins[$signal->coin] ?? null;
+                $isPending   = $signal->status !== 'settled' || $signal->result === null;
+                $isWin       = $signal->result === 'win';
+                $netResult   = ($p->profit_loss ?? 0) - ($p->fee_amount ?? 0);
+                $adminChoice = strtolower($signal->admin_choice ?? '');
+                return (object) [
+                    'source'      => 'signal',
+                    'sort_time'   => $p->joined_at,
+                    'coin'        => $signal->coin,
+                    'coin_symbol' => $sym['symbol'] ?? $signal->coin,
+                    'coin_name'   => $sym['name'] ?? '',
+                    'coin_color'  => $sym['color'] ?? '#1890ff',
+                    'title'       => $signal->title,
+                    'is_win'      => $isWin,
+                    'is_pending'  => $isPending,
+                    'entry_price' => $signal->entry_price,
+                    'close_price' => $signal->target_price,
+                    'bet_amount'  => $p->bet_amount,
+                    'net_result'  => $netResult,
+                    'rate'        => ($signal->rate_of_return ?? 0) > 0 ? $signal->rate_of_return : null,
+                    'opened_at'   => $signal->opened_at,
+                    'closed_at'   => $signal->closed_at,
+                    'direction'   => $adminChoice,
+                ];
+            });
+
+        $allHistory = $futuresHistory->concat($signalHistory)
+            ->sortByDesc('sort_time')
+            ->values();
+
+        $page = (int) $request->query('history_page', 1);
+        $perPage = 10;
+        $recentTrades = new \Illuminate\Pagination\LengthAwarePaginator(
+            $allHistory->forPage($page, $perPage)->values(),
+            $allHistory->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'pageName' => 'history_page', 'query' => $request->query()]
+        );
 
         return view('member.pages.futures.index', compact(
             'coin', 'coinInfo', 'coins', 'currentPrice',
