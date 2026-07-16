@@ -337,37 +337,22 @@
 </div>
 </div>
 
-{{-- BOTTOM SHEET --}}
+{{-- CONFIRM MODAL --}}
 @if($unjoinedOpenSignal)
-<div class="cp-bs-bg" id="cp-bs-bg" onclick="cpBsClose()"></div>
-<div class="cp-bs" id="cp-bs">
-    <div class="cp-bs-pill"></div>
-    <div class="cp-bs-icon-row">
-        <div class="cp-bs-orb">
-            <div class="cp-bs-orb-r1"></div>
-            <div class="cp-bs-orb-r2"></div>
-            <i class="bi bi-reception-4"></i>
-        </div>
+<div class="cp-cm-bg" id="cp-bs-bg" onclick="cpBsClose()"></div>
+<div class="cp-cm" id="cp-bs">
+    <div class="cp-cm-hd">
+        <span>Confirm to follow the order</span>
+        <button onclick="cpBsClose()" class="cp-cm-x"><i class="bi bi-x-lg"></i></button>
     </div>
-    <div class="cp-bs-eyebrow">SINYAL BARU MASUK</div>
-    <div class="cp-bs-asset">{{ $coinInfo['symbol'] }} · {{ $coinInfo['name'] }}</div>
-    <div class="cp-bs-signame">{{ $unjoinedOpenSignal->title }}</div>
-    <div class="cp-bs-numbers">
-        <div class="cp-bs-num-block">
-            <div class="cp-bs-num-k">TARUHAN</div>
-            <div class="cp-bs-num-v amber">{{ number_format($unjoinedOpenSignal->betAmountPreview, 2) }}<sup>USDT</sup></div>
-        </div>
-        <div class="cp-bs-num-vr"></div>
-        <div class="cp-bs-num-block">
-            <div class="cp-bs-num-k">SALDO</div>
-            <div class="cp-bs-num-v">{{ number_format(auth()->user()->trade_balance, 2) }}<sup>USDT</sup></div>
-        </div>
+    <div class="cp-cm-amount">
+        Order amount
+        <span class="cp-cm-figure">{{ number_format($unjoinedOpenSignal->betAmountPreview, 2) }} <em>USDT</em></span>
     </div>
     <form action="{{ route('member.signals.join', $unjoinedOpenSignal->id) }}" method="POST">
         @csrf
-        <button type="submit" class="cp-bs-go"><i class="bi bi-lightning-charge-fill"></i> KONFIRMASI IKUT SIGNAL</button>
+        <button type="submit" class="cp-cm-go">Sure</button>
     </form>
-    <button onclick="cpBsClose()" class="cp-bs-skip">Nanti saja</button>
 </div>
 @endif
 
@@ -826,7 +811,77 @@
 /* PAGES */
 .cp-pages { padding: 14px; }
 
-/* BOTTOM SHEET */
+/* ══════════════════════════════════════════
+   CONFIRM MODAL (polished, center)
+══════════════════════════════════════════ */
+.cp-cm-bg {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55); backdrop-filter: blur(5px);
+    z-index: 2000;
+}
+.cp-cm-bg.on { display: block; }
+
+.cp-cm {
+    display: none;
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.96);
+    width: 88%; max-width: 340px;
+    background: #fff; border-radius: 18px;
+    padding: 22px 22px 18px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35), 0 4px 16px rgba(0,0,0,0.15);
+    z-index: 2001;
+    opacity: 0;
+    transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s ease;
+}
+.cp-cm.on { display: block; }
+.cp-cm.on.show { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+
+.cp-cm-hd {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 18px;
+}
+.cp-cm-hd span {
+    font-size: 16px; font-weight: 800; color: #0f172a;
+    letter-spacing: -0.2px;
+}
+.cp-cm-x {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: rgba(0,0,0,0.04); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(0,0,0,0.4); font-size: 12px;
+    transition: background 0.15s;
+}
+.cp-cm-x:hover { background: rgba(0,0,0,0.08); color: #0f172a; }
+
+.cp-cm-amount {
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(15,23,42,0.03);
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 22px;
+    font-size: 13px; font-weight: 600; color: rgba(15,23,42,0.5);
+}
+.cp-cm-figure {
+    font-size: 16px; font-weight: 900; color: #d97706;
+    font-variant-numeric: tabular-nums;
+}
+.cp-cm-figure em {
+    font-style: normal; font-size: 10px; font-weight: 700;
+    color: rgba(217,119,6,0.6); margin-left: 3px;
+}
+
+.cp-cm-go {
+    width: 100%; padding: 13px;
+    background: #0f172a; border: none; border-radius: 12px;
+    color: #fff; font-size: 14px; font-weight: 800; letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.cp-cm-go:hover { background: #1e293b; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(15,23,42,0.25); }
+.cp-cm-go:active { transform: translateY(0); }
+
+/* BOTTOM SHEET (kept for other coin pages that may still reference it) */
 .cp-bs-bg {
     display: none; position: fixed; inset: 0;
     background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
@@ -844,62 +899,6 @@
     transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
 }
 .cp-bs.on { transform: translateY(0); }
-.cp-bs-pill { width: 32px; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.1); margin: 0 auto 20px; }
-
-.cp-bs-icon-row { text-align: center; margin-bottom: 12px; }
-.cp-bs-orb {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 56px; height: 56px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px; font-size: 24px; color: #fff;
-    position: relative;
-}
-.cp-bs-orb-r1, .cp-bs-orb-r2 {
-    position: absolute; border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.05);
-    animation: cpOrbPulse 2s ease infinite;
-}
-.cp-bs-orb-r1 { inset: -8px; animation-delay: 0s; }
-.cp-bs-orb-r2 { inset: -16px; animation-delay: 0.5s; }
-@keyframes cpOrbPulse {
-    0%   { opacity: 0.6; transform: scale(0.95); }
-    100% { opacity: 0; transform: scale(1.05); }
-}
-
-.cp-bs-eyebrow { text-align: center; font-size: 10px; font-weight: 800; letter-spacing: 3px; color: rgba(255,255,255,0.25); margin-bottom: 3px; }
-.cp-bs-asset   { text-align: center; color: rgba(255,255,255,0.35); font-size: 12px; margin-bottom: 14px; }
-.cp-bs-signame {
-    text-align: center; color: #fff; font-size: 17px; font-weight: 900;
-    margin-bottom: 18px; line-height: 1.3;
-}
-.cp-bs-numbers {
-    display: flex; align-items: center;
-    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 14px; padding: 16px 0; margin-bottom: 20px;
-}
-.cp-bs-num-block { flex: 1; text-align: center; }
-.cp-bs-num-k { font-size: 9px; font-weight: 800; letter-spacing: 1.5px; color: rgba(255,255,255,0.2); margin-bottom: 6px; }
-.cp-bs-num-v { font-size: 24px; font-weight: 900; color: #fff; font-variant-numeric: tabular-nums; }
-.cp-bs-num-v sup { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.25); margin-left: 3px; vertical-align: super; }
-.cp-bs-num-v.amber { color: #fbbf24; }
-.cp-bs-num-vr { width: 1px; height: 44px; background: rgba(255,255,255,0.06); }
-.cp-bs-go {
-    width: 100%; padding: 15px;
-    background: #fff; border: none; border-radius: 14px;
-    color: #060a12; font-size: 14px; font-weight: 900; letter-spacing: 0.5px;
-    cursor: pointer; margin-bottom: 10px;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    transition: all 0.2s;
-}
-.cp-bs-go:hover { background: #e2e8f0; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(255,255,255,0.15); }
-.cp-bs-skip {
-    width: 100%; padding: 12px; background: none;
-    border: 1px solid rgba(255,255,255,0.07); border-radius: 14px;
-    color: rgba(255,255,255,0.25); font-size: 13px; cursor: pointer;
-    transition: all 0.2s;
-}
-.cp-bs-skip:hover { background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.4); }
 </style>
 @endpush
 
@@ -936,15 +935,21 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function cpBsOpen() {
-    document.getElementById('cp-bs-bg')?.classList.add('on');
-    document.getElementById('cp-bs')?.classList.add('on');
+    const bg = document.getElementById('cp-bs-bg');
+    const modal = document.getElementById('cp-bs');
+    bg?.classList.add('on');
+    modal?.classList.add('on');
+    requestAnimationFrame(() => modal?.classList.add('show'));
 }
 function cpBsClose() {
     @if($unjoinedOpenSignal)
     sessionStorage.setItem('sig_{{ $unjoinedOpenSignal->id }}', '1');
     @endif
-    document.getElementById('cp-bs-bg')?.classList.remove('on');
-    document.getElementById('cp-bs')?.classList.remove('on');
+    const bg = document.getElementById('cp-bs-bg');
+    const modal = document.getElementById('cp-bs');
+    modal?.classList.remove('show');
+    bg?.classList.remove('on');
+    setTimeout(() => modal?.classList.remove('on'), 200);
 }
 
 function cpFilterMarkets(q) {
