@@ -136,8 +136,64 @@
         </div>
     @endif
 
+    {{-- Custom Pagination (ditulis manual, tidak pakai view vendor Laravel) --}}
     @if($transactions->hasPages())
-        <div class="whv2-pagination">{{ $transactions->links() }}</div>
+    <div class="whv2-pagination">
+        <nav class="whp-nav" role="navigation" aria-label="Pagination">
+            <ul class="whp-list">
+
+                {{-- Previous --}}
+                @if ($transactions->onFirstPage())
+                    <li class="whp-item disabled" aria-disabled="true">
+                        <span class="whp-link"><i class="bi bi-chevron-left"></i></span>
+                    </li>
+                @else
+                    <li class="whp-item">
+                        <a href="{{ $transactions->previousPageUrl() }}" class="whp-link" rel="prev">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                @endif
+
+                {{-- Page Numbers --}}
+                @php
+                    $current = $transactions->currentPage();
+                    $last    = $transactions->lastPage();
+                    $onEachSide = 1;
+                @endphp
+
+                @for ($i = 1; $i <= $last; $i++)
+                    @if ($i == 1 || $i == $last || ($i >= $current - $onEachSide && $i <= $current + $onEachSide))
+                        @if ($i == $current)
+                            <li class="whp-item active" aria-current="page">
+                                <span class="whp-link">{{ $i }}</span>
+                            </li>
+                        @else
+                            <li class="whp-item">
+                                <a href="{{ $transactions->url($i) }}" class="whp-link">{{ $i }}</a>
+                            </li>
+                        @endif
+                    @elseif ($i == $current - $onEachSide - 1 || $i == $current + $onEachSide + 1)
+                        <li class="whp-item disabled"><span class="whp-link whp-dots">...</span></li>
+                    @endif
+                @endfor
+
+                {{-- Next --}}
+                @if ($transactions->hasMorePages())
+                    <li class="whp-item">
+                        <a href="{{ $transactions->nextPageUrl() }}" class="whp-link" rel="next">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                @else
+                    <li class="whp-item disabled" aria-disabled="true">
+                        <span class="whp-link"><i class="bi bi-chevron-right"></i></span>
+                    </li>
+                @endif
+
+            </ul>
+        </nav>
+    </div>
     @endif
 
     <div style="height:24px;"></div>
@@ -339,8 +395,37 @@
     color: #f87171; font-size: 13px; font-weight: 700; text-decoration: none;
 }
 
-/* ══ Pagination ════════════════════════════════════════════════ */
-.whv2-pagination { padding: 14px 14px; }
+/* ══ Custom Pagination ═════════════════════════════════════════ */
+.whv2-pagination { padding: 14px 14px; display: flex; justify-content: center; }
+.whp-nav { display: flex; justify-content: center; }
+.whp-list {
+    display: flex; align-items: center; gap: 6px;
+    list-style: none; margin: 0; padding: 0; flex-wrap: wrap; justify-content: center;
+}
+.whp-item { display: flex; }
+.whp-link {
+    min-width: 36px; height: 36px; padding: 0 10px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.7);
+    font-size: 13px; font-weight: 700;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+a.whp-link:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.whp-item.active .whp-link {
+    background: #a78bfa;
+    border-color: transparent;
+    color: #0d1120;
+    box-shadow: 0 0 0 3px rgba(167,139,250,0.2);
+}
+.whp-item.disabled .whp-link {
+    opacity: 0.3; cursor: not-allowed; background: rgba(255,255,255,0.02);
+}
+.whp-dots { border: none; background: none; font-family: inherit; }
 
 /* ══ Bottom Sheet ══════════════════════════════════════════════ */
 .whv2-overlay {

@@ -110,8 +110,64 @@
         </div>
     @endif
 
+    {{-- Custom Pagination (ditulis manual, tidak pakai view vendor Laravel) --}}
     @if($transactions->hasPages())
-        <div class="dh-pagination">{{ $transactions->links() }}</div>
+    <div class="dh-pagination">
+        <nav class="dhp-nav" role="navigation" aria-label="Pagination">
+            <ul class="dhp-list">
+
+                {{-- Previous --}}
+                @if ($transactions->onFirstPage())
+                    <li class="dhp-item disabled" aria-disabled="true">
+                        <span class="dhp-link"><i class="bi bi-chevron-left"></i></span>
+                    </li>
+                @else
+                    <li class="dhp-item">
+                        <a href="{{ $transactions->previousPageUrl() }}" class="dhp-link" rel="prev">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                @endif
+
+                {{-- Page Numbers --}}
+                @php
+                    $current = $transactions->currentPage();
+                    $last    = $transactions->lastPage();
+                    $onEachSide = 1;
+                @endphp
+
+                @for ($i = 1; $i <= $last; $i++)
+                    @if ($i == 1 || $i == $last || ($i >= $current - $onEachSide && $i <= $current + $onEachSide))
+                        @if ($i == $current)
+                            <li class="dhp-item active" aria-current="page">
+                                <span class="dhp-link">{{ $i }}</span>
+                            </li>
+                        @else
+                            <li class="dhp-item">
+                                <a href="{{ $transactions->url($i) }}" class="dhp-link">{{ $i }}</a>
+                            </li>
+                        @endif
+                    @elseif ($i == $current - $onEachSide - 1 || $i == $current + $onEachSide + 1)
+                        <li class="dhp-item disabled"><span class="dhp-link dhp-dots">...</span></li>
+                    @endif
+                @endfor
+
+                {{-- Next --}}
+                @if ($transactions->hasMorePages())
+                    <li class="dhp-item">
+                        <a href="{{ $transactions->nextPageUrl() }}" class="dhp-link" rel="next">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                @else
+                    <li class="dhp-item disabled" aria-disabled="true">
+                        <span class="dhp-link"><i class="bi bi-chevron-right"></i></span>
+                    </li>
+                @endif
+
+            </ul>
+        </nav>
+    </div>
     @endif
 
     <div style="height:24px;"></div>
@@ -309,8 +365,35 @@
 }
 .dh-empty-cta:hover { transform: translateY(-1px); opacity: 0.9; color: #0a0f1e; }
 
-/* ── Pagination ── */
-.dh-pagination { padding: 16px 20px; }
+/* ── Custom Pagination ── */
+.dh-pagination { padding: 16px 20px; display: flex; justify-content: center; }
+.dhp-nav { display: flex; justify-content: center; }
+.dhp-list {
+    display: flex; align-items: center; gap: 6px;
+    list-style: none; margin: 0; padding: 0; flex-wrap: wrap; justify-content: center;
+}
+.dhp-item { display: flex; }
+.dhp-link {
+    min-width: 36px; height: 36px; padding: 0 10px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 13px; font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+a.dhp-link:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.dhp-item.active .dhp-link {
+    background: linear-gradient(135deg, var(--gold-color), #00b8d4);
+    border-color: transparent;
+    color: #0a0f1e;
+}
+.dhp-item.disabled .dhp-link {
+    opacity: 0.35; cursor: not-allowed; background: rgba(255,255,255,0.02);
+}
+.dhp-dots { border: none; background: none; }
 
 /* ── Bottom Sheet Overlay ── */
 .dh-overlay {
