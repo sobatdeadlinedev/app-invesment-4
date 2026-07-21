@@ -20,12 +20,12 @@
             <!-- User Info -->
             <div class="pc-header">
                 <div class="pc-email">{{ \Illuminate\Support\Str::mask(auth()->user()->email, '*', 3, -8) }}</div>
-                <div class="pc-uid">ID:{{ auth()->user()->id }}</div>
-            </div>
-
-            <!-- Banner -->
-            <div class="pc-banner">
-                <span>{{ app()->getLocale() == 'id' ? 'UNDANG TRADER' : 'INVITE TRADERS' }}<br>{{ app()->getLocale() == 'id' ? 'DAPAT KOMISI.' : 'EARN COMMISSION.' }}</span>
+                <div class="pc-uid-row">
+                    <div class="pc-uid">ID:{{ auth()->user()->id }}</div>
+                    @if(auth()->user()->level)
+                        <span class="pc-level-badge">Level {{ auth()->user()->level }}</span>
+                    @endif
+                </div>
             </div>
 
             <!-- Menu List -->
@@ -192,21 +192,22 @@
 /* ── Header ── */
 .pc-header { padding: 18px 18px 14px; }
 .pc-email { color: #fff; font-size: 14px; font-weight: 500; word-break: break-all; }
-.pc-uid { color: rgba(255,255,255,0.45); font-size: 12px; margin-top: 6px; }
-
-/* ── Banner ── */
-.pc-banner {
-    margin: 4px 18px 18px;
-    border-radius: 10px;
-    height: 110px;
-    background:
-        linear-gradient(135deg, rgba(13,30,60,0.55), rgba(20,50,90,0.4)),
-        radial-gradient(circle at 30% 30%, rgba(56,189,248,0.35), transparent 60%),
-        linear-gradient(135deg, #0a1e3d, #142d52);
-    display: flex; align-items: center; justify-content: center; text-align: center;
-    color: #fff; font-size: 18px; font-weight: 800; line-height: 1.35;
-    letter-spacing: 0.3px;
-    box-shadow: inset 0 0 40px rgba(0,0,0,0.25);
+.pc-uid-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 6px;
+}
+.pc-uid { color: rgba(255,255,255,0.45); font-size: 12px; }
+.pc-level-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #00e5ff, #00b8d4);
+    color: #0a0f1e;
+    padding: 3px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: 0 2px 10px rgba(0,229,255,0.25);
 }
 
 /* ── List ── */

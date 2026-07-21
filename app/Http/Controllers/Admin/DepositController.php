@@ -72,34 +72,16 @@ class DepositController extends Controller
 
             $isFirstDeposit = ($previousApprovedDeposits === 0);
 
-            // Bonus 4% untuk deposit pertama
+            // Proses bonus new member (5%) dan komisi referrer (5%) — hanya untuk deposit pertama dan hanya jika pakai kode referral
+            $referralBonusGiven = false;
             if ($isFirstDeposit) {
-                $bonusAmount = $deposit->total_amount * 0.04;
-
-                $user->addExchangeBalance($bonusAmount);
-
-                Transaction::create([
-                    'user_id'        => $user->id,
-                    'source_user_id' => null,
-                    'reference'      => Transaction::generateReference('DP'),
-                    'amount'         => $bonusAmount,
-                    'total_amount'   => $bonusAmount,
-                    'type'           => 'deposit',
-                    'balance_type'   => 'exchange',
-                    'status'         => 'approved',
-                    'approved_by'    => auth()->id(),
-                ]);
-            }
-
-            // Proses komisi referral hanya untuk deposit pertama
-            if ($isFirstDeposit) {
-                $this->processReferralCommissions($deposit);
+                $referralBonusGiven = $this->processReferralCommissions($deposit, $user);
             }
 
             DB::commit();
 
-            $message = $isFirstDeposit
-                ? 'Deposit berhasil diapprove dan saldo Exchange telah ditambahkan. Bonus 4% telah dikreditkan!'
+            $message = $referralBonusGiven
+                ? 'Deposit berhasil diapprove dan saldo Exchange telah ditambahkan. Bonus referral 5% telah dikreditkan ke member dan pengundang!'
                 : 'Deposit berhasil diapprove dan saldo Exchange telah ditambahkan.';
 
             return redirect()->route('admin.deposit.index')
@@ -177,18 +159,39 @@ class DepositController extends Controller
     }
 
     /**
-     * Proses komisi referral — hanya untuk deposit pertama
+     * Proses bonus referral — hanya untuk deposit pertama, hanya jika user pakai kode referral
+     * New member dapat 5%, Pengundang (referrer) dapat 5%
+     *
+     * @return bool true jika bonus diberikan
      */
-    private function processReferralCommissions(Transaction $deposit)
+    private function processReferralCommissions(Transaction $deposit, User $user)
     {
         $referralUsage = ReferralUsage::where('referred_id', $deposit->user_id)->first();
 
         if (!$referralUsage) {
-            return;
+            return false;
         }
 
-        $depositAmount     = $deposit->total_amount;
-        $referrerCommission = $depositAmount * 0.06;
+        $depositAmount = $deposit->total_amount;
+
+        // Bonus untuk new member (5%)
+        $newMemberBonus = $depositAmount * 0.05;
+        $user->addExchangeBalance($newMemberBonus);
+
+        Transaction::create([
+            'user_id'        => $user->id,
+            'source_user_id' => $referralUsage->referrer_id,
+            'reference'      => Transaction::generateReference('DP'),
+            'amount'         => $newMemberBonus,
+            'total_amount'   => $newMemberBonus,
+            'type'           => 'deposit',
+            'balance_type'   => 'exchange',
+            'status'         => 'approved',
+            'approved_by'    => auth()->id(),
+        ]);
+
+        // Komisi untuk pengundang (5%)
+        $referrerCommission = $depositAmount * 0.05;
 
         $this->createCommissionTransaction(
             $referralUsage->referrer_id,
@@ -196,6 +199,8 @@ class DepositController extends Controller
             $referrerCommission,
             'Referral Commission - First Deposit'
         );
+
+        return true;
     }
 
     /**
