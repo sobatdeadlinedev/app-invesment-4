@@ -348,22 +348,28 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; wid
 
             <div class="cp-tk-title">{{ $t->title }}</div>
 
-            {{-- Price gauge: Entry -> Close/Target --}}
-            <div class="cp-tk-gauge">
-                <div class="cp-tk-gauge-pt">
-                    <div class="cp-tk-gauge-lbl">ENTRY</div>
-                    <div class="cp-tk-gauge-val">{{ $ftEntry !== null ? number_format($ftEntry, $ftEntry < 1 ? 6 : 2) : '--' }}</div>
-                </div>
-                <div class="cp-tk-gauge-track">
-                    <div class="cp-tk-gauge-line {{ $ftMoved !== null ? ($ftMoved >= 0 ? 'up' : 'down') : '' }}"></div>
-                    <i class="bi bi-caret-right-fill cp-tk-gauge-chev {{ $ftMoved !== null ? ($ftMoved >= 0 ? 'up' : 'down') : '' }}"></i>
-                </div>
-                <div class="cp-tk-gauge-pt right">
-                    <div class="cp-tk-gauge-lbl">TARGET</div>
-                    <div class="cp-tk-gauge-val {{ $ftMoved !== null ? ($ftMoved >= 0 ? 'cp-val-g' : 'cp-val-r') : '' }}">{{ $ftClose !== null ? number_format($ftClose, $ftClose < 1 ? 6 : 2) : '--' }}</div>
-                </div>
-            </div>
-            <div class="cp-tk-perf"></div>
+{{-- Price gauge: Entry -> Close/Target (hidden while pending) --}}
+@if(!$t->is_pending)
+<div class="cp-tk-gauge">
+    <div class="cp-tk-gauge-pt">
+        <div class="cp-tk-gauge-lbl">ENTRY</div>
+        <div class="cp-tk-gauge-val">{{ $ftEntry !== null ? number_format($ftEntry, $ftEntry < 1 ? 6 : 2) : '--' }}</div>
+    </div>
+    <div class="cp-tk-gauge-track">
+        <div class="cp-tk-gauge-line {{ $ftMoved !== null ? ($ftMoved >= 0 ? 'up' : 'down') : '' }}"></div>
+        <i class="bi bi-caret-right-fill cp-tk-gauge-chev {{ $ftMoved !== null ? ($ftMoved >= 0 ? 'up' : 'down') : '' }}"></i>
+    </div>
+    <div class="cp-tk-gauge-pt right">
+        <div class="cp-tk-gauge-lbl">TARGET</div>
+        <div class="cp-tk-gauge-val {{ $ftMoved !== null ? ($ftMoved >= 0 ? 'cp-val-g' : 'cp-val-r') : '' }}">{{ $ftClose !== null ? number_format($ftClose, $ftClose < 1 ? 6 : 2) : '--' }}</div>
+    </div>
+</div>
+@else
+<div class="cp-tk-pending-note">
+    <i class="bi bi-hourglass-split"></i> Waiting
+</div>
+@endif
+<div class="cp-tk-perf"></div>
 
             <div class="cp-tk-stats">
                 <div class="cp-tk-stat">
@@ -866,6 +872,16 @@ body::-webkit-scrollbar { display: none !important; width: 0 !important; }
     content: '';
     position: absolute; top: 0; left: 0; right: 0; height: 2px;
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+}
+
+
+.cp-tk-pending-note {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px;
+    background: rgba(251,191,36,0.06);
+    border: 1px solid rgba(251,191,36,0.15);
+    border-radius: 10px;
+    color: #fbbf24; font-size: 12px; font-weight: 600;
 }
 .cp-tk-w { box-shadow: inset 3px 0 0 #4ade80; }
 .cp-tk-l { box-shadow: inset 3px 0 0 #f87171; }

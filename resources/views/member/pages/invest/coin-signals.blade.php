@@ -262,7 +262,8 @@
 
             <div class="cp-tk-title">{{ $signal->title }}</div>
 
-            {{-- Price gauge: Entry -> Target --}}
+            {{-- Price gauge: Entry -> Target (hidden while pending — belum settle) --}}
+            @if(!$isPending)
             <div class="cp-tk-gauge">
                 <div class="cp-tk-gauge-pt">
                     <div class="cp-tk-gauge-lbl">ENTRY</div>
@@ -277,6 +278,11 @@
                     <div class="cp-tk-gauge-val {{ $priceMoved !== null ? ($priceMoved >= 0 ? 'cp-val-g' : 'cp-val-r') : '' }}">{{ $closePrice !== null ? number_format($closePrice, 2) : '--' }}</div>
                 </div>
             </div>
+            @else
+            <div class="cp-tk-pending-note">
+                <i class="bi bi-hourglass-split"></i> Waiting
+            </div>
+            @endif
             <div class="cp-tk-perf"></div>
 
             {{-- Stat grid --}}
@@ -753,6 +759,16 @@
 .cp-tk-delta {
     display: flex; align-items: center; gap: 4px;
     font-size: 11px; font-weight: 700; margin-top: 6px;
+}
+
+/* Pending state note — shown while entry/target aren't revealed yet */
+.cp-tk-pending-note {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px;
+    background: rgba(251,191,36,0.06);
+    border: 1px solid rgba(251,191,36,0.15);
+    border-radius: 10px;
+    color: #fbbf24; font-size: 12px; font-weight: 600;
 }
 
 /* Perforated divider */
