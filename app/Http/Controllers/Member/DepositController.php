@@ -152,7 +152,7 @@ class DepositController extends Controller
         }
 
         $request->validate([
-            'amount'         => 'required|numeric|min:200',
+            'amount'         => 'required|numeric|min:100',
             'wallet_type'    => 'required|in:trc20,bep20',
             'wallet_address' => 'required|string',
         ], [

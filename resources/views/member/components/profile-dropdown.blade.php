@@ -21,7 +21,7 @@
             <div class="pc-header">
                 <div class="pc-email">{{ \Illuminate\Support\Str::mask(auth()->user()->email, '*', 3, -8) }}</div>
                 <div class="pc-uid-row">
-                    <div class="pc-uid">ID:{{ auth()->user()->id }}</div>
+                    <div class="pc-uid">{{ app()->getLocale() == 'id' ? 'Kode' : 'Code' }}: {{ auth()->user()->refferal_code }}</div>
                     @if(auth()->user()->level)
                         <span class="pc-level-badge">Level {{ auth()->user()->level }}</span>
                     @endif

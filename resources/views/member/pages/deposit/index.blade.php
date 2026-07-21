@@ -53,19 +53,14 @@
             <div class="dp-field-label">Recharge amount</div>
             <div class="dp-amount-input-wrap">
                 <input type="number" id="deposit-amount" class="dp-amount-input"
-                    placeholder="Enter amount" step="0.01" min="200">
+                    placeholder="Enter amount" step="0.01" min="100">
             </div>
             <!-- Quick chips -->
             <div class="dp-chips">
                 <button type="button" class="dp-chip" onclick="setAmount(100)">100</button>
                 <button type="button" class="dp-chip" onclick="setAmount(200)">200</button>
                 <button type="button" class="dp-chip" onclick="setAmount(300)">300</button>
-                <button type="button" class="dp-chip" onclick="setAmount(400)">400</button>
                 <button type="button" class="dp-chip" onclick="setAmount(500)">500</button>
-                <button type="button" class="dp-chip" onclick="setAmount(600)">600</button>
-                <button type="button" class="dp-chip" onclick="setAmount(700)">700</button>
-                <button type="button" class="dp-chip" onclick="setAmount(800)">800</button>
-                <button type="button" class="dp-chip" onclick="setAmount(900)">900</button>
                 <button type="button" class="dp-chip" onclick="setAmount(1000)">1000</button>
             </div>
         </div>
@@ -480,7 +475,7 @@ function setAmount(val) {
 function confirmDeposit() {
     var amount = parseFloat(document.getElementById('deposit-amount').value);
     if (!amount || amount <= 0) { alert('Please enter a valid amount.'); return; }
-    if (amount < 200) { alert('Minimum deposit is 200 USDT.'); return; }
+    if (amount < 100) { alert('Minimum deposit is 100 USDT.'); return; }
 
     var network = selectedWalletType.toUpperCase();
     var msg = 'Deposit Confirmation\n\n'
