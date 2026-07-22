@@ -360,7 +360,7 @@ class User extends Authenticatable
      */
     public function canJoinSignal()
     {
-        return $this->getAvailableTradeBalance() >= 200;
+        return $this->getAvailableTradeBalance() >= 100;
     }
 
     /**
