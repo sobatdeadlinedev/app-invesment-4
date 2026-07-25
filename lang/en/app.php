@@ -306,7 +306,7 @@ return [
     'submit_verification' => 'Submit Verification',
 
     // Verification Status
-    'verification_pending' => 'Verification Being Processed',
+   'verification_pending' => 'Under Audit',
     'verification_pending_message' => 'Your documents are being verified by admin. Please wait until the process is complete.',
     'submitted_on' => 'Submitted on',
     'account_verified' => 'Account Verified',
