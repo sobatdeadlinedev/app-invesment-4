@@ -264,8 +264,9 @@
     background:
         radial-gradient(ellipse 60% 80% at 15% 20%, rgba(167,139,250,0.18) 0%, transparent 60%),
         radial-gradient(ellipse 50% 60% at 85% 80%, rgba(52,211,153,0.12) 0%, transparent 60%);
+    z-index: 0;
 }
-.wov2-hero-inner { position: relative; padding: 24px 20px 20px; }
+.wov2-hero-inner { position: relative; padding: 24px 20px 20px; z-index: 1; }
 .wov2-hero-label {
     display: flex; align-items: center; gap: 8px;
     color: rgba(255,255,255,0.4);
@@ -276,6 +277,8 @@
 .wov2-eye {
     background: none; border: none; color: rgba(255,255,255,0.35);
     padding: 0; cursor: pointer; font-size: 13px; line-height: 1;
+    position: relative;
+    z-index: 2;
 }
 .wov2-hero-amount {
     display: flex; align-items: flex-end; gap: 8px;
@@ -300,20 +303,30 @@
 
 /* ══ Actions (strip inside hero) ══════════════════════════════ */
 .wov2-actions {
+    position: relative;
+    z-index: 3;
     display: grid; grid-template-columns: repeat(4, 1fr);
     gap: 8px;
     padding-top: 20px;
     border-top: 1px solid rgba(255,255,255,0.06);
 }
 .wov2-act {
+    position: relative;
+    z-index: 3;
     display: flex; flex-direction: column; align-items: center; gap: 6px;
     text-decoration: none;
+    -webkit-tap-highlight-color: rgba(255,255,255,0.08);
+    touch-action: manipulation;
+    /* pastikan seluruh area (icon + label) jadi target tap, bukan cuma tulisan */
+    padding: 4px 2px;
 }
 .wov2-act-icon {
     width: 44px; height: 44px; border-radius: 14px;
     display: flex; align-items: center; justify-content: center;
     font-size: 18px; transition: transform 0.2s;
+    pointer-events: none; /* biar tap selalu ditangkap oleh <a> pembungkus, bukan icon di dalamnya */
 }
+.wov2-act i { pointer-events: none; }
 .wov2-act:active .wov2-act-icon { transform: scale(0.92); }
 .wov2-act-icon.deposit  { background: rgba(167,139,250,0.15); color: #a78bfa; border: 1px solid rgba(167,139,250,0.25); }
 .wov2-act-icon.withdraw { background: rgba(251,146,60,0.15);  color: #fb923c; border: 1px solid rgba(251,146,60,0.25); }
@@ -323,6 +336,7 @@
     font-size: 10px; font-weight: 600;
     color: rgba(255,255,255,0.55);
     letter-spacing: 0.3px;
+    pointer-events: none;
 }
 
 /* ══ Section ═══════════════════════════════════════════════════ */
@@ -405,6 +419,7 @@
     display: flex; flex-direction: column; gap: 3px;
     transition: border-color 0.2s, background 0.2s;
     position: relative; overflow: hidden;
+    touch-action: manipulation;
 }
 .wov2-acard:active {
     background: rgba(255,255,255,0.06);
