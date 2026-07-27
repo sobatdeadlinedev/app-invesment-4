@@ -31,7 +31,7 @@
         <div class="wov2-hero-inner">
             <div class="wov2-hero-label">
                 <span>TOTAL BALANCE</span>
-                <button class="wov2-eye" onclick="toggleBalance()" id="eyeBtn">
+                <button class="wov2-eye" onclick="toggleBalance()" id="eyeBtn" type="button">
                     <i class="bi bi-eye" id="eyeIcon"></i>
                 </button>
             </div>
@@ -44,20 +44,20 @@
             {{-- Action Strip --}}
             <div class="wov2-actions">
                 <a href="{{ route('member.deposit.index') }}" class="wov2-act">
-                    <div class="wov2-act-icon deposit"><i class="bi bi-arrow-down-circle-fill"></i></div>
-                    <span>{{ __('app.deposit') }}</span>
+                    <span class="wov2-act-icon deposit"><i class="bi bi-arrow-down-circle-fill"></i></span>
+                    <span class="wov2-act-label">{{ __('app.deposit') }}</span>
                 </a>
-                <a href="{{ route('member.withdraw.index') }}" class="wov2-act">
-                    <div class="wov2-act-icon withdraw"><i class="bi bi-arrow-up-circle-fill"></i></div>
-                    <span>{{ __('app.withdraw') }}</span>
+                <a href="{{ route('member.withdraw.index') }}" class="wov2-act" id="btnWithdraw">
+                    <span class="wov2-act-icon withdraw"><i class="bi bi-arrow-up-circle-fill"></i></span>
+                    <span class="wov2-act-label">{{ __('app.withdraw') }}</span>
                 </a>
                 <a href="{{ route('member.balance.transfer') }}" class="wov2-act">
-                    <div class="wov2-act-icon transfer"><i class="bi bi-arrow-left-right"></i></div>
-                    <span>{{ __('app.transfer') }}</span>
+                    <span class="wov2-act-icon transfer"><i class="bi bi-arrow-left-right"></i></span>
+                    <span class="wov2-act-label">{{ __('app.transfer') }}</span>
                 </a>
                 <a href="{{ route('member.deposit.history') }}" class="wov2-act">
-                    <div class="wov2-act-icon history"><i class="bi bi-clock-history"></i></div>
-                    <span>{{ __('app.history') }}</span>
+                    <span class="wov2-act-icon history"><i class="bi bi-clock-history"></i></span>
+                    <span class="wov2-act-label">{{ __('app.history') }}</span>
                 </a>
             </div>
         </div>
@@ -226,6 +226,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 14px 20px;
+    position: relative;
+    z-index: 1;
 }
 .wov2-user { display: flex; align-items: center; gap: 10px; }
 .wov2-avatar {
@@ -255,9 +257,10 @@
     position: relative;
     margin: 0 12px 4px;
     border-radius: 20px;
-    overflow: hidden;
+    overflow: visible; /* was hidden — could clip/alter tap area on some mobile renderers */
     background: #0d111f;
     border: 1px solid rgba(167,139,250,0.2);
+    z-index: 1;
 }
 .wov2-hero-mesh {
     position: absolute; inset: 0; pointer-events: none;
@@ -265,6 +268,7 @@
         radial-gradient(ellipse 60% 80% at 15% 20%, rgba(167,139,250,0.18) 0%, transparent 60%),
         radial-gradient(ellipse 50% 60% at 85% 80%, rgba(52,211,153,0.12) 0%, transparent 60%);
     z-index: 0;
+    border-radius: 20px;
 }
 .wov2-hero-inner { position: relative; padding: 24px 20px 20px; z-index: 1; }
 .wov2-hero-label {
@@ -304,7 +308,7 @@
 /* ══ Actions (strip inside hero) ══════════════════════════════ */
 .wov2-actions {
     position: relative;
-    z-index: 3;
+    z-index: 5;
     display: grid; grid-template-columns: repeat(4, 1fr);
     gap: 8px;
     padding-top: 20px;
@@ -312,19 +316,23 @@
 }
 .wov2-act {
     position: relative;
-    z-index: 3;
-    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    z-index: 5;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
     text-decoration: none;
-    -webkit-tap-highlight-color: rgba(255,255,255,0.08);
+    -webkit-tap-highlight-color: rgba(0,229,255,0.15);
     touch-action: manipulation;
-    /* pastikan seluruh area (icon + label) jadi target tap, bukan cuma tulisan */
-    padding: 4px 2px;
+    -webkit-user-select: none;
+    user-select: none;
+    /* seluruh kotak ini jadi target tap yang solid */
+    padding: 8px 4px;
+    min-height: 74px;
+    cursor: pointer;
 }
 .wov2-act-icon {
     width: 44px; height: 44px; border-radius: 14px;
     display: flex; align-items: center; justify-content: center;
     font-size: 18px; transition: transform 0.2s;
-    pointer-events: none; /* biar tap selalu ditangkap oleh <a> pembungkus, bukan icon di dalamnya */
+    pointer-events: none;
 }
 .wov2-act i { pointer-events: none; }
 .wov2-act:active .wov2-act-icon { transform: scale(0.92); }
@@ -332,7 +340,7 @@
 .wov2-act-icon.withdraw { background: rgba(251,146,60,0.15);  color: #fb923c; border: 1px solid rgba(251,146,60,0.25); }
 .wov2-act-icon.transfer { background: rgba(52,211,153,0.15);  color: #34d399; border: 1px solid rgba(52,211,153,0.25); }
 .wov2-act-icon.history  { background: rgba(96,165,250,0.15);  color: #60a5fa; border: 1px solid rgba(96,165,250,0.25); }
-.wov2-act span {
+.wov2-act-label {
     font-size: 10px; font-weight: 600;
     color: rgba(255,255,255,0.55);
     letter-spacing: 0.3px;
@@ -600,6 +608,23 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('donutLabel').textContent = 'TOTAL';
         });
     });
+
+    // Fallback: if a click on the withdraw button somehow doesn't navigate
+    // (e.g. blocked by an overlay/gesture library on some mobile browsers),
+    // force navigation manually as a safety net.
+    const btnWithdraw = document.getElementById('btnWithdraw');
+    if (btnWithdraw) {
+        btnWithdraw.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            // let default happen; if for some reason it's stopped elsewhere,
+            // this ensures navigation still occurs.
+            setTimeout(() => {
+                if (window.location.pathname.indexOf('withdraw') === -1) {
+                    window.location.href = href;
+                }
+            }, 300);
+        });
+    }
 });
 </script>
 @endpush

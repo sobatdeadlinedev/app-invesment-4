@@ -53,6 +53,7 @@
         /* Mobile Container */
         .mobile-container {
             width: 425px;
+            max-width: 100%;   /* ← tambahkan baris ini */
             height: 100vh;
             background-color: var(--primary-light);
             position: relative;
