@@ -127,7 +127,7 @@
         <div class="email-card">
             <!-- Header -->
             <div class="email-header">
-                <h1>{{ config('app.name') }}</h1>
+                <h1>PRESTIGE TRADERS</h1>
                 <p>Verifikasi Email Pendaftaran</p>
             </div>
 
@@ -138,7 +138,7 @@
                 </div>
 
                 <p class="desc">
-                    Terima kasih telah mendaftar di <strong style="color: #FFD700;">{{ config('app.name') }}</strong>.
+                    Terima kasih telah mendaftar di <strong style="color: #FFD700;">PRESTIGE TRADERS</strong>.
                     Gunakan kode OTP berikut untuk memverifikasi email Anda dan menyelesaikan proses pendaftaran.
                 </p>
 
@@ -159,14 +159,14 @@
                 <hr class="divider">
 
                 <div class="security-note">
-                    <strong>Catatan Keamanan:</strong> Jika Anda tidak melakukan pendaftaran di {{ config('app.name') }},
+                    <strong>Catatan Keamanan:</strong> Jika Anda tidak melakukan pendaftaran di PRESTIGE TRADERS,
                     abaikan email ini. Akun tidak akan dibuat jika kode OTP tidak diverifikasi.
                 </div>
             </div>
 
             <!-- Footer -->
             <div class="email-footer">
-                &copy; {{ date('Y') }} <strong>{{ config('app.name') }}</strong>. All rights reserved.
+                &copy; {{ date('Y') }} <strong>PRESTIGE TRADERS</strong>. All rights reserved.
             </div>
         </div>
     </div>

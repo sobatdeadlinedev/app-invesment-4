@@ -416,10 +416,31 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; wid
         </div>
         @endforelse
 
-        @if($recentTrades->hasPages())
-        <div class="cp-pages">{{ $recentTrades->links() }}</div>
-        @endif
-
+       @if($recentTrades->hasPages())
+<div class="cp-pages">
+    <nav class="cpp-nav" role="navigation" aria-label="Pagination">
+        <ul class="cpp-list">
+            @php
+                $current = $recentTrades->currentPage();
+                $last    = $recentTrades->lastPage();
+                $onEachSide = 1;
+            @endphp
+            @for ($i = 1; $i <= $last; $i++)
+                @if ($i == 1 || $i == $last || ($i >= $current - $onEachSide && $i <= $current + $onEachSide))
+                    @if ($i == $current)
+                        <li class="cpp-item active"><span class="cpp-link">{{ $i }}</span></li>
+                    @else
+                        <li class="cpp-item"><a href="{{ $recentTrades->url($i) }}" class="cpp-link">{{ $i }}</a></li>
+                    @endif
+                @elseif ($i == $current - $onEachSide - 1 || $i == $current + $onEachSide + 1)
+                    <li class="cpp-item disabled"><span class="cpp-link cpp-dots">...</span></li>
+                @endif
+            @endfor
+        </ul>
+    </nav>
+</div>
+@endif
+<div>
         <div style="height:40px;"></div>
     </div>
 
@@ -773,6 +794,35 @@ body::-webkit-scrollbar { display: none !important; width: 0 !important; }
     display: grid; grid-template-columns: repeat(4,1fr); gap: 8px;
     margin-bottom: 14px;
 }
+
+
+.cpp-nav { display: flex; justify-content: center; }
+.cpp-list {
+    display: flex; align-items: center; gap: 6px;
+    list-style: none; margin: 0; padding: 0; flex-wrap: wrap; justify-content: center;
+}
+.cpp-item { display: flex; }
+.cpp-link {
+    min-width: 34px; height: 34px; padding: 0 10px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--card);
+    border: 1px solid var(--bd);
+    border-radius: 8px;
+    color: var(--t1);
+    font-size: 12px; font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+a.cpp-link:hover { background: rgba(255,255,255,0.06); color: #fff; }
+.cpp-item.active .cpp-link {
+    background: linear-gradient(160deg, #0a8f5a 0%, #0ecb81 100%);
+    border-color: transparent;
+    color: #06120c;
+}
+.cpp-item.disabled .cpp-link {
+    opacity: 0.35; cursor: not-allowed; background: rgba(255,255,255,0.02);
+}
+.cpp-dots { border: none; background: none; }
 .ex-qbtn {
     padding: 9px 2px;
     background: var(--panel); border: 1px solid var(--bd);

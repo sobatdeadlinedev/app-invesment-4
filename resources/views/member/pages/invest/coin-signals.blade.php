@@ -335,10 +335,31 @@
         @endforelse
 
         @if($historyForThisCoin->hasPages())
-        <div class="cp-pages">{{ $historyForThisCoin->links() }}</div>
-        @endif
-    </div>
-
+<div class="cp-pages">
+    <nav class="cpp-nav" role="navigation" aria-label="Pagination">
+        <ul class="cpp-list">
+            @php
+                $current = $historyForThisCoin->currentPage();
+                $last    = $historyForThisCoin->lastPage();
+                $onEachSide = 1;
+            @endphp
+            @for ($i = 1; $i <= $last; $i++)
+                @if ($i == 1 || $i == $last || ($i >= $current - $onEachSide && $i <= $current + $onEachSide))
+                    @if ($i == $current)
+                        <li class="cpp-item active"><span class="cpp-link">{{ $i }}</span></li>
+                    @else
+                        <li class="cpp-item"><a href="{{ $historyForThisCoin->url($i) }}" class="cpp-link">{{ $i }}</a></li>
+                    @endif
+                @elseif ($i == $current - $onEachSide - 1 || $i == $current + $onEachSide + 1)
+                    <li class="cpp-item disabled"><span class="cpp-link cpp-dots">...</span></li>
+                @endif
+            @endfor
+        </ul>
+    </nav>
+</div>
+@endif
+    
+<div>
     <div style="height:40px;"></div>
 </div>
 </div>
@@ -914,6 +935,35 @@
     transform: translateY(100%);
     transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
 }
+
+.cpp-nav { display: flex; justify-content: center; }
+.cpp-list {
+    display: flex; align-items: center; gap: 6px;
+    list-style: none; margin: 0; padding: 0; flex-wrap: wrap; justify-content: center;
+}
+.cpp-item { display: flex; }
+.cpp-link {
+    min-width: 34px; height: 34px; padding: 0 10px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 12px; font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+a.cpp-link:hover { background: rgba(255,255,255,0.08); }
+.cpp-item.active .cpp-link {
+    background: #fff;
+    border-color: transparent;
+    color: #060a12;
+}
+.cpp-item.disabled .cpp-link {
+    opacity: 0.35; cursor: not-allowed; background: rgba(255,255,255,0.02);
+}
+.cpp-dots { border: none; background: none; }
+
 .cp-bs.on { transform: translateY(0); }
 </style>
 @endpush
