@@ -175,6 +175,62 @@
         </div>
     </div>
 
+    {{-- ═══ TRADING VOLUME ═══ --}}
+    @php
+        $targetVolume = (float) (auth()->user()->target_volume ?? 0);
+        $achievedVolume = (float) (auth()->user()->achieved_volume ?? 0);
+        $remainingVolume = max(0, $targetVolume - $achievedVolume);
+        $volumePct = $targetVolume > 0
+            ? min(100, round($achievedVolume / $targetVolume * 100, 1))
+            : 100;
+    @endphp
+
+    <div class="wov2-section">
+        <div class="wov2-sec-head">
+            <div>
+                <div class="wov2-sec-title">Trading Volume</div>
+                <div class="wov2-sec-sub">Progress menuju target volume</div>
+            </div>
+        </div>
+
+        <div class="wov2-volume-card">
+            <div class="wov2-volume-top">
+                <div class="wov2-volume-pct">{{ $volumePct }}%</div>
+                @if($targetVolume > 0 && $achievedVolume >= $targetVolume)
+                    <div class="wov2-volume-badge done">Completed</div>
+                @elseif($targetVolume > 0)
+                    <div class="wov2-volume-badge">In Progress</div>
+                @endif
+            </div>
+
+            <div class="wov2-volume-bar">
+                <div class="wov2-volume-fill" style="width: {{ $volumePct }}%;"></div>
+            </div>
+
+            <div class="wov2-volume-stats">
+                <div class="wov2-volume-stat">
+                    <span class="wov2-volume-stat-label">Achieved</span>
+                    <span class="wov2-volume-stat-val">{{ number_format($achievedVolume, 2) }} USDT</span>
+                </div>
+                <div class="wov2-volume-stat">
+                    <span class="wov2-volume-stat-label">Target</span>
+                    <span class="wov2-volume-stat-val">{{ number_format($targetVolume, 2) }} USDT</span>
+                </div>
+                <div class="wov2-volume-stat">
+                    <span class="wov2-volume-stat-label">Remaining</span>
+                    <span class="wov2-volume-stat-val">{{ number_format($remainingVolume, 2) }} USDT</span>
+                </div>
+            </div>
+
+            @if($targetVolume > 0 && $achievedVolume < $targetVolume)
+            <div class="wov2-volume-note">
+                <i class="bi bi-info-circle"></i>
+                Selesaikan target volume untuk menghindari penalti saat transfer balance ke exchange.
+            </div>
+            @endif
+        </div>
+    </div>
+
     <div style="height:24px;"></div>
 </div>
 @endsection
@@ -406,6 +462,63 @@
     border-radius: 2px; margin-top: 10px; overflow: hidden;
 }
 .wov2-acard-fill { height: 100%; border-radius: 2px; transition: width 0.8s ease; }
+
+/* ══ Volume card ═══════════════════════════════════════════════ */
+.wov2-volume-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 18px;
+}
+.wov2-volume-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+}
+.wov2-volume-pct {
+    font-size: 24px; font-weight: 900; color: #fff;
+    font-variant-numeric: tabular-nums;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+}
+.wov2-volume-badge {
+    background: rgba(167,139,250,0.15); color: #a78bfa;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+    padding: 3px 10px; border-radius: 20px;
+}
+.wov2-volume-badge.done {
+    background: rgba(52,211,153,0.15); color: #34d399;
+}
+.wov2-volume-bar {
+    height: 8px; background: rgba(255,255,255,0.06);
+    border-radius: 4px; overflow: hidden; margin-bottom: 16px;
+}
+.wov2-volume-fill {
+    height: 100%; border-radius: 4px;
+    background: linear-gradient(90deg, #a78bfa, #34d399);
+    transition: width 0.8s ease;
+}
+.wov2-volume-stats {
+    display: flex; justify-content: space-between; gap: 10px;
+}
+.wov2-volume-stat {
+    display: flex; flex-direction: column; gap: 3px;
+    flex: 1;
+}
+.wov2-volume-stat-label {
+    font-size: 10px; color: rgba(255,255,255,0.35);
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+.wov2-volume-stat-val {
+    font-size: 13px; font-weight: 700; color: #fff;
+    font-variant-numeric: tabular-nums;
+}
+.wov2-volume-note {
+    display: flex; align-items: flex-start; gap: 6px;
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-size: 11px; color: rgba(255,255,255,0.4);
+    line-height: 1.5;
+}
+.wov2-volume-note i { margin-top: 1px; }
 </style>
 @endpush
 
