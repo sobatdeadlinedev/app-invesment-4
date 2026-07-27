@@ -194,32 +194,9 @@
         </div>
 
         <div class="wov2-volume-card">
-            <div class="wov2-volume-top">
-                <div class="wov2-volume-pct">{{ $volumePct }}%</div>
-                @if($targetVolume > 0 && $achievedVolume >= $targetVolume)
-                    <div class="wov2-volume-badge done">Completed</div>
-                @elseif($targetVolume > 0)
-                    <div class="wov2-volume-badge">In Progress</div>
-                @endif
-            </div>
-
-            <div class="wov2-volume-bar">
-                <div class="wov2-volume-fill" style="width: {{ $volumePct }}%;"></div>
-            </div>
-
-            <div class="wov2-volume-stats">
-                <div class="wov2-volume-stat">
-                    <span class="wov2-volume-stat-label">Achieved</span>
-                    <span class="wov2-volume-stat-val">{{ number_format($achievedVolume, 2) }} USDT</span>
-                </div>
-                <div class="wov2-volume-stat">
-                    <span class="wov2-volume-stat-label">Target</span>
-                    <span class="wov2-volume-stat-val">{{ number_format($targetVolume, 2) }} USDT</span>
-                </div>
-                <div class="wov2-volume-stat">
-                    <span class="wov2-volume-stat-label">Remaining</span>
-                    <span class="wov2-volume-stat-val">{{ number_format($remainingVolume, 2) }} USDT</span>
-                </div>
+            <div class="wov2-volume-simple">
+                <span class="wov2-volume-simple-label">Volume Trading</span>
+                <span class="wov2-volume-simple-val">{{ number_format($achievedVolume, 2) }} USDT</span>
             </div>
 
             @if($targetVolume > 0 && $achievedVolume < $targetVolume)
@@ -519,6 +496,18 @@
     line-height: 1.5;
 }
 .wov2-volume-note i { margin-top: 1px; }
+.wov2-volume-simple {
+    display: flex; flex-direction: column; gap: 6px;
+}
+.wov2-volume-simple-label {
+    font-size: 11px; color: rgba(255,255,255,0.4);
+    text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;
+}
+.wov2-volume-simple-val {
+    font-size: 22px; font-weight: 900; color: #fff;
+    font-variant-numeric: tabular-nums;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+}
 </style>
 @endpush
 
