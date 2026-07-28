@@ -312,7 +312,7 @@ return [
     'account_verified' => 'Account Verified',
     'account_verified_message' => 'Congratulations! Your account has been successfully verified.',
     'verified_on' => 'Verified on',
-
+'confirm_transfer' => 'Are you sure you want to proceed with this transfer?',
     // Submitted/Verified Data
     'submitted_data' => 'Submitted Data',
     'verified_data' => 'Verified Data',

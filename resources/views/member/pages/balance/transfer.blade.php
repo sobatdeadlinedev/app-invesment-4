@@ -123,6 +123,17 @@
         </div>
     </div>
 
+    <!-- Custom Confirm Modal -->
+    <div class="custom-modal-overlay" id="customConfirmModal">
+        <div class="custom-modal-box">
+            <p class="custom-modal-text" id="customModalText"></p>
+            <div class="custom-modal-actions">
+                <button type="button" class="custom-modal-btn cancel" id="customModalCancel">{{ __('app.cancel') }}</button>
+                <button type="button" class="custom-modal-btn ok" id="customModalOk">OK</button>
+            </div>
+        </div>
+    </div>
+
     <style>
         .select-wrapper { position: relative; }
 
@@ -185,6 +196,37 @@
             background: transparent; border: none; color: var(--gold-color);
             font-size: 12px; font-weight: 700; cursor: pointer; padding: 0;
         }
+
+        /* Custom Confirm Modal */
+        .custom-modal-overlay {
+            display: none; position: fixed; inset: 0; z-index: 1050;
+            background: rgba(0,0,0,0.6);
+            align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .custom-modal-overlay.show { display: flex; }
+        .custom-modal-box {
+            background: #0f1a2b; border: 1px solid var(--border-color);
+            border-radius: 14px; padding: 20px; width: 100%; max-width: 320px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+        .custom-modal-text {
+            color: var(--text-white); font-size: 14px; margin-bottom: 18px;
+            text-align: center; line-height: 1.5;
+        }
+        .custom-modal-actions {
+            display: flex; gap: 10px;
+        }
+        .custom-modal-btn {
+            flex: 1; padding: 10px 0; border-radius: 8px; border: none;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+        }
+        .custom-modal-btn.cancel {
+            background: rgba(255,255,255,0.08); color: var(--text-muted);
+        }
+        .custom-modal-btn.ok {
+            background: var(--gold-color); color: #0b1420;
+        }
     </style>
 
     @push('scripts')
@@ -201,7 +243,8 @@
                 trade: "{{ __('app.trade') }}",
                 minimumTransferAlert: "{{ __('app.minimum_transfer_alert') }}",
                 insufficientBalance: "{{ __('app.insufficient_balance') }}",
-                warning: "{{ __('app.warning') }}"
+                warning: "{{ __('app.warning') }}",
+                confirmTransfer: "{{ __('app.confirm_transfer') ?? 'Confirm this transfer?' }}"
             };
 
             const fromAccountInput = document.getElementById('fromAccountInput');
@@ -215,6 +258,28 @@
             const transferForm = document.getElementById('transferForm');
             const penaltyWarning = document.getElementById('penaltyWarning');
             const volumeInfo = document.getElementById('volumeInfo');
+
+            // Custom modal elements
+            const customConfirmModal = document.getElementById('customConfirmModal');
+            const customModalText = document.getElementById('customModalText');
+            const customModalOk = document.getElementById('customModalOk');
+            const customModalCancel = document.getElementById('customModalCancel');
+
+            function showCustomConfirm(message, onConfirm) {
+                customModalText.textContent = message;
+                customConfirmModal.classList.add('show');
+
+                function cleanup() {
+                    customConfirmModal.classList.remove('show');
+                    customModalOk.removeEventListener('click', handleOk);
+                    customModalCancel.removeEventListener('click', handleCancel);
+                }
+                function handleOk() { cleanup(); onConfirm(); }
+                function handleCancel() { cleanup(); }
+
+                customModalOk.addEventListener('click', handleOk);
+                customModalCancel.addEventListener('click', handleCancel);
+            }
 
             let direction = 'toTrade'; // 'toTrade' = exchange -> trade, 'toExchange' = trade -> exchange
 
@@ -260,23 +325,14 @@
                 e.preventDefault();
                 const amount = parseFloat(transferAmount.value);
                 const from = fromAccountInput.value;
-                const to = toAccountInput.value;
 
                 if (amount < 10) { alert(translations.minimumTransferAlert); return; }
                 if (amount > parseFloat(fromWalletBalance.textContent)) { alert(translations.insufficientBalance); return; }
 
-                let message = `Transfer ${amount.toFixed(2)} USDT from ${from.toUpperCase()} to ${to.toUpperCase()}?`;
-                if (from === 'trade' && needsPenalty) {
-                    const penalty = amount * 0.30;
-                    const net = amount - penalty;
-                    const remainingPercent = (100 - volumePercentage).toFixed(2);
-                    message = `${translations.warning}: 30% Penalty will be applied!\n\n` +
-                        `Remaining Trading Volume: ${remainingVolume.toFixed(2)} USDT (${remainingPercent}%)\n\n` +
-                        `Transfer Amount: ${amount.toFixed(2)} USDT\n` +
-                        `Penalty (30%): ${penalty.toFixed(2)} USDT\n` +
-                        `You will receive: ${net.toFixed(2)} USDT\n\nDo you want to continue?`;
-                }
-                if (confirm(message)) { this.submit(); }
+                // Simple custom confirm - no penalty detail shown, just short text + OK/Cancel
+                showCustomConfirm(translations.confirmTransfer, function() {
+                    transferForm.submit();
+                });
             });
 
             updateDirection();

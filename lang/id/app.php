@@ -305,13 +305,13 @@ return [
     'submit_verification' => 'Ajukan Verifikasi',
 
     // Verification Status
-    'verification_pending' => 'Verifikasi Sedang Diproses',
+   'verification_pending' => 'Proses Audit',
     'verification_pending_message' => 'Dokumen Anda sedang dalam proses verifikasi oleh admin. Mohon tunggu hingga proses selesai.',
     'submitted_on' => 'Diajukan pada',
     'account_verified' => 'Akun Terverifikasi',
     'account_verified_message' => 'Selamat! Akun Anda telah berhasil diverifikasi.',
     'verified_on' => 'Diverifikasi pada',
-
+'confirm_transfer' => 'Yakin ingin melanjutkan transfer ini?',
     // Submitted/Verified Data
     'submitted_data' => 'Data yang Diajukan',
     'verified_data' => 'Data Terverifikasi',
