@@ -417,17 +417,7 @@
                     </div>
                 @endif
 
-                @if ($referralCode && $referrer)
-                    <div class="referral-banner">
-                        <i class="ki-duotone ki-shield-tick">
-                            <span class="path1"></span><span class="path2"></span>
-                        </i>
-                        <div>
-                            <div class="referral-banner-title">Referral Code Applied</div>
-                            <div class="referral-banner-msg">You were referred by <strong>{{ $referrer->name }}</strong></div>
-                        </div>
-                    </div>
-                @endif
+                
 
                 <form method="POST" action="{{ route('register.post') }}">
                     @csrf
