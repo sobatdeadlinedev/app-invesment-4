@@ -267,11 +267,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; wid
                 <span class="sg-row-k">{{ __('app.trading_pair') ?? 'Trading pair' }}</span>
                 <span class="sg-row-v">{{ $inviteCoinInfo['symbol'] ?? $latestSignal->coin }}</span>
             </div>
-            <div class="sg-row">
-                <span class="sg-row-k">{{ __('app.release_time') ?? 'Release time' }}</span>
-                <span class="sg-row-v">{{ optional($latestSignal->opened_at ?? $latestSignal->created_at)->format('d/m/Y, H:i:s') }}</span>
-            </div>
-            
+
+
         </div>
 
         <a href="{{ route('member.invest.coin', ['coin' => $coinSlug]) }}" class="sg-cta">

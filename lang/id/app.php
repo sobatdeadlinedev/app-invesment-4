@@ -109,7 +109,7 @@ return [
 
     // Notice & Warnings
     'notice' => 'Pemberitahuan:',
-    'minimum_balance_required' => 'Minimum <strong>$ 200.00</strong> Saldo Trading tersedia diperlukan untuk bergabung dengan sinyal.',
+    'minimum_balance_required' => 'Minimum <strong>$ 100.00</strong> Saldo Trading tersedia diperlukan untuk bergabung dengan sinyal.',
     'please_transfer_funds' => 'Silakan <a href=":url" class="text-decoration-underline" style="color: #dc3545; font-weight: 600;">transfer dana</a> terlebih dahulu.',
 
     // Tabs

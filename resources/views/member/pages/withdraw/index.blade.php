@@ -71,7 +71,7 @@
             <div class="wdv2-amount-wrap">
                 <input type="number" id="withdraw-amount" name="amount"
                     class="wdv2-amount-input"
-                    step="0.01" min="50" disabled
+                    step="0.01" min="10" disabled
                     placeholder="0.00">
                 <div class="wdv2-amount-right">
                     <span class="wdv2-amount-cur">USDT</span>
@@ -402,7 +402,7 @@ function fillAll() {
 
 function calculateFee() {
     const amount = parseFloat(document.getElementById('withdraw-amount').value) || 0;
-    const fee    = amount > 0 ? (amount < 100 ? 5 : amount * 0.05) : 0;
+    const fee    = amount > 0 ? (amount < 100 ? 5 : amount * 0.07) : 0;
     const recv   = Math.max(0, amount - fee);
     document.getElementById('wd-recv-val').textContent = recv.toFixed(2) + ' USDT';
     document.getElementById('wd-fee-val').textContent  = fee.toFixed(2);
@@ -413,9 +413,9 @@ function submitWithdraw() {
     if (!wallet) return;
     const amount = parseFloat(document.getElementById('withdraw-amount').value);
     if (!amount || amount <= 0) { alert(FWTrans.enterValidAmount); return; }
-    if (amount < 50) { alert(FWTrans.minimumWithdrawal); return; }
+    if (amount < 10) { alert(FWTrans.minimumWithdrawal); return; }
     if (amount > userBalance) { alert(FWTrans.insufficientBalance.replace(':balance', userBalance.toFixed(2))); return; }
-    const fee   = amount < 100 ? 5 : amount * 0.05;
+    const fee   = amount < 100 ? 5 : amount * 0.07;
     const total = amount - fee;
     if (total <= 0) { alert(FWTrans.amountTooSmall); return; }
     const msg = FWTrans.confirmWithdrawal

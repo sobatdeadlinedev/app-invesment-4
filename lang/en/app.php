@@ -54,7 +54,7 @@ return [
     'deposit_amount' => 'Deposit Amount',
     'enter_amount_usdt' => 'Enter Amount (USDT)',
     'enter_amount_manually' => 'Enter amount manually',
-    
+
     // 'minimum_deposit' => 'Minimum deposit',
     'select_network' => 'Select Network',
     'amount' => 'Amount',
@@ -156,7 +156,7 @@ return [
     'join_this_signal' => 'CONFIRM TO FOLLOW ORDER',
     'you_have_joined' => 'You have joined this signal. Wait for settlement to receive your rewards!',
     'insufficient_balance_message' => 'Insufficient Balance:',
-    'minimum_balance_required_short' => 'Minimum $200.00 available Trade Balance required.',
+    'minimum_balance_required_short' => 'Minimum $100.00 available Trade Balance required.',
     'you_need_at_least' => 'You need at least',
     'available_short' => 'available.',
     'transfer_now' => 'Transfer now',
@@ -312,7 +312,7 @@ return [
     'account_verified' => 'Account Verified',
     'account_verified_message' => 'Congratulations! Your account has been successfully verified.',
     'verified_on' => 'Verified on',
-'confirm_transfer' => 'Are you sure you want to proceed with this transfer?',   
+'confirm_transfer' => 'Are you sure you want to proceed with this transfer?',
     // Submitted/Verified Data
     'submitted_data' => 'Submitted Data',
     'verified_data' => 'Verified Data',
@@ -479,7 +479,7 @@ return [
     'nav_futures' => 'Trade',
     'nav_access' => 'Validation',
     'nav_wallet' => 'Wallet',
-    
+
     'delivery_order' => 'delivery order',
 'historical_orders' => 'historical orders',
 
